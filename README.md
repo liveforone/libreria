@@ -71,6 +71,7 @@ LocalDate로 저장된 생성날자에서 getDayOfYear()를 사용해서 365일�
     "email" : "admin@libreria.com",
     "password" : "1234"
 }
+seoul - body, raw, text, /user/address, post
 ```
 
 배운점과 사용 기술과 알고리즘에대한 설명을 자세히
