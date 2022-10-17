@@ -81,12 +81,9 @@ editora 보단 libro를 더욱 고도화 한다고 생각하면된다
 
 예외처리 등을 신경쓴 시스템
 테스트코드
-게시글 수정시 파일은 libro의 방식말고 내가 원래 쓰는 방식으로 판별식으로 만들기
-회원등급은 mypage에 접근하면 user에 count 확인해서 등급매기고 body에 쏴주기
 yml 설정 내용 확인 후 도큐먼테이션
 https://jaimemin.tistory.com/1516
 https://velog.io/@fada2020/yml-%EC%98%B5%EC%85%98
-seller권한 없애버리기
 
 mypage와 detail에서 map으로 유저의 등급 내보내기
 주문시 itemTitle이 아니라 itemId저장하는 것으로 함.
