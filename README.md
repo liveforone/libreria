@@ -60,6 +60,19 @@ LocalDate로 저장된 생성날자에서 getDayOfYear()를 사용해서 365일�
 * 주소는 언제나 등록(수정)이 가능하다.
 * orderList를 통해서 나의 주문 리스트를 확인 할 수 있다.
 
+## json body
+#### users
+```
+{
+    "email" : "yc1234@gmail.com",
+    "password" : "1234"
+}
+{
+    "email" : "admin@libreria.com",
+    "password" : "1234"
+}
+```
+
 배운점과 사용 기술과 알고리즘에대한 설명을 자세히
 왜 이런 패턴을 쓰고 왜 이런걸 적용했는지 세세히 작상
 그것이 빌더패턴일지라도 말이다
@@ -77,4 +90,4 @@ seller권한 없애버리기
 mypage와 detail에서 map으로 유저의 등급 내보내기
 주문시 itemTitle이 아니라 itemId저장하는 것으로 함.
 
-admin id = admin@libreria.com
+userservice test 작성하기
