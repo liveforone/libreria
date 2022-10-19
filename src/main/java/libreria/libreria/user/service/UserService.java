@@ -2,6 +2,7 @@ package libreria.libreria.user.service;
 
 import libreria.libreria.user.model.Role;
 import libreria.libreria.user.model.UserDto;
+import libreria.libreria.user.model.UserResponseDto;
 import libreria.libreria.user.model.Users;
 import libreria.libreria.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -66,7 +67,7 @@ public class UserService implements UserDetailsService {
         new User(user.getEmail(), user.getPassword(), authorities);
     }
 
-    //== 로그인 로직 ==//
+    //== spring context 반환 메소드(필수) ==//
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Users users = userRepository.findByEmail(email);
@@ -82,10 +83,32 @@ public class UserService implements UserDetailsService {
         return new User(users.getEmail(), users.getPassword(), authorities);
     }
 
-    //== 유저 정보 가져오기 ==//
+    //== 등급체크 후 pw없이 유저 정보 가져오기 ==//
     @Transactional(readOnly = true)
-    public Users getUser(String email) {
-        return userRepository.findByEmail(email);
+    public UserResponseDto getUser(String email) {
+        Users users = userRepository.findByEmail(email);
+        String rank;
+        // 등급 체크
+        if (users.getCount() >= 120) {
+            rank = "DIA";
+        } else if (users.getCount() >= 60) {
+            rank = "PLATINUM";
+        } else if (users.getCount() >= 30) {
+            rank = "GOLD";
+        } else if (users.getCount() >= 15) {
+            rank = "SILVER";
+        } else {
+            rank = "BRONZE";
+        }
+
+        return UserResponseDto.builder()
+                .id(users.getId())
+                .email(users.getEmail())
+                .address(users.getAddress())
+                .rank(rank)
+                .auth(users.getAuth())
+                .build();
+
     }
 
     //== 전체 유저 리턴 for admin ==//
@@ -98,23 +121,5 @@ public class UserService implements UserDetailsService {
     @Transactional
     public void regiAddress(String email, String address) {
         userRepository.updateAddress(address, email);
-    }
-
-    //== 등급 계산 후 반환 ==//
-    @Transactional
-    public String checkClass(String email) {
-        Users users = userRepository.findByEmail(email);
-
-        if (users.getCount() >= 120) {
-            return "DIA";
-        } else if (users.getCount() >= 60) {
-            return "PLATINUM";
-        } else if (users.getCount() >= 30) {
-            return "GOLD";
-        } else if (users.getCount() >= 15) {
-            return "SILVER";
-        } else {
-            return "BRONZE";
-        }
     }
 }

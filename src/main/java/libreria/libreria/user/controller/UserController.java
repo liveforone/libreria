@@ -2,6 +2,7 @@ package libreria.libreria.user.controller;
 
 import libreria.libreria.user.model.Role;
 import libreria.libreria.user.model.UserDto;
+import libreria.libreria.user.model.UserResponseDto;
 import libreria.libreria.user.model.Users;
 import libreria.libreria.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -79,22 +80,16 @@ public class UserController {
 
     //== myPage ==//
     @GetMapping("/user/mypage")  //rest-api에서는 대문자를 쓰지않는다.
-    public ResponseEntity<Map<String, Object>> myPage(Principal principal) {
-        Map<String, Object> map = new HashMap<>();
+    public ResponseEntity<UserResponseDto> myPage(Principal principal) {
         String user = principal.getName();
-        Users currUser = userService.getUser(user);
+        UserResponseDto dto = userService.getUser(user);
 
-        String userClass = userService.checkClass(user);
-        String address = currUser.getAddress();
-        map.put("userClass", userClass);
-        map.put("address", address);
-
-        return ResponseEntity.ok(map);
+        return ResponseEntity.ok(dto);
     }
 
     //== 주소 등록 페이지 ==//
     @GetMapping("/user/address")
-    public ResponseEntity<?> addressPage(Principal principal) {
+    public ResponseEntity<?> regiAddressPage(Principal principal) {
         String user = principal.getName();
         String address = userService.getUser(user).getAddress();
 
@@ -127,8 +122,8 @@ public class UserController {
     @GetMapping("/admin")
     public ResponseEntity<?> admin(Principal principal) {
         String user = principal.getName();
-        Users currUser = userService.getUser(user);
-        if (currUser.getAuth().equals(Role.ADMIN)) {  //권한 검증
+        UserResponseDto dto = userService.getUser(user);
+        if (dto.getAuth().equals(Role.ADMIN)) {  //권한 검증
             log.info("어드민이 어드민 페이지에 접속했습니다.");
             return ResponseEntity.ok(userService.getAllUsersForAdmin());
         } else {
