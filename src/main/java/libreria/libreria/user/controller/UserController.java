@@ -73,12 +73,35 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).headers(httpHeaders).build();
     }
 
+    //== 판매자 등록 페이지 ==//
+    @GetMapping("/user/seller")
+    public ResponseEntity<?> sellerPage() {
+        return ResponseEntity.ok("판매자 등록 페이지");
+    }
+
+    //== 판매자 등록 - 권한 업데이트 ==//
+    @PostMapping("/user/seller")
+    public ResponseEntity<?> seller(Principal principal) {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setLocation(URI.create("/"));
+        String email = principal.getName();
+
+        userService.updateAuth(email);
+        log.info("seller 권한 업데이트 성공!!");
+
+        return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).headers(httpHeaders).build();
+    }
+
     /*
     로그아웃은 시큐리티 단에서 이루어짐.
     /user/logout 으로 post 하면 된다.
      */
 
-    //== myPage ==//
+    /*
+    README에서도 설명했지만 화면단에서 auth를 바탕으로
+    MEMBER일 경우 주문 리스트 버튼을 띄어서 /user/orderlist로 연결하고
+    SELLER일 경우 등록 상품 버튼을 띄어서 /user/itemlist 로 연결한다.
+     */
     @GetMapping("/user/mypage")  //rest-api에서는 대문자를 쓰지않는다.
     public ResponseEntity<UserResponseDto> myPage(Principal principal) {
         String user = principal.getName();

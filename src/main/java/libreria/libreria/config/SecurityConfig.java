@@ -50,7 +50,7 @@ public class SecurityConfig {
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers("/").permitAll()
                 .antMatchers("/item").authenticated()
-                .antMatchers("/item/post").authenticated()
+                .antMatchers("/item/post").hasRole("SELLER")
                 .antMatchers("/mypage").authenticated()
                 .and() // 로그아웃 설정
                 .logout()

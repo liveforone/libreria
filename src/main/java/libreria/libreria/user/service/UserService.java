@@ -7,6 +7,7 @@ import libreria.libreria.user.model.Users;
 import libreria.libreria.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -63,6 +64,8 @@ public class UserService implements UserDetailsService {
             userRepository.save(userDto.toEntity());
         } else if (user.getAuth() == Role.MEMBER) {
             authorities.add(new SimpleGrantedAuthority(Role.MEMBER.getValue()));
+        } else if (user.getAuth() == Role.SELLER) {
+            authorities.add(new SimpleGrantedAuthority(Role.SELLER.getValue()));
         }
         new User(user.getEmail(), user.getPassword(), authorities);
     }
@@ -78,9 +81,27 @@ public class UserService implements UserDetailsService {
             authorities.add(new SimpleGrantedAuthority(Role.ADMIN.getValue()));
         } else if (users.getAuth() == Role.MEMBER) {
             authorities.add(new SimpleGrantedAuthority(Role.MEMBER.getValue()));
+        } else if (users.getAuth() == Role.SELLER) {
+            authorities.add(new SimpleGrantedAuthority(Role.SELLER.getValue()));
         }
 
         return new User(users.getEmail(), users.getPassword(), authorities);
+    }
+
+    //== 권한 업데이트 ==//
+    @Transactional
+    public void updateAuth (String email) {
+        //권한을 업데이트(컨텍스트홀더 + db객체)
+        //업데이트 한 권한 현재 객체에 저장, 로그아웃 하지 않아도 됨!
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        List<GrantedAuthority> updatedAuthorities = new ArrayList<>(auth.getAuthorities());
+        updatedAuthorities.add(new SimpleGrantedAuthority(Role.SELLER.getValue()));
+        Authentication newAuth = new UsernamePasswordAuthenticationToken(auth.getPrincipal(), auth.getCredentials(), updatedAuthorities);
+        SecurityContextHolder.getContext().setAuthentication(newAuth);
+        //컨텍스트홀더 업데이트 끝.
+
+        //db업데이트
+        userRepository.updateAuth(Role.SELLER, email);
     }
 
     //== 등급체크 후 pw없이 유저 정보 가져오기 ==//
