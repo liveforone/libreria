@@ -156,7 +156,7 @@ form-data, application/json, requestpart
 
 테스트코드, 위키 정리, 예외처리
 
-jpql 위키 정리하기 + 페치조인 jpql 정리하기
+json body와 api doc 작성
 
 리뷰에서 map으로 유저의 등급 내보내기 = item + user =>  map
 주문시 itemTitle이 아니라 item자체를 연관관계로 저장하는 것으로 함.
