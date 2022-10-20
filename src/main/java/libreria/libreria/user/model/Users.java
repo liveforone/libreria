@@ -1,5 +1,6 @@
 package libreria.libreria.user.model;
 
+import libreria.libreria.item.model.Item;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

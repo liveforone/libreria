@@ -23,7 +23,7 @@
 * 또한 사진이 없다면 도서의 등록은 불가능하다.(forbidden)
 * 게시글 마다 리뷰게시판이 존재한다.
 * 상품을 주문 할 때마다 상품 주문 횟수는 증가하며 이것을 기준으로 페이징이된다. 검색도 마찬가지
-* 핫 게시판이 존재하며 핫게시판에는 좋아요(good) 순으로 페이징 정렬한다.
+* 카테고리와 상품 홈 모두 좋아요(good) 순으로 페이징 정렬한다.
 * 주문을 취소할때에는 반드시 주문한지 7일 이내에 취소해야한다.
 * 품절된 상품은 body에 품절 메세지를 보내준다.
 * 게시자는 상품의 수정이 가능하며, 품절시 재고 등록도 수정으로 한다.(게시자 판별은 서버에서함)
@@ -87,9 +87,21 @@ LocalDate로 저장된 생성날자에서 getDayOfYear()를 사용해서 365일�
 ## 연관관계 매핑
 * Order & Item -> ManyToOne 단방향
 * Users & Order ->  OneToMany ManyToOne 양방향
-* Item & Users -> ManyToOne OneToMany 양방향
+* Item & Users -> ManyToOne 단방향
 * Comment & Item  -> ManyToOne 단방향
 * ToOne관계에서는 지연로딩이기에 n+1 문제해결을위해 jpql로 페치조인해서 성능최적화.
+
+## 카테고리
+```
+카테고리는 
+자기계발, 여행, 경제, 종교, 예술, 요리, 수험, 미정 
+이 있다. 
+카테고리는 navbar와 같은곳에 <li>의 형태로 넣어두고,
+상품을 등록할때 select box를 사용하여 입력받는다. 
+이 카테고리의 범위를 넘어서지 않는다. 
+카테고리가 없을경우 null로 하는것이 아니라 미정을 선택하여 저장한다.
+뷰에서는 미정일경우 카테고리를 숨기는 형식으로 진행한다.(템플릿엔진 등에도 if문이 있음, 판별가능)
+```
 
 # json body
 ## users
@@ -104,19 +116,51 @@ LocalDate로 저장된 생성날자에서 getDayOfYear()를 사용해서 365일�
 }
 seoul - body, raw, text, /user/address, post
 ```
+## item
+```
+form-data, application/json, requestpart
+{
+    "title" : "test1",
+    "content" : "this is content",
+    "author" : "chan",
+    "remaining" : 3,
+    "category" : "종교",
+    "year" : "2022-10-12",
+    "good" : 1
+}
+{
+    "title" : "test2",
+    "content" : "this is content2",
+    "author" : "park",
+    "remaining" : 1,
+    "category" : "여행",
+    "year" : "2022-10-14",
+    "good" : 3
+}
+```
+
+# api
+## users
+```
+/ - get
+/user/signup - get/post
+/user/login - get/post
+/user/logout - post
+/user/seller - get/post
+/user/mypage - get
+/user/address - get/post
+/user/itemlist - get, auth가 SELLER인 user만 가능
+/user/prohibition - get
+/admin - get, auth가 ADMIN인 경우만 가능
+```
 
 테스트코드, 위키 정리, 예외처리
 
 jpql 위키 정리하기 + 페치조인 jpql 정리하기
 
-3 jpa 표준에서 5번째 연관관계 매핑 기초 참고해서 연관관계 맺기
-페치 조인으로 성능 최적화 하기
-
 리뷰에서 map으로 유저의 등급 내보내기 = item + user =>  map
 주문시 itemTitle이 아니라 item자체를 연관관계로 저장하는 것으로 함.
 
-
-
-연관관계 편의 메소드가 있는경우에는 dto로 set 하지 않고 필드에 바로 적용한다
+테스트 코드는 주로 컨트롤러를 위주로 한다.
 
 다만들고 나서 er diagram 캡쳐해서 readme에 첨부

@@ -1,9 +1,10 @@
 package libreria.libreria.user.controller;
 
+import libreria.libreria.item.model.Item;
+import libreria.libreria.item.service.ItemService;
 import libreria.libreria.user.model.Role;
 import libreria.libreria.user.model.UserDto;
 import libreria.libreria.user.model.UserResponseDto;
-import libreria.libreria.user.model.Users;
 import libreria.libreria.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,8 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpSession;
 import java.net.URI;
 import java.security.Principal;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,6 +27,7 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
+    private final ItemService itemService;
 
     //== 메인 페이지 ==//
     @GetMapping("/")
@@ -73,6 +74,11 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).headers(httpHeaders).build();
     }
 
+    /*
+    로그아웃은 시큐리티 단에서 이루어짐.
+    /user/logout 으로 post 하면 된다.
+     */
+
     //== 판매자 등록 페이지 ==//
     @GetMapping("/user/seller")
     public ResponseEntity<?> sellerPage() {
@@ -84,18 +90,12 @@ public class UserController {
     public ResponseEntity<?> seller(Principal principal) {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(URI.create("/"));
-        String email = principal.getName();
 
-        userService.updateAuth(email);
+        userService.updateAuth(principal.getName());
         log.info("seller 권한 업데이트 성공!!");
 
         return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).headers(httpHeaders).build();
     }
-
-    /*
-    로그아웃은 시큐리티 단에서 이루어짐.
-    /user/logout 으로 post 하면 된다.
-     */
 
     /*
     README에서도 설명했지만 화면단에서 auth를 바탕으로
@@ -104,8 +104,7 @@ public class UserController {
      */
     @GetMapping("/user/mypage")  //rest-api에서는 대문자를 쓰지않는다.
     public ResponseEntity<UserResponseDto> myPage(Principal principal) {
-        String user = principal.getName();
-        UserResponseDto dto = userService.getUser(user);
+        UserResponseDto dto = userService.getUser(principal.getName());
 
         return ResponseEntity.ok(dto);
     }
@@ -113,8 +112,7 @@ public class UserController {
     //== 주소 등록 페이지 ==//
     @GetMapping("/user/address")
     public ResponseEntity<?> regiAddressPage(Principal principal) {
-        String user = principal.getName();
-        String address = userService.getUser(user).getAddress();
+        String address = userService.getUser(principal.getName()).getAddress();
 
         return ResponseEntity.ok(address);
     }
@@ -133,6 +131,20 @@ public class UserController {
         log.info("주소 등록 성공!!");
 
         return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).headers(httpHeaders).build();
+    }
+
+    //== 내가 등록한 상품 - 권한이 판매자일 경우 ==//
+    @GetMapping("/user/itemlist")
+    public ResponseEntity<?> myItemList(Principal principal) {
+        UserResponseDto user = userService.getUser(principal.getName());
+
+        if (user.getAuth() != Role.SELLER) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } else {
+            List<Item> itemList = itemService.getItemListForMyPage(user.getEmail());
+            return ResponseEntity.ok(itemList);
+        }
+
     }
 
     //== 접근 거부 페이지 ==//
