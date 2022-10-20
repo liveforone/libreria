@@ -94,7 +94,10 @@ public class UserController {
         userService.updateAuth(principal.getName());
         log.info("seller 권한 업데이트 성공!!");
 
-        return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).headers(httpHeaders).build();
+        return ResponseEntity
+                .status(HttpStatus.MOVED_PERMANENTLY)
+                .headers(httpHeaders).
+                build();
     }
 
     /*
