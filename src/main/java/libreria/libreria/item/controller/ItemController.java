@@ -73,5 +73,5 @@ public class ItemController {
         }
     }
 
-    //detail, edit -> comment
+    //detail, edit, 검색, 카테고리 -> comment
 }
