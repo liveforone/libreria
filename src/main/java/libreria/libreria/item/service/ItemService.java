@@ -60,4 +60,9 @@ public class ItemService {
 
         itemRepository.save(itemDto.toEntity());
     }
+
+    @Transactional
+    public void updateGood(Long id) {
+        itemRepository.updateGood(id);
+    }
 }

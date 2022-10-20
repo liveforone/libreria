@@ -13,10 +13,7 @@ import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -71,6 +68,22 @@ public class ItemController {
                     .status(HttpStatus.BAD_REQUEST)
                     .body("파일이 존재하지 않아 포스팅이 실패했습니다.");
         }
+    }
+
+    //== 상품 좋아요 ==//
+    @PostMapping("/item/good/{id}")
+    public ResponseEntity<?> updateGood(@PathVariable("id") Long id) {
+        String url = "/item/" + id;
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setLocation(URI.create(url));
+
+        itemService.updateGood(id);
+        log.info("좋아요 업데이트!!");
+
+        return ResponseEntity
+                .status(HttpStatus.MOVED_PERMANENTLY)
+                .headers(httpHeaders)
+                .build();
     }
 
     //detail, edit, 검색, 카테고리 -> comment
