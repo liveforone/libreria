@@ -30,6 +30,13 @@
 * 여타 다른 사이트가 그렇듯 상품은 품절됬음 품절됬지 게시글을 삭제하는것은 불가능하다.(어드민은 가능)
 
 # 나의 고민
+## 어드민의 로그인
+* 어드민은 회사에서 지정한 admin@libreria.com 라는 지정된 이메일을 사용한다.
+* 따라서 처음에 로그인 시 저 아이디로 접근한다면 최초 회원가입 시 모든 유저는 MEMBER 권한을 부여받기때문에,
+* ADMIN으로 db 업데이트 쿼리를 내보낸다.
+* 이후에 해당 이메일로 로그인 할때 이미 업데이트 되어있는 칼럼을 또 업데이트하는 쿼리가 나가므로,
+* 판별식을 이용해서 첫 로그인이 아닌경우 auth 칼럼 값을 판별해서 GrantedAuthority값만 넣어주도록 설계했다.
+
 ## user를 전송할때 고민
 * user를 json으로 클라이언트 한테 전달할때 pw도 같이 전달이된다.
 * 개인적으로 아무리 암호화된 pw이라도 클라이언트에 pw를 보내는것은 좋은 방법이 아니라는 생각이 들었다.
@@ -86,7 +93,7 @@ LocalDate로 저장된 생성날자에서 getDayOfYear()를 사용해서 365일�
 
 ## 연관관계 매핑
 * Order & Item -> ManyToOne 단방향
-* Users & Order ->  OneToMany ManyToOne 양방향
+* Order & Users ->  ManyToOne 단방향
 * Item & Users -> ManyToOne 단방향
 * Comment & Item  -> ManyToOne 단방향
 * ToOne관계에서는 지연로딩이기에 n+1 문제해결을위해 jpql로 페치조인해서 성능최적화.
@@ -164,3 +171,11 @@ json body와 api doc 작성
 테스트 코드는 주로 컨트롤러를 위주로 한다.
 
 다만들고 나서 er diagram 캡쳐해서 readme에 첨부
+
+fetch join inner로 바꾸기
+entitygraph는 outer 조인이 기본임.
+이거 jpql로 inner 조인으로 수정하고 순환참조 해결되나 확인해보기
+inner join outer(left) join 차이 위키에 정리
+또한 어노테이션 쓰지말고 responseDto, requestDto 구분해서 만들자
+보고 dto 리턴의 중요성 정리
+테스트코드 작성법 익히고 적용하기

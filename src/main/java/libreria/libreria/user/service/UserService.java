@@ -55,13 +55,16 @@ public class UserService implements UserDetailsService {
                 SecurityContextHolder.getContext());
 
         List<GrantedAuthority> authorities = new ArrayList<>();
-        if (("admin@libreria.com").equals(email)) {
+        /*
+        처음 어드민이 로그인을 하는경우 이메일로 판별해서 권한을 admin으로 변경해주고
+        그 다음부터 어드민이 업데이트 할때에는 auth 칼럼으로 판별해서 db 업데이트 하지않고,
+        grandtedauthority 만 업데이트 해준다.
+         */
+        if (user.getAuth() != Role.ADMIN && ("admin@libreria.com").equals(email)) {
             authorities.add(new SimpleGrantedAuthority(Role.ADMIN.getValue()));
-            userDto.setId(user.getId());
-            userDto.setEmail(user.getEmail());
-            userDto.setPassword(user.getPassword());
-            userDto.setAuth(Role.ADMIN);
-            userRepository.save(userDto.toEntity());
+            userRepository.updateAuth(Role.ADMIN, userDto.getEmail());
+        } else if (user.getAuth() == Role.ADMIN) {
+            authorities.add(new SimpleGrantedAuthority(Role.ADMIN.getValue()));
         } else if (user.getAuth() == Role.MEMBER) {
             authorities.add(new SimpleGrantedAuthority(Role.MEMBER.getValue()));
         } else if (user.getAuth() == Role.SELLER) {
@@ -77,7 +80,7 @@ public class UserService implements UserDetailsService {
 
         List<GrantedAuthority> authorities = new ArrayList<>();
 
-        if (("admin@libreria.com").equals(email)) {  //어드민 아이디 지정됨, 비밀번호는 회원가입해야함
+        if (users.getAuth() == Role.ADMIN) {  //어드민 아이디 지정됨, 비밀번호는 회원가입해야함
             authorities.add(new SimpleGrantedAuthority(Role.ADMIN.getValue()));
         } else if (users.getAuth() == Role.MEMBER) {
             authorities.add(new SimpleGrantedAuthority(Role.MEMBER.getValue()));
