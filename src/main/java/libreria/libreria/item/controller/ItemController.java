@@ -19,6 +19,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.net.URI;
 import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,6 +40,20 @@ public class ItemController {
         Page<Item> itemList = itemService.getItemList(pageable);
 
         return ResponseEntity.ok(itemList);
+    }
+
+    @GetMapping("/item/category/{category}")
+    public ResponseEntity<Page<Item>> categoryHome(
+            @PathVariable("category") String category,
+            @PageableDefault(page = 0, size = 10)
+            @SortDefault.SortDefaults({
+                    @SortDefault(sort = "good", direction = Sort.Direction.DESC),
+                    @SortDefault(sort = "id", direction = Sort.Direction.DESC)
+            }) Pageable pageable
+    ) {
+        Page<Item> categoryList = itemService.getCategoryList(category, pageable);
+
+        return ResponseEntity.ok(categoryList);
     }
 
     @GetMapping("/item/post")
@@ -70,6 +86,27 @@ public class ItemController {
         }
     }
 
+    /*
+    수정 버튼은 해당 상품의 등록자에게만 보여주기 위해서 현재 로그인 유저를 함께 보낸다.
+     */
+    @GetMapping("/item/{id}")
+    public ResponseEntity<Map<String, Object>> detail(
+            @PathVariable("id") Long id,
+            Principal principal
+    ) {
+        String user = principal.getName();
+        Map<String, Object> map = new HashMap<>();
+
+        Item item = itemService.getDetail(id);
+        String writer = item.getUsers().getEmail();
+
+        map.put("user", user);
+        map.put("body", item);
+        map.put("writer", writer);
+
+        return ResponseEntity.ok(map);
+    }
+
     //== 상품 좋아요 ==//
     @PostMapping("/item/good/{id}")
     public ResponseEntity<?> updateGood(@PathVariable("id") Long id) {
@@ -86,5 +123,5 @@ public class ItemController {
                 .build();
     }
 
-    //detail, edit, 검색, 카테고리 -> comment
+    //edit, 검색, 카테고리 -> comment
 }

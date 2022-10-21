@@ -108,7 +108,15 @@ LocalDate로 저장된 생성날자에서 getDayOfYear()를 사용해서 365일�
 이 카테고리의 범위를 넘어서지 않는다. 
 카테고리가 없을경우 null로 하는것이 아니라 미정을 선택하여 저장한다.
 뷰에서는 미정일경우 카테고리를 숨기는 형식으로 진행한다.(템플릿엔진 등에도 if문이 있음, 판별가능)
+postman에서는 한글이 깨진다. 인코딩 하는 것도 귀찮으니 테스트 할때에는 영어로 바꾸어서 테스트했다.
+ex) : 여행 -> travel 등
 ```
+
+## map 으로 객체 전송시 규약
+* map으로 객체를 전송시 string으로 객체의 이름을 표시하는데,
+* 현재 유저 : user
+* 현재 보낼 객체(데이터) : body
+* 나머지 이름은 키와 값의 이름이 동일.
 
 # json body
 ## users
@@ -140,7 +148,7 @@ form-data, application/json, requestpart
     "content" : "this is content2",
     "author" : "park",
     "remaining" : 1,
-    "category" : "여행",
+    "category" : "travel",
     "year" : "2022-10-14",
     "good" : 3
 }
@@ -166,16 +174,8 @@ form-data, application/json, requestpart
 json body와 api doc 작성
 
 리뷰에서 map으로 유저의 등급 내보내기 = item + user =>  map
-주문시 itemTitle이 아니라 item자체를 연관관계로 저장하는 것으로 함.
 
+테스트코드 작성법 익히고 적용하기
 테스트 코드는 주로 컨트롤러를 위주로 한다.
 
 다만들고 나서 er diagram 캡쳐해서 readme에 첨부
-
-
-entitygraph는 outer 조인이 기본임.
-이거 jpql로 inner 조인으로 수정하고 순환참조 해결되나 확인해보기
-
-inner join outer(left) join 차이 위키에 정리
-
-테스트코드 작성법 익히고 적용하기

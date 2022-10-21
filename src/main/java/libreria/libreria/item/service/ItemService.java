@@ -41,11 +41,10 @@ public class ItemService {
 //        return itemRepository.findByTitleContaining(keyword, pageable);
 //    }
 //
-//    //== 카테고리 게시판 ==//
-//    @Transactional(readOnly = true)
-//    public Page<Item> getCategoryList(String category, Pageable pageable) {
-//        return itemRepository.findByCategory(category, pageable);
-//    }
+    //== 카테고리 게시판 ==//
+    public Page<Item> getCategoryList(String category, Pageable pageable) {
+        return itemRepository.findCategoryListByCategory(category, pageable);
+    }
 
     //== 상품 등록 ==//
     @Transactional
@@ -59,6 +58,10 @@ public class ItemService {
         uploadFile.transferTo(new File(saveFileName));
 
         itemRepository.save(itemDto.toEntity());
+    }
+
+    public Item getDetail(Long id) {
+        return itemRepository.findOneById(id);
     }
 
     @Transactional
