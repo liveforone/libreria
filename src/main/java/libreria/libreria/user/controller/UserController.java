@@ -50,7 +50,10 @@ public class UserController {
         userService.joinUser(userDto);
         log.info("회원 가입 성공!!");
 
-        return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).headers(httpHeaders).build();
+        return ResponseEntity
+                .status(HttpStatus.MOVED_PERMANENTLY)
+                .headers(httpHeaders)
+                .build();
     }
 
     //== 로그인 페이지 ==//
@@ -71,7 +74,10 @@ public class UserController {
         userService.login(userDto, session);
         log.info("로그인 성공!");
 
-        return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).headers(httpHeaders).build();
+        return ResponseEntity
+                .status(HttpStatus.MOVED_PERMANENTLY)
+                .headers(httpHeaders)
+                .build();
     }
 
     /*
@@ -153,14 +159,15 @@ public class UserController {
     //== 접근 거부 페이지 ==//
     @GetMapping("/user/prohibition")
     public ResponseEntity<?> prohibition() {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("접근 권한이 없습니다.");
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body("접근 권한이 없습니다.");
     }
 
     //== 어드민 페이지 ==//
     @GetMapping("/admin")
     public ResponseEntity<?> admin(Principal principal) {
-        String user = principal.getName();
-        UserResponseDto dto = userService.getUser(user);
+        UserResponseDto dto = userService.getUser(principal.getName());
         if (dto.getAuth().equals(Role.ADMIN)) {  //권한 검증
             log.info("어드민이 어드민 페이지에 접속했습니다.");
             return ResponseEntity.ok(userService.getAllUsersForAdmin());
