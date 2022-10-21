@@ -1,7 +1,6 @@
 package libreria.libreria.item.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import libreria.libreria.user.model.Users;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -27,7 +26,7 @@ public class Item {
 
     private String author;  //책의 저자
 
-    @JsonBackReference //순환 참조 방지
+    @JsonBackReference //순환참조 방지
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "users_id")
     private Users users;  //상품 등록자

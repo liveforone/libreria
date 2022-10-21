@@ -172,10 +172,10 @@ json body와 api doc 작성
 
 다만들고 나서 er diagram 캡쳐해서 readme에 첨부
 
-fetch join inner로 바꾸기
+
 entitygraph는 outer 조인이 기본임.
 이거 jpql로 inner 조인으로 수정하고 순환참조 해결되나 확인해보기
+
 inner join outer(left) join 차이 위키에 정리
-또한 어노테이션 쓰지말고 responseDto, requestDto 구분해서 만들자
-보고 dto 리턴의 중요성 정리
+
 테스트코드 작성법 익히고 적용하기
