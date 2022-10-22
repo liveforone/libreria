@@ -179,3 +179,5 @@ json body와 api doc 작성
 테스트 코드는 주로 컨트롤러를 위주로 한다.
 
 다만들고 나서 er diagram 캡쳐해서 readme에 첨부
+
+2. itemcontroller 마저 다 작성하기

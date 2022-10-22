@@ -5,6 +5,8 @@ import libreria.libreria.item.model.ItemDto;
 import libreria.libreria.item.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.security.Principal;
 import java.util.HashMap;
@@ -107,6 +110,18 @@ public class ItemController {
         return ResponseEntity.ok(map);
     }
 
+    //== 상품 상세조회 이미지 ==//
+    /*
+    뷰단에서 이미지 태그(html tag)를 이용해서 해당 url을 걸면된다.
+     */
+    @GetMapping("/user/item/image/{saveFileName}")
+    @ResponseBody
+    public Resource showImage(
+            @PathVariable("saveFileName") String saveFileName
+    ) throws MalformedURLException {
+        return new UrlResource("file:C:\\Temp\\upload\\" + saveFileName);
+    }
+
     //== 상품 좋아요 ==//
     @PostMapping("/item/good/{id}")
     public ResponseEntity<?> updateGood(@PathVariable("id") Long id) {
@@ -123,5 +138,15 @@ public class ItemController {
                 .build();
     }
 
-    //edit, 검색, 카테고리 -> comment
+    @GetMapping("/item/edit/{id}")
+    public ResponseEntity<Item> editPage(@PathVariable("id") Long id) {
+        Item item = itemService.getDetail(id);
+
+        return ResponseEntity.ok(item);
+    }
+
+    //== edit1 - 기존 사진 유지하면서 수정 ==//
+
+
+    //edit, 검색 -> comment
 }
