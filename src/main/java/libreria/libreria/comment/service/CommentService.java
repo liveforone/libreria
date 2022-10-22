@@ -37,6 +37,10 @@ public class CommentService {
         return commentRepository.findOneById(id);
     }
 
+    /*
+    comment id 아닌 item id 리턴
+    이유는 리다이렉트 해주기위해서 itemId가 필요하다.
+     */
     @Transactional
     public Long editComment(Long id, CommentDto commentDto) {
         Comment comment = commentRepository.findOneById(id);
