@@ -20,6 +20,9 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     @Query("select i from Item i join fetch i.users")
     List<Item> findAll();
 
+    @Query("select i from Item i join i.users where i.title like %:title%")
+    Page<Item> searchByTitle(@Param("title") String keyword, Pageable pageable);
+
     /*
     페이징을 위해 fetch를 포기했다.
     다만, yml에 batch_fetch_size 저장해두어서 괜찮다!

@@ -65,7 +65,7 @@ random uuid + "_" + originalFileName = saveFileName 으로 저장
 * 게시글을 수정시 두가지 조건이 생긴다.
 * 첫째 : 기존 이미지를 수정하며 게시글 수정
 * 둘째 : 기존 이미지를 수정하지 않고 게시글 수정
-* multifile을 받을때 isEmpty()로 판별하여 비어있다면 둘째 조건을
+* multipartfile을 받을때 isEmpty()로 판별하여 비어있다면 둘째 조건을
 * 비어있지 않고 파일이 채워져있다면 첫째 조건에 따라 수정한다.
 * 즉 수정 로직(메소드)가 두개임.
 * 또한 수정시 게시자인지 판별하고 수정한다.
@@ -152,6 +152,14 @@ form-data, application/json, requestpart
     "year" : "2022-10-14",
     "good" : 3
 }
+{
+    "title" : "updated Title",
+    "content" : "updated content",
+    "author" : "park",
+    "remaining" : 10,
+    "category" : "travel",
+    "year" : "2022-10-14"
+}
 ```
 
 # api
@@ -168,16 +176,21 @@ form-data, application/json, requestpart
 /user/prohibition - get
 /admin - get, auth가 ADMIN인 경우만 가능
 ```
+## item
+```
+/item - get
+/item/search - get, parameter : keyword
+/item/category/{category} - get
+/item/post - get/post
+/item/{id} - get
+/item/image/{saveFileName} - image url
+/item/good/{id} - post
+/item/edit/{id} - get/post
 
-테스트코드, 위키 정리, 예외처리
-
-json body와 api doc 작성
+```
 
 리뷰에서 map으로 유저의 등급 내보내기 = item + user =>  map
 
-테스트코드 작성법 익히고 적용하기
-테스트 코드는 주로 컨트롤러를 위주로 한다.
+json body와 api doc 작성
 
 다만들고 나서 er diagram 캡쳐해서 readme에 첨부
-
-2. itemcontroller 마저 다 작성하기

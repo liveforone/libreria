@@ -45,6 +45,20 @@ public class ItemController {
         return ResponseEntity.ok(itemList);
     }
 
+    @GetMapping("/item/search")
+    public ResponseEntity<Page<Item>> itemSearch(
+            @PageableDefault(page = 0, size = 10)
+            @SortDefault.SortDefaults({
+                    @SortDefault(sort = "good", direction = Sort.Direction.DESC),
+                    @SortDefault(sort = "id", direction = Sort.Direction.DESC)
+            }) Pageable pageable,
+            @RequestParam("keyword") String keyword
+    ) {
+        Page<Item> searchList = itemService.getSearchList(keyword, pageable);
+
+        return ResponseEntity.ok(searchList);
+    }
+
     @GetMapping("/item/category/{category}")
     public ResponseEntity<Page<Item>> categoryHome(
             @PathVariable("category") String category,
@@ -173,7 +187,4 @@ public class ItemController {
                 .headers(httpHeaders)
                 .build();
     }
-
-
-    //검색 -> comment
 }

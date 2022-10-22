@@ -34,13 +34,12 @@ public class ItemService {
     public Page<Item> getItemList(Pageable pageable) {
         return itemRepository.findAll(pageable);
     }
-//
-//    //== 상품 검색 ==//
-//    @Transactional(readOnly = true)
-//    public Page<Item> getSearchList(String keyword, Pageable pageable) {
-//        return itemRepository.findByTitleContaining(keyword, pageable);
-//    }
-//
+
+    //== 상품 검색 ==//
+    public Page<Item> getSearchList(String keyword, Pageable pageable) {
+        return itemRepository.searchByTitle(keyword, pageable);
+    }
+
     //== 카테고리 게시판 ==//
     public Page<Item> getCategoryList(String category, Pageable pageable) {
         return itemRepository.findCategoryListByCategory(category, pageable);
