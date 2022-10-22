@@ -46,5 +46,5 @@ public class CommentController {
                 .build();
     }
     
-    //수정, 댓글
+    //수정, 삭제
 }
