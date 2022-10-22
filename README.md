@@ -70,6 +70,19 @@ random uuid + "_" + originalFileName = saveFileName 으로 저장
 * 즉 수정 로직(메소드)가 두개임.
 * 또한 수정시 게시자인지 판별하고 수정한다.
 
+## 리뷰(comment)
+* /item/comment/{itemId} 에 진입하면 댓글리스트가 서버로 부터 전송되고,
+* 최상단에 textarea(html)가 있고, 여기서 바로 댓글을 작성하는 구조로 한다.
+* 아래는 간단한 예시이다.
+```
+<form url mehtod="post">
+<textarea>어쩌구저쩌구....
+</form>
+<li>
+commentList
+</li>
+```
+
 ## 주문취소
 ```
 주문취소는 LocalDate를 활용해서 주문후 7일 안에 주문취소가 가능하도록 설정한다.
@@ -186,10 +199,8 @@ form-data, application/json, requestpart
 /item/image/{saveFileName} - image url
 /item/good/{id} - post
 /item/edit/{id} - get/post
-
 ```
 
-리뷰에서 map으로 유저의 등급 내보내기 = item + user =>  map
 
 order 만들고 usercontroller에 orderlist 만들기.
 
