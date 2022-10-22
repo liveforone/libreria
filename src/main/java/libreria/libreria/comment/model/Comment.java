@@ -33,6 +33,7 @@ public class Comment {
     private Item item;
 
     @CreatedDate
+    @Column(updatable = false)
     private LocalDateTime createdDate;
 
     @Builder

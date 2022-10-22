@@ -32,4 +32,21 @@ public class CommentService {
 
         commentRepository.save(commentDto.toEntity());
     }
+
+    public Comment getComment(Long id) {
+        return commentRepository.findOneById(id);
+    }
+
+    @Transactional
+    public Long editComment(Long id, CommentDto commentDto) {
+        Comment comment = commentRepository.findOneById(id);
+
+        commentDto.setId(id);
+        commentDto.setUser(comment.getUser());
+        commentDto.setItem(comment.getItem());
+
+        commentRepository.save(commentDto.toEntity());
+
+        return comment.getItem().getId();
+    }
 }

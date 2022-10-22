@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,11 +23,23 @@ public class CommentController {
 
     private final CommentService commentService;
 
+    /*
+    현재객체 판별을 위해 현재객체를 함께 리턴했다.
+    현재객체는 수정, 삭제 버튼 작성자 판별에 사용된다.
+     */
     @GetMapping("/item/comment/{itemId}")
-    public ResponseEntity<List<Comment>> commentList(@PathVariable("itemId") Long itemId) {
+    public ResponseEntity<Map<String, Object>> commentList(
+            @PathVariable("itemId") Long itemId,
+            Principal principal
+    ) {
+        Map<String, Object> map = new HashMap<>();
+        String user = principal.getName();
         List<Comment> commentList = commentService.getCommentList(itemId);
 
-        return ResponseEntity.ok(commentList);
+        map.put("user", user);
+        map.put("body", commentList);
+
+        return ResponseEntity.ok(map);
     }
     
     @PostMapping("/item/comment/post/{itemId}")
@@ -45,6 +59,30 @@ public class CommentController {
                 .headers(httpHeaders)
                 .build();
     }
+
+    @GetMapping("/item/comment/edit/{id}")
+    public ResponseEntity<Comment> editPage(@PathVariable("id") Long id) {
+        Comment comment = commentService.getComment(id);
+
+        return ResponseEntity.ok(comment);
+    }
+
+    @PostMapping("/item/comment/edit/{id}")
+    public ResponseEntity<?> editComment(
+            @PathVariable("id") Long id,
+            @RequestBody CommentDto commentDto
+    ) {
+        Long itemId = commentService.editComment(id, commentDto);
+        log.info("리뷰 업데이트 성공!!");
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setLocation(URI.create("/item/comment/" + itemId));
+
+        return ResponseEntity
+                .status(HttpStatus.MOVED_PERMANENTLY)
+                .headers(httpHeaders)
+                .build();
+    }
     
-    //수정, 삭제
+    //삭제
 }

@@ -174,6 +174,12 @@ form-data, application/json, requestpart
     "year" : "2022-10-14"
 }
 ```
+## comment
+```
+{
+    "content" : "this is comment"
+}
+```
 
 # api
 ## users
@@ -199,6 +205,9 @@ form-data, application/json, requestpart
 /item/image/{saveFileName} - image url
 /item/good/{id} - post
 /item/edit/{id} - get/post
+```
+## comment
+```
 ```
 
 
