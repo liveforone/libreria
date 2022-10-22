@@ -114,7 +114,7 @@ public class ItemController {
     /*
     뷰단에서 이미지 태그(html tag)를 이용해서 해당 url을 걸면된다.
      */
-    @GetMapping("/user/item/image/{saveFileName}")
+    @GetMapping("/item/image/{saveFileName}")
     @ResponseBody
     public Resource showImage(
             @PathVariable("saveFileName") String saveFileName
@@ -145,8 +145,35 @@ public class ItemController {
         return ResponseEntity.ok(item);
     }
 
-    //== edit1 - 기존 사진 유지하면서 수정 ==//
+    //== 상품 수정 ==//
+    /*
+    상품 수정은 경우가 있음.
+    1. 기존 사진을 유지하며 게시글 수정
+    2. 사진을 수정하면서 게시글 수정
+     */
+    @PostMapping("/item/edit/{id}")
+    public ResponseEntity<?> editItem(
+            @PathVariable("id") Long id,
+            @RequestPart MultipartFile uploadFile,
+            @RequestPart("itemDto") ItemDto itemDto
+    ) throws IllegalStateException, IOException {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setLocation(URI.create("/item/" + id));
+
+        if (!uploadFile.isEmpty()) {  //파일을 바꿔서 수정
+            itemService.editItemWithFile(id, itemDto, uploadFile);
+            log.info("파일 수정 완료!!(파일교체 O)");
+        } else {  //기존 파일 유지하며 수정
+            itemService.editItemNoFileChange(id, itemDto);
+            log.info("파일 수정 완료!!(파일교체 X)");
+        }
+
+        return ResponseEntity
+                .status(HttpStatus.MOVED_PERMANENTLY)
+                .headers(httpHeaders)
+                .build();
+    }
 
 
-    //edit, 검색 -> comment
+    //검색 -> comment
 }

@@ -46,6 +46,10 @@ public class ItemService {
         return itemRepository.findCategoryListByCategory(category, pageable);
     }
 
+    public Item getDetail(Long id) {
+        return itemRepository.findOneById(id);
+    }
+
     //== 상품 등록 ==//
     @Transactional
     public void saveItem(MultipartFile uploadFile, ItemDto itemDto, String user) throws IOException {
@@ -60,12 +64,37 @@ public class ItemService {
         itemRepository.save(itemDto.toEntity());
     }
 
-    public Item getDetail(Long id) {
-        return itemRepository.findOneById(id);
-    }
-
     @Transactional
     public void updateGood(Long id) {
         itemRepository.updateGood(id);
+    }
+
+    //== 파일 수정1 - 기존 파일 유지하며 ==//
+    @Transactional
+    public void editItemNoFileChange(Long id, ItemDto itemDto) {
+        Item item = itemRepository.findOneById(id);
+
+        itemDto.setId(id);
+        itemDto.setUsers(item.getUsers());
+        itemDto.setSaveFileName(item.getSaveFileName());
+        itemDto.setGood(item.getGood());
+
+        itemRepository.save(itemDto.toEntity());
+    }
+
+    //== 파일 수정2 - 파일 교체하며 ==//
+    @Transactional
+    public void editItemWithFile(Long id, ItemDto itemDto, MultipartFile uploadFile) throws IOException {
+        UUID uuid = UUID.randomUUID();
+        String saveFileName = uuid + "_" + uploadFile.getOriginalFilename();
+        Item item = itemRepository.findOneById(id);
+
+        itemDto.setId(id);
+        itemDto.setUsers(item.getUsers());
+        itemDto.setGood(item.getGood());
+        itemDto.setSaveFileName(saveFileName);
+
+        uploadFile.transferTo(new File(saveFileName));
+        itemRepository.save(itemDto.toEntity());
     }
 }
