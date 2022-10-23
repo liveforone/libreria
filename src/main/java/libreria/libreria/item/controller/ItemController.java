@@ -105,6 +105,8 @@ public class ItemController {
 
     /*
     수정 버튼은 해당 상품의 등록자에게만 보여주기 위해서 현재 로그인 유저를 함께 보낸다.
+    remaining을 보고 뷰에서는 0일경우 주문 버튼을 품절로 바꾼다.
+    즉 remaining을 보고 뷰에서 주문 가능한지 불가능한지 판별한다.
      */
     @GetMapping("/item/{id}")
     public ResponseEntity<Map<String, Object>> detail(
