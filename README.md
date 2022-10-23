@@ -22,6 +22,7 @@
 * 도서의 사진은 1개만 첨부 가능하다. 도서는 많은 상품 이미지를 사실 필요로 하지않는다.(여타 사이트들도 마찬가지)
 * 또한 사진이 없다면 도서의 등록은 불가능하다.(forbidden)
 * 게시글 마다 리뷰게시판이 존재한다.
+* 게시글의 게시자는 주문 리스트를 보는 것이가능하다. mypage와 비슷한 로직이다.
 * 상품을 주문 할 때마다 상품 주문 횟수는 증가하며 이것을 기준으로 페이징이된다. 검색도 마찬가지
 * 카테고리와 상품 홈 모두 좋아요(good) 순으로 페이징 정렬한다.
 * 주문을 취소할때에는 반드시 주문한지 7일 이내에 취소해야한다.
@@ -220,9 +221,6 @@ form-data, application/json, requestpart
 /item/comment/edit/{id} - get/post
 /item/comment/delete/{id} - post
 ```
-
-
-order 만들고 usercontroller에 orderlist 만들기.
 
 json body와 api doc 작성
 

@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
-    //== 아이템 for myPage itemList & fetch join ==//
+    //== 아이템리스트 for myPage itemList & fetch join ==//
     @Query("select i from Item i join fetch i.users u where u.email = :email")
     List<Item> findItemListByEmail(@Param("email") String email);
 
