@@ -22,7 +22,7 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String user;  //users와 연관관계를 맺을 이유가 딱히 없음, 작성자.
+    private String writer;  //users와 연관관계를 맺을 이유가 딱히 없음, 작성자.
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
@@ -37,9 +37,9 @@ public class Comment {
     private LocalDateTime createdDate;
 
     @Builder
-    public Comment(Long id, String user, String content, Item item, LocalDateTime createdDate) {
+    public Comment(Long id, String writer, String content, Item item, LocalDateTime createdDate) {
         this.id = id;
-        this.user = user;
+        this.writer = writer;
         this.content = content;
         this.item = item;
         this.createdDate = createdDate;

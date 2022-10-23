@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 public class CommentDto {
 
     private Long id;
-    private String user;
+    private String writer;
     private String content;
     private Item item;
     private LocalDateTime createdDate;
@@ -18,7 +18,7 @@ public class CommentDto {
     public Comment toEntity() {
         return Comment.builder()
                 .id(id)
-                .user(user)
+                .writer(writer)
                 .content(content)
                 .item(item)
                 .build();

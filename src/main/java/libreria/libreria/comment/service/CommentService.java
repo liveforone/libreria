@@ -24,11 +24,11 @@ public class CommentService {
     }
 
     @Transactional
-    public void saveComment(Long itemId, CommentDto commentDto, String user) {
+    public void saveComment(Long itemId, CommentDto commentDto, String writer) {
         Item item = itemRepository.findOneById(itemId);
 
         commentDto.setItem(item);
-        commentDto.setUser(user);
+        commentDto.setWriter(writer);
 
         commentRepository.save(commentDto.toEntity());
     }
@@ -46,11 +46,24 @@ public class CommentService {
         Comment comment = commentRepository.findOneById(id);
 
         commentDto.setId(id);
-        commentDto.setUser(comment.getUser());
+        commentDto.setWriter(comment.getWriter());
         commentDto.setItem(comment.getItem());
 
         commentRepository.save(commentDto.toEntity());
 
         return comment.getItem().getId();
+    }
+
+    /*
+    edit와 마찬가지로 redirect 해주기위해서 itemId를 리턴한다.(comment_id 아님!!)
+     */
+    @Transactional
+    public Long deleteComment(Long id) {
+        Comment comment = commentRepository.findOneById(id);
+        Long itemId = comment.getItem().getId();
+
+        commentRepository.deleteById(id);
+
+        return itemId;
     }
 }

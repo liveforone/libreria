@@ -179,6 +179,9 @@ form-data, application/json, requestpart
 {
     "content" : "this is comment"
 }
+{
+    "content" : "updated comment"
+}
 ```
 
 # api
@@ -208,6 +211,10 @@ form-data, application/json, requestpart
 ```
 ## comment
 ```
+/item/comment/{itemId} - get
+/item/comment/post/{itemId} - post, 댓글 홈에서 바로 댓글 작성함(textarea있음)
+/item/comment/edit/{id} - get/post
+/item/comment/delete/{id} - post
 ```
 
 

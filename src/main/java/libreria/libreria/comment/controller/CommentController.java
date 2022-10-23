@@ -83,6 +83,22 @@ public class CommentController {
                 .headers(httpHeaders)
                 .build();
     }
-    
-    //삭제
+
+    /*
+    삭제전 js의 alert로 삭제할 것이지 물어보기.
+    수정과 마찬가지로 뷰에서 작성자와 현재 유저 판별이 끝남.
+     */
+    @PostMapping("/item/comment/delete/{id}")
+    public ResponseEntity<?> commentDelete(@PathVariable("id") Long id) {
+        Long itemId = commentService.deleteComment(id);
+        log.info("댓글 " + id + "삭제완료!!");
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setLocation(URI.create("/item/comment/" + itemId));
+
+        return ResponseEntity
+                .status(HttpStatus.MOVED_PERMANENTLY)
+                .headers(httpHeaders)
+                .build();
+    }
 }
