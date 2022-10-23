@@ -139,6 +139,10 @@ ex) : 여행 -> travel 등
     "password" : "1234"
 }
 {
+    "email" : "ms1234@gmail.com",
+    "password" : "1234"
+}
+{
     "email" : "admin@libreria.com",
     "password" : "1234"
 }

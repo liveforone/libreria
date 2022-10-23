@@ -2,6 +2,8 @@ package libreria.libreria.user.controller;
 
 import libreria.libreria.item.model.Item;
 import libreria.libreria.item.service.ItemService;
+import libreria.libreria.orders.model.Orders;
+import libreria.libreria.orders.service.OrderService;
 import libreria.libreria.user.model.Role;
 import libreria.libreria.user.model.UserDto;
 import libreria.libreria.user.model.UserResponseDto;
@@ -28,6 +30,7 @@ public class UserController {
 
     private final UserService userService;
     private final ItemService itemService;
+    private final OrderService orderService;
 
     //== 메인 페이지 ==//
     @GetMapping("/")
@@ -154,6 +157,19 @@ public class UserController {
             return ResponseEntity.ok(itemList);
         }
 
+    }
+
+    //== 내가 주문한 상품 - 권한이 멤버일 경우 ==//
+    @GetMapping("/user/orderlist")
+    public ResponseEntity<?> myOrderList(Principal principal) {
+        UserResponseDto user = userService.getUser(principal.getName());
+
+        if (user.getAuth() != Role.MEMBER) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } else {
+            List<Orders> ordersList = orderService.getOrderListForMyPage(user.getEmail());
+            return ResponseEntity.ok(ordersList);
+        }
     }
 
     //== 접근 거부 페이지 ==//

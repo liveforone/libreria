@@ -27,7 +27,7 @@ public class ItemService {
 
     //== 마이페이지 itemList ==//
     public List<Item> getItemListForMyPage(String email) {
-        return itemRepository.findItemWithJoinByEmail(email);
+        return itemRepository.findItemListByEmail(email);
     }
 
     //== 상품 홈 itemList ==//

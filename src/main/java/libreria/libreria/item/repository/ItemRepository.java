@@ -14,7 +14,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     //== 아이템 for myPage itemList & fetch join ==//
     @Query("select i from Item i join fetch i.users u where u.email = :email")
-    List<Item> findItemWithJoinByEmail(@Param("email") String email);
+    List<Item> findItemListByEmail(@Param("email") String email);
 
     @Override
     @Query("select i from Item i join fetch i.users")
