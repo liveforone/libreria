@@ -242,3 +242,6 @@ form-data, application/json, requestpart
 /item/order/{itemId} - get/post
 /item/cancel/{orderId} - get/post
 ```
+
+# DB ERD diagram
+![스크린샷(135)](https://user-images.githubusercontent.com/88976237/197521558-3d2b32da-ee75-4bda-a4c7-bde7c3d3ab18.png)
