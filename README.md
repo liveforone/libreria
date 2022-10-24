@@ -23,7 +23,7 @@
 * 또한 사진이 없다면 도서의 등록은 불가능하다.(forbidden)
 * 게시글 마다 리뷰게시판이 존재한다.
 * 게시글의 게시자는 주문 리스트를 보는 것이가능하다. mypage와 비슷한 로직이다.
-* 상품을 주문 할 때마다 상품 주문 횟수는 증가하며 이것을 기준으로 페이징이된다. 검색도 마찬가지
+* 상품을 주문 할 때마다 상품 주문 횟수는 증가한다.
 * 카테고리와 상품 홈 모두 좋아요(good) 순으로 페이징 정렬한다.
 * 주문을 취소할때에는 반드시 주문한지 7일 이내에 취소해야한다.
 * 품절된 상품은 body에 품절 메세지를 보내준다.
@@ -172,7 +172,7 @@ form-data, application/json, requestpart
     "title" : "test2",
     "content" : "this is content2",
     "author" : "park",
-    "remaining" : 1,
+    "remaining" : 3,
     "category" : "travel",
     "year" : "2022-10-14",
     "good" : 3
@@ -193,6 +193,12 @@ form-data, application/json, requestpart
 }
 {
     "content" : "updated comment"
+}
+```
+## orders
+```
+{
+    "orderCount" : "2"
 }
 ```
 
