@@ -97,9 +97,7 @@ public class ItemController {
                     .build();
         } else {
             log.info("파일이 없어서 포스팅 실패했습니다.");
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body("파일이 존재하지 않아 포스팅이 실패했습니다.");
+            return ResponseEntity.ok("파일이 존재하지 않아 포스팅이 실패했습니다. \n파일을 넣고 다시 등록해주세요");
         }
     }
 

@@ -67,6 +67,7 @@ public class OrderController {
         }
     }
 
-
-    //주문취소 & localDate parshing
+    //주문취소 & localDate parshing, 주문취소는 save말고 리파지토리의 jpql 업데이트 쿼리를 이용하자.
+    // 그렇게 해야 코드를 더욱 절감할 수 있을것같다. 또한 주문취소는 status와 몇개 로직을
+    // 수정하는 것이기에...
 }
