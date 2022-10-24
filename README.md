@@ -85,7 +85,9 @@ commentList
 ```
 
 ## 주문
-* 주문시 조건이 있다. 품절인지 확인하는 것이다.
+* 주문시 두 조건이 있다. 품절인가?, 주문 수량 - 재고 수량 이 0이하인가?
+* 주문 수량 - 재고 수량 이 0 이하인경우 재고 수량이 -1이 되어버릴 수 있다.
+* 따라서 이런경우 주문수량이 재고 수량보다 많다고 사용자에게 메세지를 날려준다.
 * 품절은 item detail에서 클라언트로 품절되었다는것을 알려주고
 * 클라이언트가 품절된 상품은 버튼을 품절로 바꾸고 차단하지만
 * 이러한 차단을 넘고 url로 접근하는 유저 때문에 주문시 한 번더 품절 체크를 해준다.
@@ -234,7 +236,10 @@ form-data, application/json, requestpart
 /item/comment/edit/{id} - get/post
 /item/comment/delete/{id} - post
 ```
-
-json body와 api doc 작성
-
+## orders
+```
+/item/orderlist/{itemId} - get, myPage에서 조회할 나의 주문리스트
+/item/order/{itemId} - get/post
+/item/cancel/{orderId} - get/post
+```
 다만들고 나서 er diagram 캡쳐해서 readme에 첨부

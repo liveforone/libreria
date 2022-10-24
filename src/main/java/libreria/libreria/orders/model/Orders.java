@@ -40,7 +40,7 @@ public class Orders {
     private int orderCount;
 
     @CreatedDate
-    private LocalDate createdDate;  //plusDays(5)로 5일후 날짜 얻을 수 있음.
+    private LocalDate createdDate;
 
     @Builder
     public Orders(Long id, Item item, Users users, OrderStatus status, int orderCount) {

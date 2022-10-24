@@ -53,6 +53,9 @@ public class OrderController {
         if (item.getRemaining() <= 0) {
             log.info("품절입니다.");
             return ResponseEntity.ok("품절된 상품입니다. 상품 홈으로 돌아가주세요");
+        } else if (item.getRemaining() - ordersDto.getOrderCount() <= 0) {
+            log.info("주문 불가능, 수량이 재고보다 많음.");
+            return ResponseEntity.ok("주문 수량이 재고보다 많아 주문이 불가능합니다.");
         } else {
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.setLocation(URI.create("/item/" + itemId));
@@ -67,7 +70,36 @@ public class OrderController {
         }
     }
 
-    //주문취소 & localDate parshing, 주문취소는 save말고 리파지토리의 jpql 업데이트 쿼리를 이용하자.
-    // 그렇게 해야 코드를 더욱 절감할 수 있을것같다. 또한 주문취소는 status와 몇개 로직을
-    // 수정하는 것이기에...
+    @GetMapping("/item/cancel/{orderId}")
+    public ResponseEntity<Orders> cancelPage(@PathVariable("orderId") Long orderId) {
+        Orders order = orderService.getOrder(orderId);
+
+        return ResponseEntity.ok(order);
+    }
+
+    /*
+    myPage에 접근은 principal로 현재 객체를 가져와서 접근한다.
+    주문리스트를 보고 주문취소를 클릭하는 방식인데, 이미 현재객체로 myPage를 띄어주기때문에
+    주문의 Users에 대한 판별은 하지 않는다.
+     */
+    @PostMapping("/item/cancel/{orderId}")
+    public ResponseEntity<?> cancel(@PathVariable("orderId") Long orderId) {
+        int ableCancelDate = orderService.getOrderDay(orderId);
+
+        if (ableCancelDate == 1) {  //주문 취소 가능
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.setLocation(URI.create("/user/orderlist"));
+
+            orderService.cancelOrder(orderId);
+            log.info("주문 취소 성공!!");
+
+            return ResponseEntity
+                    .status(HttpStatus.MOVED_PERMANENTLY)
+                    .headers(httpHeaders)
+                    .build();
+        } else {  //주문 취소 불가능
+            log.info("주문 취소 실패!!");
+            return ResponseEntity.ok("주문 한지 7일이 지나 주문 취소가 불가능합니다.");
+        }
+    }
 }
