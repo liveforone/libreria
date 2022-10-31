@@ -257,3 +257,10 @@ form-data, application/json, requestpart
 
 ## DB ERD diagram
 ![스크린샷(135)](https://user-images.githubusercontent.com/88976237/197521558-3d2b32da-ee75-4bda-a4c7-bde7c3d3ab18.png)
+
+## 느낀점
+* 생성이나 수정시 원래 게시글로 리다이렉트 할 경우 pathVariable로 받았다면 상관없지만,
+* 그렇지 않았다면 서비스단에서 save()메소드 호출하고 .getId()로 id입력받아
+* 컨트롤러로 보낸다면 보다 쉽게 리다이렉트가 가능해진다. 
+* 권한 체크는 원래 계획은 화면단에서 끝내는 것이었는데,
+* 수정과 삭제는 민간함 부분인 만큼 화면, 서버단 모두에서 하는 것이 코드는 복잡해지더라도 좋다라는것을 알게되었다.
