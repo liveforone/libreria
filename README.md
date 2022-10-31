@@ -258,7 +258,7 @@ form-data, application/json, requestpart
 ## DB ERD diagram
 ![스크린샷(135)](https://user-images.githubusercontent.com/88976237/197521558-3d2b32da-ee75-4bda-a4c7-bde7c3d3ab18.png)
 
-## 느낀점
+## 새롭게 적용한 점
 * 생성이나 수정시 원래 게시글로 리다이렉트 할 경우 pathVariable로 받았다면 상관없지만,
 * 그렇지 않았다면 서비스단에서 save()메소드 호출하고 .getId()로 id입력받아
 * 컨트롤러로 보낸다면 보다 쉽게 리다이렉트가 가능해진다. 
