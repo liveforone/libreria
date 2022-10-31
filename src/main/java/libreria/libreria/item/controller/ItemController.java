@@ -91,7 +91,7 @@ public class ItemController {
             log.info("포스팅 성공!!");
 
             HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.setLocation(URI.create("/item" + itemId));
+            httpHeaders.setLocation(URI.create("/item/" + itemId));
 
             return ResponseEntity
                     .status(HttpStatus.MOVED_PERMANENTLY)
