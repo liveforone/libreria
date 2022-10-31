@@ -24,6 +24,7 @@ import java.net.URI;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
@@ -84,12 +85,13 @@ public class ItemController {
             @RequestPart("itemDto") ItemDto itemDto,
             Principal principal
             ) throws IllegalStateException, IOException {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(URI.create("/item"));
 
         if (!uploadFile.isEmpty()) {
-            itemService.saveItem(uploadFile, itemDto, principal.getName());
+            Long itemId = itemService.saveItem(uploadFile, itemDto, principal.getName());
             log.info("포스팅 성공!!");
+
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.setLocation(URI.create("/item" + itemId));
 
             return ResponseEntity
                     .status(HttpStatus.MOVED_PERMANENTLY)
@@ -164,27 +166,37 @@ public class ItemController {
     상품 수정은 경우가 있음.
     1. 기존 사진을 유지하며 게시글 수정
     2. 사진을 수정하면서 게시글 수정
+    또한 뷰에서 작성자와 현재 유저를 판별했더라도 수정/삭제는 서버단에서 한 번 더 판별한다.
      */
     @PostMapping("/item/edit/{id}")
     public ResponseEntity<?> editItem(
             @PathVariable("id") Long id,
             @RequestPart MultipartFile uploadFile,
-            @RequestPart("itemDto") ItemDto itemDto
+            @RequestPart("itemDto") ItemDto itemDto,
+            Principal principal
     ) throws IllegalStateException, IOException {
+        Item item = itemService.getDetail(id);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(URI.create("/item/" + id));
 
-        if (!uploadFile.isEmpty()) {  //파일을 바꿔서 수정
-            itemService.editItemWithFile(id, itemDto, uploadFile);
-            log.info("파일 수정 완료!!(파일교체 O)");
-        } else {  //기존 파일 유지하며 수정
-            itemService.editItemNoFileChange(id, itemDto);
-            log.info("파일 수정 완료!!(파일교체 X)");
-        }
+        if (Objects.equals(item.getUsers().getEmail(), principal.getName())) {
+            if (!uploadFile.isEmpty()) {  //파일을 바꿔서 수정
+                itemService.editItemWithFile(id, itemDto, uploadFile);
+                log.info("파일 수정 완료!!(파일교체 O)");
+            } else {  //기존 파일 유지하며 수정
+                itemService.editItemNoFileChange(id, itemDto);
+                log.info("파일 수정 완료!!(파일교체 X)");
+            }
 
-        return ResponseEntity
-                .status(HttpStatus.MOVED_PERMANENTLY)
-                .headers(httpHeaders)
-                .build();
+            return ResponseEntity
+                    .status(HttpStatus.MOVED_PERMANENTLY)
+                    .headers(httpHeaders)
+                    .build();
+        } else {
+            log.info("작성자와 현재 유저가 달라 수정 불가능.");
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .build();
+        }
     }
 }

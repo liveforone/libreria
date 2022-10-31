@@ -51,7 +51,7 @@ public class ItemService {
 
     //== 상품 등록 ==//
     @Transactional
-    public void saveItem(MultipartFile uploadFile, ItemDto itemDto, String user) throws IOException {
+    public Long saveItem(MultipartFile uploadFile, ItemDto itemDto, String user) throws IOException {
         Users users = userRepository.findByEmail(user);
         UUID uuid = UUID.randomUUID();
         String saveFileName = uuid + "_" + uploadFile.getOriginalFilename();
@@ -60,7 +60,7 @@ public class ItemService {
         itemDto.setUsers(users);
         uploadFile.transferTo(new File(saveFileName));
 
-        itemRepository.save(itemDto.toEntity());
+        return itemRepository.save(itemDto.toEntity()).getId();
     }
 
     @Transactional

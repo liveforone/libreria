@@ -15,6 +15,7 @@ import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
@@ -67,38 +68,65 @@ public class CommentController {
         return ResponseEntity.ok(comment);
     }
 
+    /*
+    수정과 삭제 모두 화면단(프론트)에서 작성자와 현재 유저 판별이 끝났다.
+    하지만 민감한 부분인 수정과 삭제시 서버단에서 다시 한번 판별한다.
+     */
     @PostMapping("/item/comment/edit/{id}")
     public ResponseEntity<?> editComment(
             @PathVariable("id") Long id,
-            @RequestBody CommentDto commentDto
+            @RequestBody CommentDto commentDto,
+            Principal principal
     ) {
-        Long itemId = commentService.editComment(id, commentDto);
-        log.info("리뷰 업데이트 성공!!");
+        Comment comment = commentService.getComment(id);
 
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(URI.create("/item/comment/" + itemId));
+        if (Objects.equals(comment.getWriter(), principal.getName())) {
+            Long itemId = commentService.editComment(id, commentDto);
+            log.info("리뷰 업데이트 성공!!");
 
-        return ResponseEntity
-                .status(HttpStatus.MOVED_PERMANENTLY)
-                .headers(httpHeaders)
-                .build();
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.setLocation(URI.create("/item/comment/" + itemId));
+
+            return ResponseEntity
+                    .status(HttpStatus.MOVED_PERMANENTLY)
+                    .headers(httpHeaders)
+                    .build();
+        } else {
+            log.info("작성자와 현재 유저가 달라 수정 불가능.");
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .build();
+        }
     }
 
     /*
     삭제전 js의 alert로 삭제할 것이지 물어보기.
     수정과 마찬가지로 뷰에서 작성자와 현재 유저 판별이 끝남.
+    그러나 민감한 부분인 만큼 다시 서버단에서 작성자와 현재 유저를 판별한다.
      */
     @PostMapping("/item/comment/delete/{id}")
-    public ResponseEntity<?> commentDelete(@PathVariable("id") Long id) {
-        Long itemId = commentService.deleteComment(id);
-        log.info("댓글 " + id + "삭제완료!!");
+    public ResponseEntity<?> commentDelete(
+            @PathVariable("id") Long id,
+            Principal principal
+    ) {
+        Comment comment = commentService.getComment(id);
 
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(URI.create("/item/comment/" + itemId));
+        if (Objects.equals(comment.getWriter(), principal.getName())) {
+            Long itemId = commentService.deleteComment(id);
+            log.info("댓글 " + id + "삭제완료!!");
 
-        return ResponseEntity
-                .status(HttpStatus.MOVED_PERMANENTLY)
-                .headers(httpHeaders)
-                .build();
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.setLocation(URI.create("/item/comment/" + itemId));
+
+            return ResponseEntity
+                    .status(HttpStatus.MOVED_PERMANENTLY)
+                    .headers(httpHeaders)
+                    .build();
+        } else {
+            log.info("작성자와 현재유저가 달라 삭제 불가능");
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .build();
+        }
     }
 }
