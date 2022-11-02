@@ -1,7 +1,8 @@
 package libreria.libreria.item.controller;
 
 import libreria.libreria.item.model.Item;
-import libreria.libreria.item.model.ItemDto;
+import libreria.libreria.item.model.ItemRequest;
+import libreria.libreria.item.model.ItemResponse;
 import libreria.libreria.item.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,20 +35,20 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping("/item")
-    public ResponseEntity<Page<Item>> itemHome(
+    public ResponseEntity<Page<ItemResponse>> itemHome(
             @PageableDefault(page = 0, size = 10)
             @SortDefault.SortDefaults({
                     @SortDefault(sort = "good", direction = Sort.Direction.DESC),
                     @SortDefault(sort = "id", direction = Sort.Direction.DESC)
             }) Pageable pageable
     ) {
-        Page<Item> itemList = itemService.getItemList(pageable);
+        Page<ItemResponse> itemList = itemService.getItemList(pageable);
 
         return ResponseEntity.ok(itemList);
     }
 
     @GetMapping("/item/search")
-    public ResponseEntity<Page<Item>> itemSearch(
+    public ResponseEntity<Page<ItemResponse>> itemSearch(
             @PageableDefault(page = 0, size = 10)
             @SortDefault.SortDefaults({
                     @SortDefault(sort = "good", direction = Sort.Direction.DESC),
@@ -55,13 +56,13 @@ public class ItemController {
             }) Pageable pageable,
             @RequestParam("keyword") String keyword
     ) {
-        Page<Item> searchList = itemService.getSearchList(keyword, pageable);
+        Page<ItemResponse> searchList = itemService.getSearchList(keyword, pageable);
 
         return ResponseEntity.ok(searchList);
     }
 
     @GetMapping("/item/category/{category}")
-    public ResponseEntity<Page<Item>> categoryHome(
+    public ResponseEntity<Page<ItemResponse>> categoryHome(
             @PathVariable("category") String category,
             @PageableDefault(page = 0, size = 10)
             @SortDefault.SortDefaults({
@@ -69,7 +70,7 @@ public class ItemController {
                     @SortDefault(sort = "id", direction = Sort.Direction.DESC)
             }) Pageable pageable
     ) {
-        Page<Item> categoryList = itemService.getCategoryList(category, pageable);
+        Page<ItemResponse> categoryList = itemService.getCategoryList(category, pageable);
 
         return ResponseEntity.ok(categoryList);
     }
@@ -82,12 +83,12 @@ public class ItemController {
     @PostMapping("/item/post")
     public ResponseEntity<?> itemPost(
             @RequestPart MultipartFile uploadFile,
-            @RequestPart("itemDto") ItemDto itemDto,
+            @RequestPart("itemRequest") ItemRequest itemRequest,
             Principal principal
             ) throws IllegalStateException, IOException {
 
         if (!uploadFile.isEmpty()) {
-            Long itemId = itemService.saveItem(uploadFile, itemDto, principal.getName());
+            Long itemId = itemService.saveItem(uploadFile, itemRequest, principal.getName());
             log.info("포스팅 성공!!");
 
             HttpHeaders httpHeaders = new HttpHeaders();
@@ -107,6 +108,9 @@ public class ItemController {
     수정 버튼은 해당 상품의 등록자에게만 보여주기 위해서 현재 로그인 유저를 함께 보낸다.
     remaining을 보고 뷰에서는 0일경우 주문 버튼을 품절로 바꾼다.
     즉 remaining을 보고 뷰에서 주문 가능한지 불가능한지 판별한다.
+    엔티티 리턴시 사용자 엔티티 전부가 적나라하게 노출되기 때문에
+    엔티티에서 유저 이메일 빼고, dto로 따로 뷰에 노출시키는 방식을 사용했다.
+    성능보단 보안이 우선 !!
      */
     @GetMapping("/item/{id}")
     public ResponseEntity<Map<String, Object>> detail(
@@ -116,8 +120,10 @@ public class ItemController {
         String user = principal.getName();
         Map<String, Object> map = new HashMap<>();
 
-        Item item = itemService.getDetail(id);
-        String writer = item.getUsers().getEmail();
+        Item entity = itemService.getItemEntity(id);
+        String writer = entity.getUsers().getEmail();
+
+        ItemResponse item = itemService.getDetail(id);
 
         map.put("user", user);
         map.put("body", item);
@@ -155,8 +161,8 @@ public class ItemController {
     }
 
     @GetMapping("/item/edit/{id}")
-    public ResponseEntity<Item> editPage(@PathVariable("id") Long id) {
-        Item item = itemService.getDetail(id);
+    public ResponseEntity<ItemResponse> editPage(@PathVariable("id") Long id) {
+        ItemResponse item = itemService.getDetail(id);
 
         return ResponseEntity.ok(item);
     }
@@ -172,19 +178,19 @@ public class ItemController {
     public ResponseEntity<?> editItem(
             @PathVariable("id") Long id,
             @RequestPart MultipartFile uploadFile,
-            @RequestPart("itemDto") ItemDto itemDto,
+            @RequestPart("itemRequest") ItemRequest itemRequest,
             Principal principal
     ) throws IllegalStateException, IOException {
-        Item item = itemService.getDetail(id);
+        Item item = itemService.getItemEntity(id);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(URI.create("/item/" + id));
 
         if (Objects.equals(item.getUsers().getEmail(), principal.getName())) {
             if (!uploadFile.isEmpty()) {  //파일을 바꿔서 수정
-                itemService.editItemWithFile(id, itemDto, uploadFile);
+                itemService.editItemWithFile(id, itemRequest, uploadFile);
                 log.info("파일 수정 완료!!(파일교체 O)");
             } else {  //기존 파일 유지하며 수정
-                itemService.editItemNoFileChange(id, itemDto);
+                itemService.editItemNoFileChange(id, itemRequest);
                 log.info("파일 수정 완료!!(파일교체 X)");
             }
 

@@ -1,6 +1,6 @@
 package libreria.libreria.orders.controller;
 
-import libreria.libreria.item.model.Item;
+import libreria.libreria.item.model.ItemResponse;
 import libreria.libreria.item.service.ItemService;
 import libreria.libreria.orders.model.Orders;
 import libreria.libreria.orders.model.OrdersDto;
@@ -36,8 +36,8 @@ public class OrderController {
     }
 
     @GetMapping("/item/order/{itemId}")
-    public ResponseEntity<Item> orderPage(@PathVariable("itemId") Long itemId) {
-        Item item = itemService.getDetail(itemId);
+    public ResponseEntity<ItemResponse> orderPage(@PathVariable("itemId") Long itemId) {
+        ItemResponse item = itemService.getDetail(itemId);
 
         return ResponseEntity.ok(item);
     }
@@ -48,7 +48,7 @@ public class OrderController {
             @RequestBody OrdersDto ordersDto,
             Principal principal
             ) {
-        Item item = itemService.getDetail(itemId);
+        ItemResponse item = itemService.getDetail(itemId);
 
         if (item.getRemaining() <= 0) {
             log.info("품절입니다.");

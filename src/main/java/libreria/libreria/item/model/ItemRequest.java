@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class ItemDto {
+public class ItemRequest {
 
     private Long id;
     private String title;

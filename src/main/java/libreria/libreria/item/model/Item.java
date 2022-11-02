@@ -26,7 +26,6 @@ public class Item {
 
     private String author;  //책의 저자
 
-    @JsonBackReference //순환참조 방지
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "users_id")
     private Users users;  //상품 등록자
