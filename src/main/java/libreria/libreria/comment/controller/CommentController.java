@@ -1,6 +1,5 @@
 package libreria.libreria.comment.controller;
 
-import libreria.libreria.comment.model.Comment;
 import libreria.libreria.comment.model.CommentRequest;
 import libreria.libreria.comment.model.CommentResponse;
 import libreria.libreria.comment.service.CommentService;
