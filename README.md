@@ -70,7 +70,7 @@
 * 엔티티 직접 리턴은 Users 테이블이 아니여도 좀 불안하고 좋지 않은 방법인것 같았다.
 * 또한 순환 참조 문제를 완전히 해결하고 싶었다.
 * 따라서 모든 엔티티를 dto로 바꾸어서 화면단에 전달하는 리팩토링 작업을 프로젝트 마지막에 진행하였다.
-* 해당 내용은 위키에서 확인 가능하다.
+* 해당 내용은 밑의 위키에서 확인 가능하다.
 * [Dto 위키](https://github.com/liveforone/libreria/wiki/Dto%EB%A1%9C-%EC%88%9C%ED%99%98%EC%B0%B8%EC%A1%B0-%ED%95%B4%EA%B2%B0)
 
 # 상세 설명
@@ -156,6 +156,12 @@ LocalDate로 저장된 생성날자에서 getDayOfYear()를 사용해서 365일�
 postman에서는 한글이 깨진다. 인코딩 하는 것도 귀찮으니 테스트 할때에는 영어로 바꾸어서 테스트했다.
 ex) : 여행 -> travel 등
 ```
+
+## json 리턴시 null column 생략
+* /user/mypage 가 대표적인 예시인데,
+* address가 처음 가입하고 등록하지 않은경우 null일 수가 있다.
+* 따라서 이때 null을 반환하고 싶지 않기때문에
+* @JsonInclude(JsonInclude.Include.NON_NULL) 를 사용하여서 null인 column을 빼고 리턴했다.
 
 ## map 으로 객체 전송시 규약
 * map으로 객체를 전송시 string으로 객체의 이름을 표시하는데,
@@ -277,10 +283,4 @@ form-data, application/json, requestpart
 * 유저를 포함한 모든 엔티티를 직접 리턴하지 않았다.
 * 민감한 컨텐츠가 없더라도, 연관관계 때문에 순환참조가 발생하는 것이 마음에 들지 않았다.
 * JsonBackReference 어노테이션이 아닌 dto 반환으로 순환 참조 문제를 완전히 해결했다.
-
-유저는 맨마지막
-entity to dto 변환은 서비스에서 한다(?)
-responsedto의 핵심은 연관관계를 빼버리고 나머지만 리턴해주는것임 !!
-유저는 비밀번호를 빼고, 나머지는 연관관계를 뻬고 리턴 하기 이것이 핵심 !
-detail과 edit 설명하기
-위키 링크 넣기
+* json null인 컬럼도 그냥 리턴하는 것이 아닌 빼고 리턴하는 부분이 추가됨.
