@@ -1,14 +1,17 @@
 package libreria.libreria.comment.service;
 
 import libreria.libreria.comment.model.Comment;
-import libreria.libreria.comment.model.CommentDto;
+import libreria.libreria.comment.model.CommentRequest;
+import libreria.libreria.comment.model.CommentResponse;
 import libreria.libreria.comment.repository.CommentRepository;
 import libreria.libreria.item.model.Item;
+import libreria.libreria.item.model.ItemResponse;
 import libreria.libreria.item.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -19,22 +22,48 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final ItemRepository itemRepository;
 
-    public List<Comment> getCommentList(Long id) {
-        return commentRepository.findCommentByItemId(id);
+    //== entity -> dto 편의메소드1 - 리스트 ==//
+    public List<CommentResponse> entityToDtoList(List<Comment> commentList) {
+        List<CommentResponse> dtoList = new ArrayList<>();
+
+        for (Comment comment : commentList) {
+            CommentResponse commentResponse = CommentResponse.builder()
+                    .id(comment.getId())
+                    .writer(comment.getWriter())
+                    .content(comment.getContent())
+                    .createdDate(comment.getCreatedDate())
+                    .build();
+            dtoList.add(commentResponse);
+        }
+        return dtoList;
+    }
+
+    //== entity -> dto 편의 메소드2 - detail ==//
+    public CommentResponse entityToDtoDetail(Comment comment) {
+        return CommentResponse.builder()
+                .id(comment.getId())
+                .writer(comment.getWriter())
+                .content(comment.getContent())
+                .createdDate(comment.getCreatedDate())
+                .build();
+    }
+
+    public List<CommentResponse> getCommentList(Long id) {
+        return entityToDtoList(commentRepository.findCommentByItemId(id));
+    }
+
+    public CommentResponse getComment(Long id) {
+        return entityToDtoDetail(commentRepository.findOneById(id));
     }
 
     @Transactional
-    public void saveComment(Long itemId, CommentDto commentDto, String writer) {
+    public void saveComment(Long itemId, CommentRequest commentRequest, String writer) {
         Item item = itemRepository.findOneById(itemId);
 
-        commentDto.setItem(item);
-        commentDto.setWriter(writer);
+        commentRequest.setItem(item);
+        commentRequest.setWriter(writer);
 
-        commentRepository.save(commentDto.toEntity());
-    }
-
-    public Comment getComment(Long id) {
-        return commentRepository.findOneById(id);
+        commentRepository.save(commentRequest.toEntity());
     }
 
     /*
@@ -42,14 +71,14 @@ public class CommentService {
     이유는 리다이렉트 해주기위해서 itemId가 필요하다.
      */
     @Transactional
-    public Long editComment(Long id, CommentDto commentDto) {
+    public Long editComment(Long id, CommentRequest commentRequest) {
         Comment comment = commentRepository.findOneById(id);
 
-        commentDto.setId(id);
-        commentDto.setWriter(comment.getWriter());
-        commentDto.setItem(comment.getItem());
+        commentRequest.setId(id);
+        commentRequest.setWriter(comment.getWriter());
+        commentRequest.setItem(comment.getItem());
 
-        commentRepository.save(commentDto.toEntity());
+        commentRepository.save(commentRequest.toEntity());
 
         return comment.getItem().getId();
     }

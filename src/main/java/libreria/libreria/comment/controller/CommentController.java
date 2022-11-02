@@ -1,7 +1,8 @@
 package libreria.libreria.comment.controller;
 
 import libreria.libreria.comment.model.Comment;
-import libreria.libreria.comment.model.CommentDto;
+import libreria.libreria.comment.model.CommentRequest;
+import libreria.libreria.comment.model.CommentResponse;
 import libreria.libreria.comment.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +36,7 @@ public class CommentController {
     ) {
         Map<String, Object> map = new HashMap<>();
         String user = principal.getName();
-        List<Comment> commentList = commentService.getCommentList(itemId);
+        List<CommentResponse> commentList = commentService.getCommentList(itemId);
 
         map.put("user", user);
         map.put("body", commentList);
@@ -46,13 +47,13 @@ public class CommentController {
     @PostMapping("/item/comment/post/{itemId}")
     public ResponseEntity<?> commentPost(
             @PathVariable("itemId") Long itemId,
-            @RequestBody CommentDto commentDto,
+            @RequestBody CommentRequest commentRequest,
             Principal principal
             ) {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(URI.create("/item/comment/" + itemId));
 
-        commentService.saveComment(itemId, commentDto, principal.getName());
+        commentService.saveComment(itemId, commentRequest, principal.getName());
         log.info("댓글 작성 성공!!");
 
         return ResponseEntity
@@ -62,8 +63,8 @@ public class CommentController {
     }
 
     @GetMapping("/item/comment/edit/{id}")
-    public ResponseEntity<Comment> editPage(@PathVariable("id") Long id) {
-        Comment comment = commentService.getComment(id);
+    public ResponseEntity<CommentResponse> editPage(@PathVariable("id") Long id) {
+        CommentResponse comment = commentService.getComment(id);
 
         return ResponseEntity.ok(comment);
     }
@@ -75,13 +76,13 @@ public class CommentController {
     @PostMapping("/item/comment/edit/{id}")
     public ResponseEntity<?> editComment(
             @PathVariable("id") Long id,
-            @RequestBody CommentDto commentDto,
+            @RequestBody CommentRequest commentRequest,
             Principal principal
     ) {
-        Comment comment = commentService.getComment(id);
+        CommentResponse comment = commentService.getComment(id);
 
         if (Objects.equals(comment.getWriter(), principal.getName())) {
-            Long itemId = commentService.editComment(id, commentDto);
+            Long itemId = commentService.editComment(id, commentRequest);
             log.info("리뷰 업데이트 성공!!");
 
             HttpHeaders httpHeaders = new HttpHeaders();
@@ -109,7 +110,7 @@ public class CommentController {
             @PathVariable("id") Long id,
             Principal principal
     ) {
-        Comment comment = commentService.getComment(id);
+        CommentResponse comment = commentService.getComment(id);
 
         if (Objects.equals(comment.getWriter(), principal.getName())) {
             Long itemId = commentService.deleteComment(id);

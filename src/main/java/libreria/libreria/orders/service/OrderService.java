@@ -38,21 +38,6 @@ public class OrderService {
         return orderRepository.findOneById(orderId);
     }
 
-    //== 주문 ==//
-    @Transactional
-    public void saveOrder(Long itemId, OrdersDto ordersDto, String user) {
-        Item item = itemRepository.findOneById(itemId);
-        Users users = userRepository.findByEmail(user);
-
-        ordersDto.setItem(item);
-        ordersDto.setUsers(users);
-        ordersDto.setStatus(OrderStatus.ORDER);
-
-        itemRepository.minusRemaining(ordersDto.getOrderCount(), itemId);
-        userRepository.plusCount(user);
-        orderRepository.save(ordersDto.toEntity());
-    }
-
     //== 주문 날짜 - 주문 취소를 위한 ==//
     public int getOrderDay(Long orderId) {
         Orders orders = orderRepository.findOneById(orderId);
@@ -67,6 +52,20 @@ public class OrderService {
         }
     }
 
+    //== 주문 ==//
+    @Transactional
+    public void saveOrder(Long itemId, OrdersDto ordersDto, String user) {
+        Item item = itemRepository.findOneById(itemId);
+        Users users = userRepository.findByEmail(user);
+
+        ordersDto.setItem(item);
+        ordersDto.setUsers(users);
+        ordersDto.setStatus(OrderStatus.ORDER);
+
+        itemRepository.minusRemaining(ordersDto.getOrderCount(), itemId);
+        userRepository.plusCount(user);
+        orderRepository.save(ordersDto.toEntity());
+    }
 
     //== 주문 취소 ==//
     @Transactional
