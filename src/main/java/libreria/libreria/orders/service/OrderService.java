@@ -4,7 +4,8 @@ import libreria.libreria.item.model.Item;
 import libreria.libreria.item.repository.ItemRepository;
 import libreria.libreria.orders.model.OrderStatus;
 import libreria.libreria.orders.model.Orders;
-import libreria.libreria.orders.model.OrdersDto;
+import libreria.libreria.orders.model.OrdersRequest;
+import libreria.libreria.orders.model.OrdersResponse;
 import libreria.libreria.orders.repository.OrderRepository;
 import libreria.libreria.user.model.Users;
 import libreria.libreria.user.repository.UserRepository;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -24,17 +26,49 @@ public class OrderService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
+    //== entity -> dto 편의 메소드1 - 리스트 ==//
+    public List<OrdersResponse> entityToDtoList(List<Orders> ordersList) {
+        List<OrdersResponse> dtoList = new ArrayList<>();
+
+        for (Orders orders : ordersList) {
+            OrdersResponse ordersResponse = OrdersResponse.builder()
+                    .id(orders.getId())
+                    .status(orders.getStatus())
+                    .orderCount(orders.getOrderCount())
+                    .createdDate(orders.getCreatedDate())
+                    .build();
+            dtoList.add(ordersResponse);
+        }
+
+        return dtoList;
+    }
+
+    //== entity -> dto 편의 메소드2 - detail ==//
+    public OrdersResponse entityToDtoDetail(Orders orders) {
+        return OrdersResponse.builder()
+                .id(orders.getId())
+                .status(orders.getStatus())
+                .orderCount(orders.getOrderCount())
+                .createdDate(orders.getCreatedDate())
+                .build();
+    }
+
     //== orderList for myPage ==//
-    public List<Orders> getOrderListForMyPage(String email) {
-        return orderRepository.findOrderListByEmail(email);
+    public List<OrdersResponse> getOrderListForMyPage(String email) {
+        return entityToDtoList(orderRepository.findOrderListByEmail(email));
     }
 
     //== orderList for item detail ==//
-    public List<Orders> getOrderListForItemDetail(Long itemId) {
-        return orderRepository.findOrderListByItemId(itemId);
+    public List<OrdersResponse> getOrderListForItemDetail(Long itemId) {
+        return entityToDtoList(orderRepository.findOrderListByItemId(itemId));
     }
 
-    public Orders getOrder(Long orderId) {
+    public OrdersResponse getOrder(Long orderId) {
+        return entityToDtoDetail(orderRepository.findOneById(orderId));
+    }
+
+    //== 엔티티 직접 리턴 - 연관관계 참조를 위해 ==//
+    public Orders getOrderEntity(Long orderId) {
         return orderRepository.findOneById(orderId);
     }
 
@@ -54,17 +88,17 @@ public class OrderService {
 
     //== 주문 ==//
     @Transactional
-    public void saveOrder(Long itemId, OrdersDto ordersDto, String user) {
+    public void saveOrder(Long itemId, OrdersRequest ordersRequest, String user) {
         Item item = itemRepository.findOneById(itemId);
         Users users = userRepository.findByEmail(user);
 
-        ordersDto.setItem(item);
-        ordersDto.setUsers(users);
-        ordersDto.setStatus(OrderStatus.ORDER);
+        ordersRequest.setItem(item);
+        ordersRequest.setUsers(users);
+        ordersRequest.setStatus(OrderStatus.ORDER);
 
-        itemRepository.minusRemaining(ordersDto.getOrderCount(), itemId);
+        itemRepository.minusRemaining(ordersRequest.getOrderCount(), itemId);
         userRepository.plusCount(user);
-        orderRepository.save(ordersDto.toEntity());
+        orderRepository.save(ordersRequest.toEntity());
     }
 
     //== 주문 취소 ==//

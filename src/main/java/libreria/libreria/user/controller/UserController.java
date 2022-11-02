@@ -4,6 +4,7 @@ import libreria.libreria.item.model.Item;
 import libreria.libreria.item.model.ItemResponse;
 import libreria.libreria.item.service.ItemService;
 import libreria.libreria.orders.model.Orders;
+import libreria.libreria.orders.model.OrdersResponse;
 import libreria.libreria.orders.service.OrderService;
 import libreria.libreria.user.model.Role;
 import libreria.libreria.user.model.UserDto;
@@ -168,7 +169,7 @@ public class UserController {
         if (user.getAuth() != Role.MEMBER) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } else {
-            List<Orders> ordersList = orderService.getOrderListForMyPage(user.getEmail());
+            List<OrdersResponse> ordersList = orderService.getOrderListForMyPage(user.getEmail());
             return ResponseEntity.ok(ordersList);
         }
     }
