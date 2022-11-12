@@ -4,6 +4,7 @@ import libreria.libreria.item.dto.ItemResponse;
 import libreria.libreria.item.service.ItemService;
 import libreria.libreria.orders.dto.OrdersRequest;
 import libreria.libreria.orders.dto.OrdersResponse;
+import libreria.libreria.orders.model.Orders;
 import libreria.libreria.orders.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,10 +38,10 @@ public class OrderController {
     }
 
     @GetMapping("/item/order/{itemId}")
-    public ResponseEntity<ItemResponse> orderPage(@PathVariable("itemId") Long itemId) {
+    public ResponseEntity<?> orderPage(@PathVariable("itemId") Long itemId) {
         ItemResponse item = itemService.getDetail(itemId);
 
-        return ResponseEntity.ok(item);
+        return ResponseEntity.ok(Objects.requireNonNullElse(item, "해당 상품이 없어 주문이 불가능합니다."));
     }
 
     @PostMapping("/item/order/{itemId}")
@@ -51,31 +52,41 @@ public class OrderController {
             ) {
         ItemResponse item = itemService.getDetail(itemId);
 
-        if (item.getRemaining() <= 0) {
-            log.info("품절입니다.");
-            return ResponseEntity.ok("품절된 상품입니다. 상품 홈으로 돌아가주세요");
-        } else if (item.getRemaining() - ordersRequest.getOrderCount() <= 0) {
-            log.info("주문 불가능, 수량이 재고보다 많음.");
-            return ResponseEntity.ok("주문 수량이 재고보다 많아 주문이 불가능합니다.");
+        if (item != null) {
+
+            if (item.getRemaining() <= 0) {
+                log.info("품절입니다.");
+                return ResponseEntity.ok("품절된 상품입니다. 상품 홈으로 돌아가주세요");
+            } else if (item.getRemaining() - ordersRequest.getOrderCount() <= 0) {
+                log.info("주문 불가능, 수량이 재고보다 많음.");
+                return ResponseEntity.ok("주문 수량이 재고보다 많아 주문이 불가능합니다.");
+            } else {
+                HttpHeaders httpHeaders = new HttpHeaders();
+                httpHeaders.setLocation(URI.create("/item/" + itemId));
+
+                orderService.saveOrder(itemId, ordersRequest, principal.getName());
+                log.info("주문 성공!!");
+
+                return ResponseEntity
+                        .status(HttpStatus.MOVED_PERMANENTLY)
+                        .headers(httpHeaders)
+                        .build();
+            }
+
         } else {
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.setLocation(URI.create("/item/" + itemId));
-
-            orderService.saveOrder(itemId, ordersRequest, principal.getName());
-            log.info("주문 성공!!");
-
-            return ResponseEntity
-                    .status(HttpStatus.MOVED_PERMANENTLY)
-                    .headers(httpHeaders)
-                    .build();
+            return ResponseEntity.ok("해당 상품이 없어 주문이 불가능합니다.");
         }
     }
 
     @GetMapping("/item/cancel/{orderId}")
-    public ResponseEntity<OrdersResponse> cancelPage(@PathVariable("orderId") Long orderId) {
+    public ResponseEntity<?> cancelPage(@PathVariable("orderId") Long orderId) {
         OrdersResponse order = orderService.getOrder(orderId);
 
-        return ResponseEntity.ok(order);
+        if (order != null) {
+            return ResponseEntity.ok(order);
+        } else {
+            return ResponseEntity.ok("해당 주문이 없어 주문취소가 불가능합니다.");
+        }
     }
 
     /*
@@ -87,32 +98,38 @@ public class OrderController {
             @PathVariable("orderId") Long orderId,
             Principal principal
     ) {
+        Orders orders = orderService.getOrderEntity(orderId);
 
-        String orderUser = orderService.getOrderEntity(orderId).getUsers().getEmail();
+        if (orders != null) {
+            String orderUser = orders.getUsers().getEmail();
 
-        if (Objects.equals(principal.getName(), orderUser)) {
-            int ableCancelDate = orderService.getOrderDay(orderId);
+            if (Objects.equals(principal.getName(), orderUser)) {
+                int ableCancelDate = orderService.getOrderDay(orderId);
 
-            if (ableCancelDate == 1) {  //주문 취소 가능
-                HttpHeaders httpHeaders = new HttpHeaders();
-                httpHeaders.setLocation(URI.create("/user/orderlist"));
+                if (ableCancelDate == 1) {  //주문 취소 가능
+                    HttpHeaders httpHeaders = new HttpHeaders();
+                    httpHeaders.setLocation(URI.create("/user/orderlist"));
 
-                orderService.cancelOrder(orderId);
-                log.info("주문 취소 성공!!");
+                    orderService.cancelOrder(orderId);
+                    log.info("주문 취소 성공!!");
 
+                    return ResponseEntity
+                            .status(HttpStatus.MOVED_PERMANENTLY)
+                            .headers(httpHeaders)
+                            .build();
+                } else {  //주문 취소 불가능
+                    log.info("주문 취소 실패!!");
+                    return ResponseEntity.ok("주문 한지 7일이 지나 주문 취소가 불가능합니다.");
+                }
+            } else {
+                log.info("작성자와 현재 유저가 달라 주문 취소 불가능");
                 return ResponseEntity
-                        .status(HttpStatus.MOVED_PERMANENTLY)
-                        .headers(httpHeaders)
+                        .status(HttpStatus.FORBIDDEN)
                         .build();
-            } else {  //주문 취소 불가능
-                log.info("주문 취소 실패!!");
-                return ResponseEntity.ok("주문 한지 7일이 지나 주문 취소가 불가능합니다.");
             }
+
         } else {
-            log.info("작성자와 현재 유저가 달라 주문 취소 불가능");
-            return ResponseEntity
-                    .status(HttpStatus.FORBIDDEN)
-                    .build();
+            return ResponseEntity.ok("해당 주문을 찾을 수 없어 주문 취소가 불가능합니다.");
         }
     }
 }

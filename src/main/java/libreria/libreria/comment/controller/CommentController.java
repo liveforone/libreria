@@ -3,6 +3,8 @@ package libreria.libreria.comment.controller;
 import libreria.libreria.comment.dto.CommentRequest;
 import libreria.libreria.comment.dto.CommentResponse;
 import libreria.libreria.comment.service.CommentService;
+import libreria.libreria.item.model.Item;
+import libreria.libreria.item.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -23,6 +25,7 @@ import java.util.Objects;
 public class CommentController {
 
     private final CommentService commentService;
+    private final ItemService itemService;
 
     /*
     현재객체 판별을 위해 현재객체를 함께 리턴했다.
@@ -49,23 +52,31 @@ public class CommentController {
             @RequestBody CommentRequest commentRequest,
             Principal principal
             ) {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(URI.create("/item/comment/" + itemId));
+        Item item = itemService.getItemEntity(itemId);
 
-        commentService.saveComment(itemId, commentRequest, principal.getName());
-        log.info("댓글 작성 성공!!");
+        if (item != null) {
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.setLocation(URI.create("/item/comment/" + itemId));
 
-        return ResponseEntity
-                .status(HttpStatus.MOVED_PERMANENTLY)
-                .headers(httpHeaders)
-                .build();
+            commentService.saveComment(itemId, commentRequest, principal.getName());
+            log.info("댓글 작성 성공!!");
+
+            return ResponseEntity
+                    .status(HttpStatus.MOVED_PERMANENTLY)
+                    .headers(httpHeaders)
+                    .build();
+        } else {
+            return ResponseEntity.ok("해당 상품이 없어 댓글 작성이 불가능합니다.");
+        }
     }
 
     @GetMapping("/item/comment/edit/{id}")
-    public ResponseEntity<CommentResponse> editPage(@PathVariable("id") Long id) {
+    public ResponseEntity<?> editPage(@PathVariable("id") Long id) {
         CommentResponse comment = commentService.getComment(id);
 
-        return ResponseEntity.ok(comment);
+        return ResponseEntity.ok(Objects.requireNonNullElse(comment, "댓글을 찾을 수 없어 수정이 불가능합니다."));
+
+
     }
 
     /*
@@ -80,22 +91,28 @@ public class CommentController {
     ) {
         CommentResponse comment = commentService.getComment(id);
 
-        if (Objects.equals(comment.getWriter(), principal.getName())) {
-            Long itemId = commentService.editComment(id, commentRequest);
-            log.info("리뷰 업데이트 성공!!");
+        if (comment != null) {
 
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.setLocation(URI.create("/item/comment/" + itemId));
+            if (Objects.equals(comment.getWriter(), principal.getName())) {
+                Long itemId = commentService.editComment(id, commentRequest);
+                log.info("리뷰 업데이트 성공!!");
 
-            return ResponseEntity
-                    .status(HttpStatus.MOVED_PERMANENTLY)
-                    .headers(httpHeaders)
-                    .build();
+                HttpHeaders httpHeaders = new HttpHeaders();
+                httpHeaders.setLocation(URI.create("/item/comment/" + itemId));
+
+                return ResponseEntity
+                        .status(HttpStatus.MOVED_PERMANENTLY)
+                        .headers(httpHeaders)
+                        .build();
+            } else {
+                log.info("작성자와 현재 유저가 달라 수정 불가능.");
+                return ResponseEntity
+                        .status(HttpStatus.FORBIDDEN)
+                        .build();
+            }
+
         } else {
-            log.info("작성자와 현재 유저가 달라 수정 불가능.");
-            return ResponseEntity
-                    .status(HttpStatus.FORBIDDEN)
-                    .build();
+            return ResponseEntity.ok("댓글을 찾을 수 없어 수정이 불가능합니다.");
         }
     }
 
@@ -111,22 +128,28 @@ public class CommentController {
     ) {
         CommentResponse comment = commentService.getComment(id);
 
-        if (Objects.equals(comment.getWriter(), principal.getName())) {
-            Long itemId = commentService.deleteComment(id);
-            log.info("댓글 " + id + "삭제완료!!");
+        if (comment != null) {
 
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.setLocation(URI.create("/item/comment/" + itemId));
+            if (Objects.equals(comment.getWriter(), principal.getName())) {
+                Long itemId = commentService.deleteComment(id);
+                log.info("댓글 " + id + "삭제완료!!");
 
-            return ResponseEntity
-                    .status(HttpStatus.MOVED_PERMANENTLY)
-                    .headers(httpHeaders)
-                    .build();
+                HttpHeaders httpHeaders = new HttpHeaders();
+                httpHeaders.setLocation(URI.create("/item/comment/" + itemId));
+
+                return ResponseEntity
+                        .status(HttpStatus.MOVED_PERMANENTLY)
+                        .headers(httpHeaders)
+                        .build();
+            } else {
+                log.info("작성자와 현재유저가 달라 삭제 불가능");
+                return ResponseEntity
+                        .status(HttpStatus.FORBIDDEN)
+                        .build();
+            }
+
         } else {
-            log.info("작성자와 현재유저가 달라 삭제 불가능");
-            return ResponseEntity
-                    .status(HttpStatus.FORBIDDEN)
-                    .build();
+            return ResponseEntity.ok("댓글을 찾을 수 없어 삭제가 불가능합니다.");
         }
     }
 }

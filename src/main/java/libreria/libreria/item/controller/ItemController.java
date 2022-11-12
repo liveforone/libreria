@@ -113,23 +113,26 @@ public class ItemController {
     성능보단 보안이 우선 !!
      */
     @GetMapping("/item/{id}")
-    public ResponseEntity<Map<String, Object>> detail(
+    public ResponseEntity<?> detail(
             @PathVariable("id") Long id,
             Principal principal
     ) {
-        String user = principal.getName();
-        Map<String, Object> map = new HashMap<>();
-
         Item entity = itemService.getItemEntity(id);
-        String writer = entity.getUsers().getEmail();
 
-        ItemResponse item = itemService.getDetail(id);
+        if (entity != null) {
+            String user = principal.getName();
+            Map<String, Object> map = new HashMap<>();
+            String writer = entity.getUsers().getEmail();
+            ItemResponse item = itemService.getDetail(id);
 
-        map.put("user", user);
-        map.put("body", item);
-        map.put("writer", writer);
+            map.put("user", user);
+            map.put("body", item);
+            map.put("writer", writer);
 
-        return ResponseEntity.ok(map);
+            return ResponseEntity.ok(map);
+        } else {
+            return ResponseEntity.ok("해당 상품이 없어 조회가 불가능합니다.");
+        }
     }
 
     //== 상품 상세조회 이미지 ==//
@@ -147,24 +150,30 @@ public class ItemController {
     //== 상품 좋아요 ==//
     @PostMapping("/item/good/{id}")
     public ResponseEntity<?> updateGood(@PathVariable("id") Long id) {
-        String url = "/item/" + id;
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(URI.create(url));
+        Item item = itemService.getItemEntity(id);
 
-        itemService.updateGood(id);
-        log.info("좋아요 업데이트!!");
+        if (item != null) {
+            String url = "/item/" + id;
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.setLocation(URI.create(url));
 
-        return ResponseEntity
-                .status(HttpStatus.MOVED_PERMANENTLY)
-                .headers(httpHeaders)
-                .build();
+            itemService.updateGood(id);
+            log.info("좋아요 업데이트!!");
+
+            return ResponseEntity
+                    .status(HttpStatus.MOVED_PERMANENTLY)
+                    .headers(httpHeaders)
+                    .build();
+        } else {
+            return ResponseEntity.ok("해당 상품이 없어 좋아요가 불가능합니다.");
+        }
     }
 
     @GetMapping("/item/edit/{id}")
-    public ResponseEntity<ItemResponse> editPage(@PathVariable("id") Long id) {
+    public ResponseEntity<?> editPage(@PathVariable("id") Long id) {
         ItemResponse item = itemService.getDetail(id);
 
-        return ResponseEntity.ok(item);
+        return ResponseEntity.ok(Objects.requireNonNullElse(item, "해당 상품이 없어 수정이 불가능합니다."));
     }
 
     //== 상품 수정 ==//
@@ -182,27 +191,35 @@ public class ItemController {
             Principal principal
     ) throws IllegalStateException, IOException {
         Item item = itemService.getItemEntity(id);
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(URI.create("/item/" + id));
 
-        if (Objects.equals(item.getUsers().getEmail(), principal.getName())) {
-            if (!uploadFile.isEmpty()) {  //파일을 바꿔서 수정
-                itemService.editItemWithFile(id, itemRequest, uploadFile);
-                log.info("파일 수정 완료!!(파일교체 O)");
-            } else {  //기존 파일 유지하며 수정
-                itemService.editItemNoFileChange(id, itemRequest);
-                log.info("파일 수정 완료!!(파일교체 X)");
+        if (item != null) {
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.setLocation(URI.create("/item/" + id));
+
+            if (Objects.equals(item.getUsers().getEmail(), principal.getName())) {
+
+                if (!uploadFile.isEmpty()) {  //파일을 바꿔서 수정
+                    itemService.editItemWithFile(id, itemRequest, uploadFile);
+                    log.info("파일 수정 완료!!(파일교체 O)");
+                } else {  //기존 파일 유지하며 수정
+                    itemService.editItemNoFileChange(id, itemRequest);
+                    log.info("파일 수정 완료!!(파일교체 X)");
+                }
+
+                return ResponseEntity
+                        .status(HttpStatus.MOVED_PERMANENTLY)
+                        .headers(httpHeaders)
+                        .build();
+
+            } else {
+                log.info("작성자와 현재 유저가 달라 수정 불가능.");
+                return ResponseEntity
+                        .status(HttpStatus.FORBIDDEN)
+                        .build();
             }
 
-            return ResponseEntity
-                    .status(HttpStatus.MOVED_PERMANENTLY)
-                    .headers(httpHeaders)
-                    .build();
         } else {
-            log.info("작성자와 현재 유저가 달라 수정 불가능.");
-            return ResponseEntity
-                    .status(HttpStatus.FORBIDDEN)
-                    .build();
+            return ResponseEntity.ok("해당 상품이 없어 수정이 불가능합니다.");
         }
     }
 }
