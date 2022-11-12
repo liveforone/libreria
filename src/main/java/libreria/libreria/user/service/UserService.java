@@ -1,8 +1,8 @@
 package libreria.libreria.user.service;
 
 import libreria.libreria.user.model.Role;
-import libreria.libreria.user.model.UserDto;
-import libreria.libreria.user.model.UserResponseDto;
+import libreria.libreria.user.dto.UserRequest;
+import libreria.libreria.user.dto.UserResponse;
 import libreria.libreria.user.model.Users;
 import libreria.libreria.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,23 +30,86 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
+    //== 이메일 중복 검증 ==//
+    @Transactional(readOnly = true)
+    public int checkSameEmail(String email) {
+        Users users = userRepository.findByEmail(email);
+
+        if (users == null) {  //중복 아님
+            return 1;
+        } else {  //중복임
+            return 0;
+        }
+    }
+
+    //== 비밀번호 복호화 ==//
+    public int passwordDecode(String inputPassword, String password) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+        if(encoder.matches(inputPassword, password)) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public Users getUserEntity(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    //== 등급체크 후 pw없이 유저 정보 가져오기 ==//
+    @Transactional(readOnly = true)
+    public UserResponse getUser(String email) {
+        Users users = userRepository.findByEmail(email);
+
+        String rank;
+        // 등급 체크
+        if (users.getCount() >= 120) {
+            rank = "DIA";
+        } else if (users.getCount() >= 60) {
+            rank = "PLATINUM";
+        } else if (users.getCount() >= 30) {
+            rank = "GOLD";
+        } else if (users.getCount() >= 15) {
+            rank = "SILVER";
+        } else {
+            rank = "BRONZE";
+        }
+
+        return UserResponse.builder()
+                .id(users.getId())
+                .email(users.getEmail())
+                .address(users.getAddress())
+                .rank(rank)
+                .auth(users.getAuth())
+                .build();
+
+    }
+
+    //== 전체 유저 리턴 for admin ==//
+    @Transactional(readOnly = true)
+    public List<Users> getAllUsersForAdmin() {
+        return userRepository.findAll();
+    }
+
     //== 회원 가입 로직 ==//
     @Transactional
-    public Long joinUser(UserDto userDto) {
+    public Long joinUser(UserRequest userRequest) {
         //비밀번호 암호화
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        userDto.setAuth(Role.MEMBER);  //기본 권한 매핑
+        userRequest.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+        userRequest.setAuth(Role.MEMBER);  //기본 권한 매핑
 
-        return userRepository.save(userDto.toEntity()).getId();
+        return userRepository.save(userRequest.toEntity()).getId();
     }
 
     //== 로그인 - 세션과 컨텍스트홀더 사용 ==//
     @Transactional
-    public void login(UserDto userDto, HttpSession httpSession) throws UsernameNotFoundException {
+    public void login(UserRequest userRequest, HttpSession httpSession) throws UsernameNotFoundException {
 
-        String email = userDto.getEmail();
-        String password = userDto.getPassword();
+        String email = userRequest.getEmail();
+        String password = userRequest.getPassword();
         Users user = userRepository.findByEmail(email);
 
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(email, password);
@@ -62,7 +125,7 @@ public class UserService implements UserDetailsService {
          */
         if (user.getAuth() != Role.ADMIN && ("admin@libreria.com").equals(email)) {
             authorities.add(new SimpleGrantedAuthority(Role.ADMIN.getValue()));
-            userRepository.updateAuth(Role.ADMIN, userDto.getEmail());
+            userRepository.updateAuth(Role.ADMIN, userRequest.getEmail());
         } else if (user.getAuth() == Role.ADMIN) {
             authorities.add(new SimpleGrantedAuthority(Role.ADMIN.getValue()));
         } else if (user.getAuth() == Role.MEMBER) {
@@ -107,43 +170,28 @@ public class UserService implements UserDetailsService {
         userRepository.updateAuth(Role.SELLER, email);
     }
 
-    //== 등급체크 후 pw없이 유저 정보 가져오기 ==//
-    @Transactional(readOnly = true)
-    public UserResponseDto getUser(String email) {
-        Users users = userRepository.findByEmail(email);
-        String rank;
-        // 등급 체크
-        if (users.getCount() >= 120) {
-            rank = "DIA";
-        } else if (users.getCount() >= 60) {
-            rank = "PLATINUM";
-        } else if (users.getCount() >= 30) {
-            rank = "GOLD";
-        } else if (users.getCount() >= 15) {
-            rank = "SILVER";
-        } else {
-            rank = "BRONZE";
-        }
-
-        return UserResponseDto.builder()
-                .id(users.getId())
-                .email(users.getEmail())
-                .address(users.getAddress())
-                .rank(rank)
-                .auth(users.getAuth())
-                .build();
-
-    }
-
-    //== 전체 유저 리턴 for admin ==//
-    @Transactional(readOnly = true)
-    public List<Users> getAllUsersForAdmin() {
-        return userRepository.findAll();
-    }
-
     //== 유저 주소 등록 ==//
     @Transactional
     public void regiAddress(String email, String address) {
         userRepository.updateAddress(address, email);
+    }
+
+    @Transactional
+    public void updateEmail(String oldEmail, String newEmail) {
+        userRepository.updateEmail(oldEmail, newEmail);
+    }
+
+    @Transactional
+    public void updatePassword(Long id, String inputPassword) {
+        //pw 암호화
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String newPassword =  passwordEncoder.encode(inputPassword);
+
+        userRepository.updatePassword(id, newPassword);
+    }
+
+    @Transactional
+    public void deleteUser(Long userId) {
+        userRepository.deleteById(userId);
     }
 }
