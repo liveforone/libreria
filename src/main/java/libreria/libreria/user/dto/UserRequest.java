@@ -1,11 +1,13 @@
-package libreria.libreria.user.model;
+package libreria.libreria.user.dto;
 
+import libreria.libreria.user.model.Role;
+import libreria.libreria.user.model.Users;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class UserDto {
+public class UserRequest {
 
     private Long id;
     private String email;

@@ -1,8 +1,8 @@
 package libreria.libreria.item.service;
 
 import libreria.libreria.item.model.Item;
-import libreria.libreria.item.model.ItemRequest;
-import libreria.libreria.item.model.ItemResponse;
+import libreria.libreria.item.dto.ItemRequest;
+import libreria.libreria.item.dto.ItemResponse;
 import libreria.libreria.item.repository.ItemRepository;
 import libreria.libreria.user.model.Users;
 import libreria.libreria.user.repository.UserRepository;

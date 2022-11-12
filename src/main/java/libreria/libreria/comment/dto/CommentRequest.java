@@ -1,5 +1,6 @@
-package libreria.libreria.comment.model;
+package libreria.libreria.comment.dto;
 
+import libreria.libreria.comment.model.Comment;
 import libreria.libreria.item.model.Item;
 import lombok.Data;
 import lombok.NoArgsConstructor;

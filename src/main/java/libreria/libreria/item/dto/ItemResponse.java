@@ -1,4 +1,4 @@
-package libreria.libreria.item.model;
+package libreria.libreria.item.dto;
 
 import lombok.Builder;
 import lombok.Data;

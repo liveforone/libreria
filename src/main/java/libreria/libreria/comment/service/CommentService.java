@@ -1,11 +1,10 @@
 package libreria.libreria.comment.service;
 
 import libreria.libreria.comment.model.Comment;
-import libreria.libreria.comment.model.CommentRequest;
-import libreria.libreria.comment.model.CommentResponse;
+import libreria.libreria.comment.dto.CommentRequest;
+import libreria.libreria.comment.dto.CommentResponse;
 import libreria.libreria.comment.repository.CommentRepository;
 import libreria.libreria.item.model.Item;
-import libreria.libreria.item.model.ItemResponse;
 import libreria.libreria.item.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

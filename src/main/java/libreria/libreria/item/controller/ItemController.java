@@ -1,8 +1,8 @@
 package libreria.libreria.item.controller;
 
 import libreria.libreria.item.model.Item;
-import libreria.libreria.item.model.ItemRequest;
-import libreria.libreria.item.model.ItemResponse;
+import libreria.libreria.item.dto.ItemRequest;
+import libreria.libreria.item.dto.ItemResponse;
 import libreria.libreria.item.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

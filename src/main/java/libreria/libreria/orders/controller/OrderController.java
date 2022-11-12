@@ -1,10 +1,9 @@
 package libreria.libreria.orders.controller;
 
-import libreria.libreria.item.model.ItemResponse;
+import libreria.libreria.item.dto.ItemResponse;
 import libreria.libreria.item.service.ItemService;
-import libreria.libreria.orders.model.Orders;
-import libreria.libreria.orders.model.OrdersRequest;
-import libreria.libreria.orders.model.OrdersResponse;
+import libreria.libreria.orders.dto.OrdersRequest;
+import libreria.libreria.orders.dto.OrdersResponse;
 import libreria.libreria.orders.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

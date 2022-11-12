@@ -1,5 +1,6 @@
-package libreria.libreria.orders.model;
+package libreria.libreria.orders.dto;
 
+import libreria.libreria.orders.model.OrderStatus;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;

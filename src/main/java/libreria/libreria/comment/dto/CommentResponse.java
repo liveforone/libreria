@@ -1,4 +1,4 @@
-package libreria.libreria.comment.model;
+package libreria.libreria.comment.dto;
 
 import libreria.libreria.item.model.Item;
 import lombok.Builder;

@@ -1,5 +1,6 @@
-package libreria.libreria.item.model;
+package libreria.libreria.item.dto;
 
+import libreria.libreria.item.model.Item;
 import libreria.libreria.user.model.Users;
 import lombok.Data;
 import lombok.NoArgsConstructor;

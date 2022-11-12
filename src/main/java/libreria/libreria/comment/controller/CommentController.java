@@ -1,7 +1,7 @@
 package libreria.libreria.comment.controller;
 
-import libreria.libreria.comment.model.CommentRequest;
-import libreria.libreria.comment.model.CommentResponse;
+import libreria.libreria.comment.dto.CommentRequest;
+import libreria.libreria.comment.dto.CommentResponse;
 import libreria.libreria.comment.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
