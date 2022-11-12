@@ -40,7 +40,7 @@
 * 여타 다른 사이트가 그렇듯 상품은 품절됬음 품절됬지 게시글을 삭제하는것은 불가능하다.(어드민은 가능)
 
 ## DB ERD diagram
-![스크린샷(135)](https://user-images.githubusercontent.com/88976237/197521558-3d2b32da-ee75-4bda-a4c7-bde7c3d3ab18.png)
+![스크린샷(140)](https://user-images.githubusercontent.com/88976237/201450990-04df79cd-1da2-4e63-9cee-badda3cf2039.png)
 
 ## json body 설계 및 예시
 ### users
@@ -56,6 +56,10 @@
 {
     "email" : "admin@libreria.com",
     "password" : "1234"
+}
+{
+    "oldPassword" : "1234",
+    "newPassword" : "1111"
 }
 seoul - body, raw, text, /user/address, post
 ```
@@ -205,10 +209,11 @@ LocalDate로 저장된 생성날자에서 getDayOfYear()를 사용해서 365일�
 * 주소는 언제나 등록(수정)이 가능하다.
 
 ## 연관관계 매핑
-* Order & Item -> ManyToOne 단방향
-* Order & Users ->  ManyToOne 단방향
-* Item & Users -> ManyToOne 단방향
-* Comment & Item  -> ManyToOne 단방향
+* Order -> Item : ManyToOne 단방향
+* Order -> Users :  ManyToOne 단방향
+* Item -> Users : ManyToOne 단방향
+* Comment -> Item : ManyToOne 단방향
+* Bookmark -> Users, Item : ManyToOne 단방향
 * ToOne관계에서는 지연로딩이기에 n+1 문제해결을위해 jpql로 페치조인해서 성능최적화.
 * 연관관계에서는 모두 지연로딩으로 설정하여주었다.
 * n+1 문제를 해결하기위해 페치조인으로 해결했다.
@@ -284,3 +289,7 @@ ex) : 여행 -> travel 등
 * 민감한 컨텐츠가 없더라도, 연관관계 때문에 순환참조가 발생하는 것이 마음에 들지 않았다.
 * JsonBackReference 어노테이션이 아닌 dto 반환으로 순환 참조 문제를 완전히 해결했다.
 * json null인 컬럼도 그냥 리턴하는 것이 아닌 빼고 리턴하는 부분이 추가됨.
+* 객체의 널체크 추가됨.
+* 회원 중복 체크 추가됨.
+* 회원 탈퇴, id, pw 변경 추가됨.
+* 북마크 기능 추가됨
