@@ -82,11 +82,7 @@ public class OrderController {
     public ResponseEntity<?> cancelPage(@PathVariable("orderId") Long orderId) {
         OrdersResponse order = orderService.getOrder(orderId);
 
-        if (order != null) {
-            return ResponseEntity.ok(order);
-        } else {
-            return ResponseEntity.ok("해당 주문이 없어 주문취소가 불가능합니다.");
-        }
+        return ResponseEntity.ok(Objects.requireNonNullElse(order, "해당 주문이 없어 주문취소가 불가능합니다."));
     }
 
     /*

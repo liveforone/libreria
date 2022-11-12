@@ -39,12 +39,16 @@ public class CommentService {
 
     //== entity -> dto 편의 메소드2 - detail ==//
     public CommentResponse entityToDtoDetail(Comment comment) {
-        return CommentResponse.builder()
-                .id(comment.getId())
-                .writer(comment.getWriter())
-                .content(comment.getContent())
-                .createdDate(comment.getCreatedDate())
-                .build();
+        if (comment != null) {
+            return CommentResponse.builder()
+                    .id(comment.getId())
+                    .writer(comment.getWriter())
+                    .content(comment.getContent())
+                    .createdDate(comment.getCreatedDate())
+                    .build();
+        } else {
+            return null;
+        }
     }
 
     public List<CommentResponse> getCommentList(Long id) {
