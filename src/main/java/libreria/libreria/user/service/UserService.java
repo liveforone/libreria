@@ -63,28 +63,31 @@ public class UserService implements UserDetailsService {
     public UserResponse getUser(String email) {
         Users users = userRepository.findByEmail(email);
 
-        String rank;
-        // 등급 체크
-        if (users.getCount() >= 120) {
-            rank = "DIA";
-        } else if (users.getCount() >= 60) {
-            rank = "PLATINUM";
-        } else if (users.getCount() >= 30) {
-            rank = "GOLD";
-        } else if (users.getCount() >= 15) {
-            rank = "SILVER";
+        if (users != null) {
+            String rank;
+            // 등급 체크
+            if (users.getCount() >= 120) {
+                rank = "DIA";
+            } else if (users.getCount() >= 60) {
+                rank = "PLATINUM";
+            } else if (users.getCount() >= 30) {
+                rank = "GOLD";
+            } else if (users.getCount() >= 15) {
+                rank = "SILVER";
+            } else {
+                rank = "BRONZE";
+            }
+
+            return UserResponse.builder()
+                    .id(users.getId())
+                    .email(users.getEmail())
+                    .address(users.getAddress())
+                    .rank(rank)
+                    .auth(users.getAuth())
+                    .build();
         } else {
-            rank = "BRONZE";
+            return null;
         }
-
-        return UserResponse.builder()
-                .id(users.getId())
-                .email(users.getEmail())
-                .address(users.getAddress())
-                .rank(rank)
-                .auth(users.getAuth())
-                .build();
-
     }
 
     //== 전체 유저 리턴 for admin ==//
