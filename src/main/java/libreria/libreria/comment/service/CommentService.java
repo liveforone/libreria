@@ -55,8 +55,8 @@ public class CommentService {
         return entityToDtoList(commentRepository.findCommentByItemId(id));
     }
 
-    public CommentResponse getComment(Long id) {
-        return entityToDtoDetail(commentRepository.findOneById(id));
+    public Comment getComment(Long id) {
+        return commentRepository.findOneById(id);
     }
 
     @Transactional

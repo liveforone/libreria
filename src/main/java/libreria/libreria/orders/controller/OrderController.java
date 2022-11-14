@@ -1,6 +1,7 @@
 package libreria.libreria.orders.controller;
 
 import libreria.libreria.item.dto.ItemResponse;
+import libreria.libreria.item.model.Item;
 import libreria.libreria.item.service.ItemService;
 import libreria.libreria.orders.dto.OrdersRequest;
 import libreria.libreria.orders.dto.OrdersResponse;
@@ -39,7 +40,7 @@ public class OrderController {
 
     @GetMapping("/item/order/{itemId}")
     public ResponseEntity<?> orderPage(@PathVariable("itemId") Long itemId) {
-        ItemResponse item = itemService.getDetail(itemId);
+        Item item = itemService.getItemEntity(itemId);
 
         return ResponseEntity.ok(Objects.requireNonNullElse(item, "해당 상품이 없어 주문이 불가능합니다."));
     }
@@ -50,7 +51,7 @@ public class OrderController {
             @RequestBody OrdersRequest ordersRequest,
             Principal principal
             ) {
-        ItemResponse item = itemService.getDetail(itemId);
+        Item item = itemService.getItemEntity(itemId);
 
         if (item != null) {
 

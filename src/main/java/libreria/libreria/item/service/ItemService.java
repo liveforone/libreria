@@ -105,10 +105,6 @@ public class ItemService {
         return entityToDtoPage(itemRepository.findCategoryListByCategory(category, pageable));
     }
 
-    public ItemResponse getDetail(Long id) {
-        return entityToDtoDetail(itemRepository.findOneById(id));
-    }
-
     //== 연관관계인 작성자(user)를 뽑아주는 경우에만 사용한다. ==//
     public Item getItemEntity(Long id) {
         return itemRepository.findOneById(id);

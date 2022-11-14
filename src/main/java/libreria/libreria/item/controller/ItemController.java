@@ -123,7 +123,7 @@ public class ItemController {
             String user = principal.getName();
             Map<String, Object> map = new HashMap<>();
             String writer = entity.getUsers().getEmail();
-            ItemResponse item = itemService.getDetail(id);
+            ItemResponse item = itemService.entityToDtoDetail(entity);
 
             map.put("user", user);
             map.put("body", item);
@@ -171,7 +171,7 @@ public class ItemController {
 
     @GetMapping("/item/edit/{id}")
     public ResponseEntity<?> editPage(@PathVariable("id") Long id) {
-        ItemResponse item = itemService.getDetail(id);
+        ItemResponse item = itemService.entityToDtoDetail(itemService.getItemEntity(id));
 
         return ResponseEntity.ok(Objects.requireNonNullElse(item, "해당 상품이 없어 수정이 불가능합니다."));
     }

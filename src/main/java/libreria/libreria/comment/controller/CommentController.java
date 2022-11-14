@@ -2,6 +2,7 @@ package libreria.libreria.comment.controller;
 
 import libreria.libreria.comment.dto.CommentRequest;
 import libreria.libreria.comment.dto.CommentResponse;
+import libreria.libreria.comment.model.Comment;
 import libreria.libreria.comment.service.CommentService;
 import libreria.libreria.item.model.Item;
 import libreria.libreria.item.service.ItemService;
@@ -72,7 +73,7 @@ public class CommentController {
 
     @GetMapping("/item/comment/edit/{id}")
     public ResponseEntity<?> editPage(@PathVariable("id") Long id) {
-        CommentResponse comment = commentService.getComment(id);
+        CommentResponse comment = commentService.entityToDtoDetail(commentService.getComment(id));
 
         return ResponseEntity.ok(Objects.requireNonNullElse(comment, "댓글을 찾을 수 없어 수정이 불가능합니다."));
 
@@ -89,7 +90,7 @@ public class CommentController {
             @RequestBody CommentRequest commentRequest,
             Principal principal
     ) {
-        CommentResponse comment = commentService.getComment(id);
+        Comment comment = commentService.getComment(id);
 
         if (comment != null) {
 
@@ -126,7 +127,7 @@ public class CommentController {
             @PathVariable("id") Long id,
             Principal principal
     ) {
-        CommentResponse comment = commentService.getComment(id);
+        Comment comment = commentService.getComment(id);
 
         if (comment != null) {
 
