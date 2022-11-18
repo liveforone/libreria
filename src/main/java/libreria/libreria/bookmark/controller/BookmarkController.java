@@ -1,5 +1,6 @@
 package libreria.libreria.bookmark.controller;
 
+import libreria.libreria.bookmark.model.Bookmark;
 import libreria.libreria.bookmark.service.BookmarkService;
 import libreria.libreria.item.model.Item;
 import libreria.libreria.item.service.ItemService;
@@ -38,21 +39,26 @@ public class BookmarkController {
             Principal principal
     ) {
         Item item = itemService.getItemEntity(itemId);
+        Bookmark bookmark = bookmarkService.getBookmarkDetail(itemId, principal.getName());
 
-        if (item != null) {
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.setLocation(URI.create("/item/" + itemId));
-
-            bookmarkService.saveBookmark(principal.getName(), itemId);
-            log.info("북마킹 성공!!");
-
-            return ResponseEntity
-                    .status(HttpStatus.MOVED_PERMANENTLY)
-                    .headers(httpHeaders)
-                    .build();
-        } else {
+        if (item == null) {
             return ResponseEntity.ok("해당 상품을 찾을 수 없어 북마킹이 불가능합니다.");
         }
+
+        if (bookmark != null) {
+            return ResponseEntity.ok("이미 북마크 하였습니다.");
+        }
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setLocation(URI.create("/item/" + itemId));
+
+        bookmarkService.saveBookmark(principal.getName(), itemId);
+        log.info("북마킹 성공!!");
+
+        return ResponseEntity
+                .status(HttpStatus.MOVED_PERMANENTLY)
+                .headers(httpHeaders)
+                .build();
     }
 
     @PostMapping("/bookmark/cancel/{itemId}")
@@ -61,20 +67,25 @@ public class BookmarkController {
             Principal principal
     ) {
         Item item = itemService.getItemEntity(itemId);
+        Bookmark bookmark = bookmarkService.getBookmarkDetail(itemId, principal.getName());
 
-        if (item != null) {
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.setLocation(URI.create("/item/" + itemId));
-
-            bookmarkService.bookmarkCancel(principal.getName(), itemId);
-            log.info("북마크 삭제 성공!!");
-
-            return ResponseEntity
-                    .status(HttpStatus.MOVED_PERMANENTLY)
-                    .headers(httpHeaders)
-                    .build();
-        } else {
+        if (item == null) {
             return ResponseEntity.ok("해당 상품을 찾을 수 없어 북마크 취소가 불가능합니다.");
         }
+
+        if (bookmark == null) {
+            return ResponseEntity.ok("이미 북마크가 취소되었습니다.");
+        }
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setLocation(URI.create("/item/" + itemId));
+
+        bookmarkService.bookmarkCancel(principal.getName(), itemId);
+        log.info("북마크 취소 성공!!");
+
+        return ResponseEntity
+                .status(HttpStatus.MOVED_PERMANENTLY)
+                .headers(httpHeaders)
+                .build();
     }
 }

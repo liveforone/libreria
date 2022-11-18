@@ -87,21 +87,21 @@ public class ItemController {
             Principal principal
             ) throws IllegalStateException, IOException {
 
-        if (!uploadFile.isEmpty()) {
-            Long itemId = itemService.saveItem(uploadFile, itemRequest, principal.getName());
-            log.info("포스팅 성공!!");
-
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.setLocation(URI.create("/item/" + itemId));
-
-            return ResponseEntity
-                    .status(HttpStatus.MOVED_PERMANENTLY)
-                    .headers(httpHeaders)
-                    .build();
-        } else {
+        if (uploadFile.isEmpty()) {
             log.info("파일이 없어서 포스팅 실패했습니다.");
             return ResponseEntity.ok("파일이 존재하지 않아 포스팅이 실패했습니다. \n파일을 넣고 다시 등록해주세요");
         }
+
+        Long itemId = itemService.saveItem(uploadFile, itemRequest, principal.getName());
+        log.info("포스팅 성공!!");
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setLocation(URI.create("/item/" + itemId));
+
+        return ResponseEntity
+                .status(HttpStatus.MOVED_PERMANENTLY)
+                .headers(httpHeaders)
+                .build();
     }
 
     /*
@@ -119,20 +119,20 @@ public class ItemController {
     ) {
         Item entity = itemService.getItemEntity(id);
 
-        if (entity != null) {
-            String user = principal.getName();
-            Map<String, Object> map = new HashMap<>();
-            String writer = entity.getUsers().getEmail();
-            ItemResponse item = itemService.entityToDtoDetail(entity);
-
-            map.put("user", user);
-            map.put("body", item);
-            map.put("writer", writer);
-
-            return ResponseEntity.ok(map);
-        } else {
+        if (entity == null) {
             return ResponseEntity.ok("해당 상품이 없어 조회가 불가능합니다.");
         }
+
+        String user = principal.getName();
+        Map<String, Object> map = new HashMap<>();
+        String writer = entity.getUsers().getEmail();
+        ItemResponse item = itemService.entityToDtoDetail(entity);
+
+        map.put("user", user);
+        map.put("body", item);
+        map.put("writer", writer);
+
+        return ResponseEntity.ok(map);
     }
 
     //== 상품 상세조회 이미지 ==//
@@ -152,21 +152,20 @@ public class ItemController {
     public ResponseEntity<?> updateGood(@PathVariable("id") Long id) {
         Item item = itemService.getItemEntity(id);
 
-        if (item != null) {
-            String url = "/item/" + id;
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.setLocation(URI.create(url));
-
-            itemService.updateGood(id);
-            log.info("좋아요 업데이트!!");
-
-            return ResponseEntity
-                    .status(HttpStatus.MOVED_PERMANENTLY)
-                    .headers(httpHeaders)
-                    .build();
-        } else {
+        if (item == null) {
             return ResponseEntity.ok("해당 상품이 없어 좋아요가 불가능합니다.");
         }
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setLocation(URI.create("/item/" + id));
+
+        itemService.updateGood(id);
+        log.info("좋아요 업데이트!!");
+
+        return ResponseEntity
+                .status(HttpStatus.MOVED_PERMANENTLY)
+                .headers(httpHeaders)
+                .build();
     }
 
     @GetMapping("/item/edit/{id}")
@@ -190,36 +189,38 @@ public class ItemController {
             @RequestPart("itemRequest") ItemRequest itemRequest,
             Principal principal
     ) throws IllegalStateException, IOException {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setLocation(URI.create("/item/" + id));
+
         Item item = itemService.getItemEntity(id);
 
-        if (item != null) {
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.setLocation(URI.create("/item/" + id));
-
-            if (Objects.equals(item.getUsers().getEmail(), principal.getName())) {
-
-                if (!uploadFile.isEmpty()) {  //파일을 바꿔서 수정
-                    itemService.editItemWithFile(id, itemRequest, uploadFile);
-                    log.info("파일 수정 완료!!(파일교체 O)");
-                } else {  //기존 파일 유지하며 수정
-                    itemService.editItemNoFileChange(id, itemRequest);
-                    log.info("파일 수정 완료!!(파일교체 X)");
-                }
-
-                return ResponseEntity
-                        .status(HttpStatus.MOVED_PERMANENTLY)
-                        .headers(httpHeaders)
-                        .build();
-
-            } else {
-                log.info("작성자와 현재 유저가 달라 수정 불가능.");
-                return ResponseEntity
-                        .status(HttpStatus.FORBIDDEN)
-                        .build();
-            }
-
-        } else {
+        if (item == null) {
             return ResponseEntity.ok("해당 상품이 없어 수정이 불가능합니다.");
         }
+
+        if (!Objects.equals(item.getUsers().getEmail(), principal.getName())) {
+            log.info("작성자와 현재 유저가 달라 수정 불가능.");
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .build();
+        }
+
+        if (uploadFile.isEmpty()) {
+            itemService.editItemNoFileChange(id, itemRequest);
+            log.info("파일 수정 완료!!(파일교체 X)");
+
+            return ResponseEntity
+                    .status(HttpStatus.MOVED_PERMANENTLY)
+                    .headers(httpHeaders)
+                    .build();
+        }
+
+        itemService.editItemWithFile(id, itemRequest, uploadFile);
+        log.info("파일 수정 완료!!(파일교체 O)");
+
+        return ResponseEntity
+                .status(HttpStatus.MOVED_PERMANENTLY)
+                .headers(httpHeaders)
+                .build();
     }
 }

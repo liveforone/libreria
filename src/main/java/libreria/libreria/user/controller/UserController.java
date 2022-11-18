@@ -54,20 +54,21 @@ public class UserController {
 
         int checkEmail = userService.checkSameEmail(userRequest.getEmail());
 
-        if (checkEmail == 1) {
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.setLocation(URI.create("/"));  //해당 경로로 리다이렉트
-
-            userService.joinUser(userRequest);
-            log.info("회원 가입 성공!!");
-
-            return ResponseEntity
-                    .status(HttpStatus.MOVED_PERMANENTLY)
-                    .headers(httpHeaders)
-                    .build();
-        } else {
+        if (checkEmail != 1) {
             return ResponseEntity.ok("중복되는 이메일이 있어 회원가입이 불가능합니다.");
+
         }
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setLocation(URI.create("/"));  //해당 경로로 리다이렉트
+
+        userService.joinUser(userRequest);
+        log.info("회원 가입 성공!!");
+
+        return ResponseEntity
+                .status(HttpStatus.MOVED_PERMANENTLY)
+                .headers(httpHeaders)
+                .build();
     }
 
     //== 로그인 페이지 ==//
@@ -84,27 +85,26 @@ public class UserController {
     ) {
         Users users = userService.getUserEntity(userRequest.getEmail());
 
-        if (users != null) {
-            int checkPassword = userService.passwordDecode(userRequest.getPassword(), users.getPassword());
-
-            if (checkPassword == 1) {
-                HttpHeaders httpHeaders = new HttpHeaders();
-                httpHeaders.setLocation(URI.create("/"));
-
-                userService.login(userRequest, session);
-                log.info("로그인 성공!");
-
-                return ResponseEntity
-                        .status(HttpStatus.MOVED_PERMANENTLY)
-                        .headers(httpHeaders)
-                        .build();
-            } else {
-                return ResponseEntity.ok("비밀번호가 다릅니다. 다시 시도하세요.");
-            }
-
-        } else {
+        if (users == null) {
             return ResponseEntity.ok("회원 조회가 되지않아 로그인이 불가능합니다.");
         }
+
+        int checkPassword = userService.passwordDecode(userRequest.getPassword(), users.getPassword());
+
+        if (checkPassword != 1) {
+            return ResponseEntity.ok("비밀번호가 다릅니다. 다시 시도하세요.");
+        }
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setLocation(URI.create("/"));
+
+        userService.login(userRequest, session);
+        log.info("로그인 성공!");
+
+        return ResponseEntity
+                .status(HttpStatus.MOVED_PERMANENTLY)
+                .headers(httpHeaders)
+                .build();
     }
 
     /*
@@ -121,34 +121,31 @@ public class UserController {
         Users users = userService.getUserEntity(principal.getName());
         UserResponse changeEmail = userService.getUser(userRequest.getEmail());
 
-        if (users != null) {
-            int checkPassword = userService.passwordDecode(userRequest.getPassword(), users.getPassword());
-
-            if (changeEmail == null) {  //이메일 중복안됨
-
-                if (checkPassword == 1) {  //pw 일치함
-                    HttpHeaders httpHeaders = new HttpHeaders();
-                    httpHeaders.setLocation(URI.create("/user/logout"));
-
-                    userService.updateEmail(principal.getName(), userRequest.getEmail());
-                    log.info("이메일 변경 성공!!");
-
-                    return ResponseEntity
-                            .status(HttpStatus.MOVED_PERMANENTLY)
-                            .headers(httpHeaders)
-                            .build();
-                } else {  //pw 일치하지 않음
-                    log.info("비밀번호 일치하지 않음.");
-                    return ResponseEntity.ok("비밀번호가 다릅니다. 다시 입력해주세요.");
-                }
-
-            } else {  //이메일 중복됨
-                return ResponseEntity.ok("해당 이메일이 이미 존재합니다. 다시 입력해주세요");
-            }
-
-        } else {
+        if (users == null) {
             return ResponseEntity.ok("해당 유저를 조회할 수 없어 이메일 변경이 불가능합니다.");
         }
+
+        if (changeEmail != null) {  //이메일 중복 check
+            return ResponseEntity.ok("해당 이메일이 이미 존재합니다. 다시 입력해주세요");
+        }
+
+        int checkPassword = userService.passwordDecode(userRequest.getPassword(), users.getPassword());
+
+        if (checkPassword != 1) {  //PW check
+            log.info("비밀번호 일치하지 않음.");
+            return ResponseEntity.ok("비밀번호가 다릅니다. 다시 입력해주세요.");
+        }
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setLocation(URI.create("/user/logout"));
+
+        userService.updateEmail(principal.getName(), userRequest.getEmail());
+        log.info("이메일 변경 성공!!");
+
+        return ResponseEntity
+                .status(HttpStatus.MOVED_PERMANENTLY)
+                .headers(httpHeaders)
+                .build();
     }
 
     //== 비밀번호 변경 ==//
@@ -159,28 +156,27 @@ public class UserController {
     ) {
         Users users = userService.getUserEntity(principal.getName());
 
-        if (users != null) {
-            int checkPassword = userService.passwordDecode(userRequest.getOldPassword(), users.getPassword());
-
-            if (checkPassword == 1) {  //pw 일치함
-                HttpHeaders httpHeaders = new HttpHeaders();
-                httpHeaders.setLocation(URI.create("/user/logout"));
-
-                userService.updatePassword(users.getId(), userRequest.getNewPassword());
-                log.info("비밀번호 변경 성공!!");
-
-                return ResponseEntity
-                        .status(HttpStatus.MOVED_PERMANENTLY)
-                        .headers(httpHeaders)
-                        .build();
-            } else {  //pw 일치하지 않음
-                log.info("비밀번호 일치하지 않음.");
-                return ResponseEntity.ok("비밀번호가 다릅니다. 다시 입력해주세요.");
-            }
-
-        } else {
+        if (users == null) {
             return ResponseEntity.ok("해당 유저를 조회할 수 없어 비밀번호 변경이 불가능합니다.");
         }
+
+        int checkPassword = userService.passwordDecode(userRequest.getOldPassword(), users.getPassword());
+
+        if (checkPassword != 1) {  //PW check
+            log.info("비밀번호 일치하지 않음.");
+            return ResponseEntity.ok("비밀번호가 다릅니다. 다시 입력해주세요.");
+        }
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setLocation(URI.create("/user/logout"));
+
+        userService.updatePassword(users.getId(), userRequest.getNewPassword());
+        log.info("비밀번호 변경 성공!!");
+
+        return ResponseEntity
+                .status(HttpStatus.MOVED_PERMANENTLY)
+                .headers(httpHeaders)
+                .build();
     }
 
     //== 회원 탈퇴 ==//
@@ -191,22 +187,21 @@ public class UserController {
     ) {
         Users users = userService.getUserEntity(principal.getName());
 
-        if (users != null) {
-            int checkPassword = userService.passwordDecode(password, users.getPassword());
-
-            if (checkPassword == 1) { //pw 일치함
-                log.info("회원 : " + users.getId() + " 탈퇴 성공!!");
-                userService.deleteUser(users.getId());
-
-                return ResponseEntity.ok("그동안 서비스를 이용해주셔서 감사합니다.");
-            } else {  //pw 일치하지 않음
-                log.info("비밀번호 일치하지 않음.");
-                return ResponseEntity.ok("비밀번호가 다릅니다. 다시 입력해주세요.");
-            }
-
-        } else {
+        if (users == null) {
             return ResponseEntity.ok("해당 유저를 조회할 수 없어 탈퇴가 불가능합니다.");
         }
+
+        int checkPassword = userService.passwordDecode(password, users.getPassword());
+
+        if (checkPassword != 1) {  //PW check
+            log.info("비밀번호 일치하지 않음.");
+            return ResponseEntity.ok("비밀번호가 다릅니다. 다시 입력해주세요.");
+        }
+
+        log.info("회원 : " + users.getId() + " 탈퇴 성공!!");
+        userService.deleteUser(users.getId());
+
+        return ResponseEntity.ok("그동안 서비스를 이용해주셔서 감사합니다.");
     }
 
     //== 판매자 등록 페이지 ==//
@@ -273,11 +268,10 @@ public class UserController {
 
         if (user.getAuth() != Role.SELLER) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        } else {
-            List<ItemResponse> itemList = itemService.getItemListForMyPage(user.getEmail());
-            return ResponseEntity.ok(itemList);
         }
 
+        List<ItemResponse> itemList = itemService.getItemListForMyPage(user.getEmail());
+        return ResponseEntity.ok(itemList);
     }
 
     //== 내가 주문한 상품 - 권한이 멤버일 경우 ==//
@@ -287,10 +281,10 @@ public class UserController {
 
         if (user.getAuth() != Role.MEMBER) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        } else {
-            List<OrdersResponse> ordersList = orderService.getOrderListForMyPage(user.getEmail());
-            return ResponseEntity.ok(ordersList);
         }
+
+        List<OrdersResponse> ordersList = orderService.getOrderListForMyPage(user.getEmail());
+        return ResponseEntity.ok(ordersList);
     }
 
     //== 접근 거부 페이지 ==//
@@ -305,12 +299,14 @@ public class UserController {
     @GetMapping("/admin")
     public ResponseEntity<?> admin(Principal principal) {
         UserResponse dto = userService.getUser(principal.getName());
-        if (dto.getAuth().equals(Role.ADMIN)) {  //권한 검증
-            log.info("어드민이 어드민 페이지에 접속했습니다.");
-            return ResponseEntity.ok(userService.getAllUsersForAdmin());
-        } else {
+
+        if (!dto.getAuth().equals(Role.ADMIN)) {  //권한 검증
             log.info("어드민 페이지 접속에 실패했습니다.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
         }
+
+        log.info("어드민이 어드민 페이지에 접속했습니다.");
+        return ResponseEntity.ok(userService.getAllUsersForAdmin());
     }
 }
