@@ -67,21 +67,22 @@ public class ItemService {
 
     //== entity -> dto 편의메소드3 - 엔티티 하나 ==//
     public ItemResponse entityToDtoDetail(Item item) {
-        if (item != null) {
-            return ItemResponse.builder()
-                    .id(item.getId())
-                    .title(item.getTitle())
-                    .content(item.getContent())
-                    .author(item.getAuthor())
-                    .saveFileName(item.getSaveFileName())
-                    .category(item.getCategory())
-                    .remaining(item.getRemaining())
-                    .year(item.getYear())
-                    .good(item.getGood())
-                    .build();
-        } else {
+
+        if (item == null) {
             return null;
         }
+
+        return ItemResponse.builder()
+                .id(item.getId())
+                .title(item.getTitle())
+                .content(item.getContent())
+                .author(item.getAuthor())
+                .saveFileName(item.getSaveFileName())
+                .category(item.getCategory())
+                .remaining(item.getRemaining())
+                .year(item.getYear())
+                .good(item.getGood())
+                .build();
     }
 
 

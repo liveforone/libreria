@@ -45,16 +45,17 @@ public class OrderService {
 
     //== entity -> dto 편의 메소드2 - detail ==//
     public OrdersResponse entityToDtoDetail(Orders orders) {
-        if (orders != null) {
-            return OrdersResponse.builder()
-                    .id(orders.getId())
-                    .status(orders.getStatus())
-                    .orderCount(orders.getOrderCount())
-                    .createdDate(orders.getCreatedDate())
-                    .build();
-        } else {
+
+        if (orders == null) {
             return null;
         }
+
+        return OrdersResponse.builder()
+                .id(orders.getId())
+                .status(orders.getStatus())
+                .orderCount(orders.getOrderCount())
+                .createdDate(orders.getCreatedDate())
+                .build();
     }
 
     //== orderList for myPage ==//
