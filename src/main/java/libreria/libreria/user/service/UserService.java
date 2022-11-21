@@ -53,6 +53,18 @@ public class UserService implements UserDetailsService {
         }
     }
 
+    //== dto -> entity ==//
+    public Users dtoToEntity(UserRequest users) {
+        return Users.builder()
+                .id(users.getId())
+                .email(users.getEmail())
+                .password(users.getPassword())
+                .auth(users.getAuth())
+                .count(users.getCount())
+                .address(users.getAddress())
+                .build();
+    }
+
     @Transactional(readOnly = true)
     public Users getUserEntity(String email) {
         return userRepository.findByEmail(email);
@@ -104,7 +116,7 @@ public class UserService implements UserDetailsService {
         userRequest.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         userRequest.setAuth(Role.MEMBER);  //기본 권한 매핑
 
-        return userRepository.save(userRequest.toEntity()).getId();
+        return userRepository.save(dtoToEntity(userRequest)).getId();
     }
 
     //== 로그인 - 세션과 컨텍스트홀더 사용 ==//
