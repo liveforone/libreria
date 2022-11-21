@@ -15,13 +15,4 @@ public class CommentRequest {
     private String content;
     private Item item;
     private LocalDateTime createdDate;
-
-    public Comment toEntity() {
-        return Comment.builder()
-                .id(id)
-                .writer(writer)
-                .content(content)
-                .item(item)
-                .build();
-    }
 }

@@ -28,50 +28,8 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
-    //== entity -> dto 편의 메소드1 - 리스트형식 ==//
-    public List<ItemResponse> entityToDtoList(List<Item> itemList) {
-        List<ItemResponse> dtoList = new ArrayList<>();
-
-        for (Item item : itemList) {
-            ItemResponse itemResponse = ItemResponse.builder()
-                    .id(item.getId())
-                    .title(item.getTitle())
-                    .content(item.getContent())
-                    .author(item.getAuthor())
-                    .saveFileName(item.getSaveFileName())
-                    .category(item.getCategory())
-                    .remaining(item.getRemaining())
-                    .year(item.getYear())
-                    .good(item.getGood())
-                    .build();
-            dtoList.add(itemResponse);
-        }
-        return dtoList;
-    }
-
-    //== entity ->  dto 편의메소드2 - 페이징 형식 ==//
-    public Page<ItemResponse> entityToDtoPage(Page<Item> itemList) {
-        return itemList.map(m -> ItemResponse.builder()
-                .id(m.getId())
-                .title(m.getTitle())
-                .content(m.getContent())
-                .author(m.getAuthor())
-                .saveFileName(m.getSaveFileName())
-                .category(m.getCategory())
-                .remaining(m.getRemaining())
-                .year(m.getYear())
-                .good(m.getGood())
-                .build()
-        );
-    }
-
-    //== entity -> dto 편의메소드3 - 엔티티 하나 ==//
-    public ItemResponse entityToDtoDetail(Item item) {
-
-        if (item == null) {
-            return null;
-        }
-
+    //== ItemResponse builder method ==//
+    public ItemResponse dtoBuilder(Item item) {
         return ItemResponse.builder()
                 .id(item.getId())
                 .title(item.getTitle())
@@ -83,6 +41,48 @@ public class ItemService {
                 .year(item.getYear())
                 .good(item.getGood())
                 .build();
+    }
+
+    //== dto -> entity ==//
+    public Item dtoToEntity(ItemRequest item) {
+        return Item.builder()
+                .id(item.getId())
+                .title(item.getTitle())
+                .content(item.getContent())
+                .users(item.getUsers())
+                .author(item.getAuthor())
+                .saveFileName(item.getSaveFileName())
+                .remaining(item.getRemaining())
+                .category(item.getCategory())
+                .year(item.getYear())
+                .good(item.getGood())
+                .build();
+    }
+
+    //== entity -> dto 편의 메소드1 - 리스트형식 ==//
+    public List<ItemResponse> entityToDtoList(List<Item> itemList) {
+        List<ItemResponse> dtoList = new ArrayList<>();
+
+        for (Item item : itemList) {
+            dtoList.add(dtoBuilder(item));
+        }
+
+        return dtoList;
+    }
+
+    //== entity ->  dto 편의메소드2 - 페이징 형식 ==//
+    public Page<ItemResponse> entityToDtoPage(Page<Item> itemList) {
+        return itemList.map(this::dtoBuilder);
+    }
+
+    //== entity -> dto 편의메소드3 - 엔티티 하나 ==//
+    public ItemResponse entityToDtoDetail(Item item) {
+
+        if (item == null) {
+            return null;
+        }
+
+        return dtoBuilder(item);
     }
 
 
@@ -122,7 +122,7 @@ public class ItemService {
         itemRequest.setUsers(users);
         uploadFile.transferTo(new File(saveFileName));
 
-        return itemRepository.save(itemRequest.toEntity()).getId();
+        return itemRepository.save(dtoToEntity(itemRequest)).getId();
     }
 
     @Transactional
@@ -140,7 +140,7 @@ public class ItemService {
         itemRequest.setSaveFileName(item.getSaveFileName());
         itemRequest.setGood(item.getGood());
 
-        itemRepository.save(itemRequest.toEntity());
+        itemRepository.save(dtoToEntity(itemRequest));
     }
 
     //== 파일 수정2 - 파일 교체하며 ==//
@@ -156,6 +156,6 @@ public class ItemService {
         itemRequest.setSaveFileName(saveFileName);
 
         uploadFile.transferTo(new File(saveFileName));
-        itemRepository.save(itemRequest.toEntity());
+        itemRepository.save(dtoToEntity(itemRequest));
     }
 }

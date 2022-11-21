@@ -21,18 +21,32 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final ItemRepository itemRepository;
 
+    //== CommentResponse builder method ==//
+    public CommentResponse dtoBuilder(Comment comment) {
+        return CommentResponse.builder()
+                .id(comment.getId())
+                .writer(comment.getWriter())
+                .content(comment.getContent())
+                .createdDate(comment.getCreatedDate())
+                .build();
+    }
+
+    //== dto -> entity ==//
+    public Comment dtoToEntity(CommentRequest comment) {
+        return Comment.builder()
+                    .id(comment.getId())
+                    .writer(comment.getWriter())
+                    .content(comment.getContent())
+                    .item(comment.getItem())
+                    .build();
+    }
+
     //== entity -> dto 편의메소드1 - 리스트 ==//
     public List<CommentResponse> entityToDtoList(List<Comment> commentList) {
         List<CommentResponse> dtoList = new ArrayList<>();
 
         for (Comment comment : commentList) {
-            CommentResponse commentResponse = CommentResponse.builder()
-                    .id(comment.getId())
-                    .writer(comment.getWriter())
-                    .content(comment.getContent())
-                    .createdDate(comment.getCreatedDate())
-                    .build();
-            dtoList.add(commentResponse);
+            dtoList.add(dtoBuilder(comment));
         }
         return dtoList;
     }
@@ -44,12 +58,7 @@ public class CommentService {
             return null;
         }
 
-        return CommentResponse.builder()
-                .id(comment.getId())
-                .writer(comment.getWriter())
-                .content(comment.getContent())
-                .createdDate(comment.getCreatedDate())
-                .build();
+        return dtoBuilder(comment);
     }
 
     public List<CommentResponse> getCommentList(Long id) {
@@ -67,7 +76,7 @@ public class CommentService {
         commentRequest.setItem(item);
         commentRequest.setWriter(writer);
 
-        commentRepository.save(commentRequest.toEntity());
+        commentRepository.save(dtoToEntity(commentRequest));
     }
 
     /*
@@ -82,13 +91,13 @@ public class CommentService {
         commentRequest.setWriter(comment.getWriter());
         commentRequest.setItem(comment.getItem());
 
-        commentRepository.save(commentRequest.toEntity());
+        commentRepository.save(dtoToEntity(commentRequest));
 
         return comment.getItem().getId();
     }
 
     /*
-    edit와 마찬가지로 redirect 해주기위해서 itemId를 리턴한다.(comment_id 아님!!)
+    edit 와 마찬가지로 redirect 해주기위해서 itemId를 리턴한다.(comment_id 아님!!)
      */
     @Transactional
     public Long deleteComment(Long id) {

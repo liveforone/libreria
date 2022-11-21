@@ -19,14 +19,4 @@ public class OrdersRequest {
     private OrderStatus status;
     private int orderCount;
     private LocalDate createdDate;
-
-    public Orders toEntity() {
-        return Orders.builder()
-                .id(id)
-                .item(item)
-                .users(users)
-                .status(status)
-                .orderCount(orderCount)
-                .build();
-    }
 }

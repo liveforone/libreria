@@ -19,19 +19,4 @@ public class ItemRequest {
     private String category;
     private String year;
     private int good;
-
-    public Item toEntity() {
-        return Item.builder()
-                .id(id)
-                .title(title)
-                .content(content)
-                .users(users)
-                .author(author)
-                .saveFileName(saveFileName)
-                .remaining(remaining)
-                .category(category)
-                .year(year)
-                .good(good)
-                .build();
-    }
 }

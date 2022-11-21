@@ -26,18 +26,33 @@ public class OrderService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
+    //== OrderResponse builder method ==//
+    public OrdersResponse dtoBuilder(Orders orders) {
+        return OrdersResponse.builder()
+                .id(orders.getId())
+                .status(orders.getStatus())
+                .orderCount(orders.getOrderCount())
+                .createdDate(orders.getCreatedDate())
+                .build();
+    }
+
+    //== dto -> entity ==//
+    public Orders dtoToEntity(OrdersRequest order) {
+        return Orders.builder()
+                .id(order.getId())
+                .item(order.getItem())
+                .users(order.getUsers())
+                .status(order.getStatus())
+                .orderCount(order.getOrderCount())
+                .build();
+    }
+
     //== entity -> dto 편의 메소드1 - 리스트 ==//
     public List<OrdersResponse> entityToDtoList(List<Orders> ordersList) {
         List<OrdersResponse> dtoList = new ArrayList<>();
 
         for (Orders orders : ordersList) {
-            OrdersResponse ordersResponse = OrdersResponse.builder()
-                    .id(orders.getId())
-                    .status(orders.getStatus())
-                    .orderCount(orders.getOrderCount())
-                    .createdDate(orders.getCreatedDate())
-                    .build();
-            dtoList.add(ordersResponse);
+            dtoList.add(dtoBuilder(orders));
         }
 
         return dtoList;
@@ -50,12 +65,7 @@ public class OrderService {
             return null;
         }
 
-        return OrdersResponse.builder()
-                .id(orders.getId())
-                .status(orders.getStatus())
-                .orderCount(orders.getOrderCount())
-                .createdDate(orders.getCreatedDate())
-                .build();
+        return dtoBuilder(orders);
     }
 
     //== orderList for myPage ==//
@@ -103,7 +113,7 @@ public class OrderService {
 
         itemRepository.minusRemaining(ordersRequest.getOrderCount(), itemId);
         userRepository.plusCount(user);
-        orderRepository.save(ordersRequest.toEntity());
+        orderRepository.save(dtoToEntity(ordersRequest));
     }
 
     //== 주문 취소 ==//
