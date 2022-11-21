@@ -298,3 +298,4 @@ ex) : 여행 -> travel 등
 * 신청 서비스 중복체크
 * and query 네이밍 수정 -> findOne엔티티이름
 * dto -> entity 메소드 서비스로직으로 이동 후 서비스 로직에서 처리
+* 반복되는 entity -> dto builder 를 함수화 해서 불필요한 반복을 줄임.
