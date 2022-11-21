@@ -297,3 +297,4 @@ ex) : 여행 -> travel 등
 * 분기문 버블스타일에서 gate way 스타일로 변경
 * 신청 서비스 중복체크
 * and query 네이밍 수정 -> findOne엔티티이름
+* dto -> entity 메소드 서비스로직으로 이동 후 서비스 로직에서 처리
