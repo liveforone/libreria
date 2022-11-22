@@ -82,10 +82,12 @@ public class CommentController {
         CommentResponse comment =
                 commentService.entityToDtoDetail(commentService.getComment(id));
 
-        return ResponseEntity.ok(Objects.requireNonNullElse(
+        return ResponseEntity.ok(
+                Objects.requireNonNullElse(
                 comment,
                 "댓글을 찾을 수 없어 수정이 불가능합니다."
-        ));
+                )
+        );
     }
 
     /*

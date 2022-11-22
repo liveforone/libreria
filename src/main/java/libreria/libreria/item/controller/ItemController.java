@@ -187,7 +187,8 @@ public class ItemController {
         return ResponseEntity.ok(
                 Objects.requireNonNullElse(
                         item,
-                        "해당 상품이 없어 수정이 불가능합니다.")
+                        "해당 상품이 없어 수정이 불가능합니다."
+                )
         );
     }
 

@@ -43,7 +43,10 @@ public class OrderController {
         Item item = itemService.getItemEntity(itemId);
 
         return ResponseEntity.ok(
-                Objects.requireNonNullElse(item, "해당 상품이 없어 주문이 불가능합니다.")
+                Objects.requireNonNullElse(
+                        item,
+                        "해당 상품이 없어 주문이 불가능합니다."
+                )
         );
     }
 
@@ -93,7 +96,8 @@ public class OrderController {
         return ResponseEntity.ok(
                 Objects.requireNonNullElse(
                         order,
-                        "해당 주문이 없어 주문취소가 불가능합니다.")
+                        "해당 주문이 없어 주문취소가 불가능합니다."
+                )
         );
     }
 
