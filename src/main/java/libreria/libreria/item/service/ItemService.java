@@ -103,14 +103,20 @@ public class ItemService {
     //== 상품 검색 ==//
     public Page<ItemResponse> getSearchListByTitle(String keyword, Pageable pageable) {
         return entityToDtoPage(
-                itemRepository.searchItemByTitle(keyword, pageable)
+                itemRepository.searchItemByTitle(
+                        keyword,
+                        pageable
+                )
         );
     }
 
     //== 카테고리 게시판 ==//
     public Page<ItemResponse> getCategoryList(String category, Pageable pageable) {
         return entityToDtoPage(
-                itemRepository.findCategoryListByCategory(category, pageable)
+                itemRepository.findCategoryListByCategory(
+                    category,
+                    pageable
+                )
         );
     }
 

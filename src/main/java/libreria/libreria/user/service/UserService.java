@@ -117,7 +117,9 @@ public class UserService implements UserDetailsService {
         ));
         userRequest.setAuth(Role.MEMBER);
 
-        userRepository.save(dtoToEntity(userRequest));
+        userRepository.save(
+                dtoToEntity(userRequest)
+        );
     }
 
     //== 로그인 - 세션과 컨텍스트홀더 사용 ==//
