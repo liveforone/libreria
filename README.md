@@ -120,7 +120,8 @@ form-data, application/json, requestpart
 /user/seller - get/post
 /user/mypage - get
 /user/address - get/post
-/user/itemlist - get, auth가 SELLER인 user만 가능
+/user/item-list - get, auth가 SELLER인 user만 가능
+/user/order-list - get, auth가 MEMBER인 user만 가능
 /user/prohibition - get
 /admin - get, auth가 ADMIN인 경우만 가능
 ```
@@ -144,7 +145,7 @@ form-data, application/json, requestpart
 ```
 ### orders
 ```
-/item/orderlist/{itemId} - get, myPage에서 조회할 나의 주문리스트
+/item/order-list/{itemId} - get, myPage에서 조회할 나의 주문리스트
 /item/order/{itemId} - get/post
 /item/cancel/{orderId} - get/post
 ```
@@ -280,22 +281,26 @@ ex) : 여행 -> travel 등
 * 해당 내용은 밑의 위키에서 확인 가능하다.
 * [Dto 위키](https://github.com/liveforone/libreria/wiki/Dto%EB%A1%9C-%EC%88%9C%ED%99%98%EC%B0%B8%EC%A1%B0-%ED%95%B4%EA%B2%B0)
 
+## 복잡한 함수나 변수에서의 가독성 향상
+* 긴 함수, 매개변수가 많은 함수, 긴 변수에서 가독성이 많이 떨어졌다.
+* 또한 매개변수로 문자열이 들어가는 경우에도 가독성이 많이떨어졌다.
+* 줄바꿈으로 가독성을 향상했고 이에대한 내용은 아래 링크에서 확인 가능하다.
+* [줄바꿈으로 가독성 향상](https://github.com/liveforone/study/blob/main/GoodCode/%EC%A4%84%EB%B0%94%EA%BF%88%EC%9C%BC%EB%A1%9C%20%EA%B0%80%EB%8F%85%EC%84%B1%20%ED%96%A5%EC%83%81.md)
+
 # 새롭게 적용한 점
-* 생성이나 수정시 원래 게시글로 리다이렉트 할 경우 pathVariable로 받았다면 상관없지만,
-* 그렇지 않았다면 서비스단에서 save()메소드 호출하고 .getId()로 id입력받아
-* 컨트롤러로 보낸다면 보다 쉽게 리다이렉트가 가능해진다. 
-* 권한 체크는 원래 계획은 화면단에서 끝내는 것이었는데,
-* 수정과 삭제는 민간함 부분인 만큼 화면, 서버단 모두에서 하는 것이 코드는 복잡해지더라도 좋다라는것을 알게되었다.
-* 유저를 포함한 모든 엔티티를 직접 리턴하지 않았다.
-* 민감한 컨텐츠가 없더라도, 연관관계 때문에 순환참조가 발생하는 것이 마음에 들지 않았다.
-* JsonBackReference 어노테이션이 아닌 dto 반환으로 순환 참조 문제를 완전히 해결했다.
-* json null인 컬럼도 그냥 리턴하는 것이 아닌 빼고 리턴하는 부분이 추가됨.
+* 생성이나 수정시 getId()로 id입력받아서 리다이렉트 간편히 처리했다.
+* 수정과 삭제 모두 서버에서도 권한 체크.
+* dto로 리턴하여 순환참조 및 민감한 내용 뷰에 전달 막음.
+* null인 컬럼 빼고 리턴하는 어노테이션 추가함.
 * 객체의 널체크 추가됨.
 * 회원 중복 체크 추가됨.
 * 회원 탈퇴, id, pw 변경 추가됨.
 * 북마크 기능 추가됨
 * 분기문 버블스타일에서 gate way 스타일로 변경
-* 신청 서비스 중복체크
-* and query 네이밍 수정 -> findOne엔티티이름
+* 신청 서비스 중복체크(쿼리 and절 이용)
+* 신청서비스 같은 and query 네이밍 수정 -> findOne엔티티이름
 * dto -> entity 메소드 서비스로직으로 이동 후 서비스 로직에서 처리
 * 반복되는 entity -> dto builder 를 함수화 해서 불필요한 반복을 줄임.
+* 뷰전달이 아닌 검증을 위해 값을 조회하는 것은 엔티티를 직접 리턴하여 성능 향상시킴.
+* 긴함수와 긴 변수는 줄바꿈하여 가독성을 올렸다.
+* orderlist -> order-list로 수정함. 모든 api 중 다음과 같은 형식이 있다면 전면 수정함.(오류발생시 api확인 유의)
