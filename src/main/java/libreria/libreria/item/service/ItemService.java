@@ -88,22 +88,30 @@ public class ItemService {
 
     //== 마이페이지 itemList ==//
     public List<ItemResponse> getItemListForMyPage(String email) {
-        return entityToDtoList(itemRepository.findItemListByEmail(email));
+        return entityToDtoList(
+                itemRepository.findItemListByEmail(email)
+        );
     }
 
     //== 상품 홈 itemList ==//
     public Page<ItemResponse> getItemList(Pageable pageable) {
-        return entityToDtoPage(itemRepository.findAll(pageable));
+        return entityToDtoPage(
+                itemRepository.findAll(pageable)
+        );
     }
 
     //== 상품 검색 ==//
-    public Page<ItemResponse> getSearchList(String keyword, Pageable pageable) {
-        return entityToDtoPage(itemRepository.searchByTitle(keyword, pageable));
+    public Page<ItemResponse> getSearchListByTitle(String keyword, Pageable pageable) {
+        return entityToDtoPage(
+                itemRepository.searchItemByTitle(keyword, pageable)
+        );
     }
 
     //== 카테고리 게시판 ==//
     public Page<ItemResponse> getCategoryList(String category, Pageable pageable) {
-        return entityToDtoPage(itemRepository.findCategoryListByCategory(category, pageable));
+        return entityToDtoPage(
+                itemRepository.findCategoryListByCategory(category, pageable)
+        );
     }
 
     //== 연관관계인 작성자(user)를 뽑아주는 경우에만 사용한다. ==//
@@ -113,7 +121,9 @@ public class ItemService {
 
     //== 상품 등록 ==//
     @Transactional
-    public Long saveItem(MultipartFile uploadFile, ItemRequest itemRequest, String user) throws IOException {
+    public Long saveItem(MultipartFile uploadFile, ItemRequest itemRequest, String user)
+            throws IOException
+    {
         Users users = userRepository.findByEmail(user);
         UUID uuid = UUID.randomUUID();
         String saveFileName = uuid + "_" + uploadFile.getOriginalFilename();
@@ -122,7 +132,8 @@ public class ItemService {
         itemRequest.setUsers(users);
         uploadFile.transferTo(new File(saveFileName));
 
-        return itemRepository.save(dtoToEntity(itemRequest)).getId();
+        return itemRepository.save(
+                dtoToEntity(itemRequest)).getId();
     }
 
     @Transactional
@@ -140,7 +151,9 @@ public class ItemService {
         itemRequest.setSaveFileName(item.getSaveFileName());
         itemRequest.setGood(item.getGood());
 
-        itemRepository.save(dtoToEntity(itemRequest));
+        itemRepository.save(
+                dtoToEntity(itemRequest)
+        );
     }
 
     //== 파일 수정2 - 파일 교체하며 ==//
@@ -156,6 +169,8 @@ public class ItemService {
         itemRequest.setSaveFileName(saveFileName);
 
         uploadFile.transferTo(new File(saveFileName));
-        itemRepository.save(dtoToEntity(itemRequest));
+        itemRepository.save(
+                dtoToEntity(itemRequest)
+        );
     }
 }

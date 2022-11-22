@@ -76,7 +76,9 @@ public class CommentService {
         commentRequest.setItem(item);
         commentRequest.setWriter(writer);
 
-        commentRepository.save(dtoToEntity(commentRequest));
+        commentRepository.save(
+                dtoToEntity(commentRequest)
+        );
     }
 
     /*
@@ -91,7 +93,9 @@ public class CommentService {
         commentRequest.setWriter(comment.getWriter());
         commentRequest.setItem(comment.getItem());
 
-        commentRepository.save(dtoToEntity(commentRequest));
+        commentRepository.save(
+                dtoToEntity(commentRequest)
+        );
 
         return comment.getItem().getId();
     }
@@ -102,10 +106,8 @@ public class CommentService {
     @Transactional
     public Long deleteComment(Long id) {
         Comment comment = commentRepository.findOneById(id);
-        Long itemId = comment.getItem().getId();
-
         commentRepository.deleteById(id);
 
-        return itemId;
+        return comment.getItem().getId();
     }
 }

@@ -70,19 +70,18 @@ public class OrderService {
 
     //== orderList for myPage ==//
     public List<OrdersResponse> getOrderListForMyPage(String email) {
-        return entityToDtoList(orderRepository.findOrderListByEmail(email));
+        return entityToDtoList(
+                orderRepository.findOrderListByEmail(email)
+        );
     }
 
     //== orderList for item detail ==//
     public List<OrdersResponse> getOrderListForItemDetail(Long itemId) {
-        return entityToDtoList(orderRepository.findOrderListByItemId(itemId));
+        return entityToDtoList(
+                orderRepository.findOrderListByItemId(itemId)
+        );
     }
 
-    public OrdersResponse getOrder(Long orderId) {
-        return entityToDtoDetail(orderRepository.findOneById(orderId));
-    }
-
-    //== 엔티티 직접 리턴 - 연관관계 참조를 위해 ==//
     public Orders getOrderEntity(Long orderId) {
         return orderRepository.findOneById(orderId);
     }
@@ -95,10 +94,9 @@ public class OrderService {
         int nowDate = LocalDate.now().getDayOfYear();
 
         if (nowDate <= ableDate) {
-            return 1;  //주문취소 가능, 1 == true라는 뜻
-        } else {
-            return -1;  //주문취소 불가능, -1 == False라는 뜻
+            return 1;  //주문취소 가능, 1
         }
+        return -1;  //주문취소 불가능, -1
     }
 
     //== 주문 ==//
@@ -111,9 +109,14 @@ public class OrderService {
         ordersRequest.setUsers(users);
         ordersRequest.setStatus(OrderStatus.ORDER);
 
-        itemRepository.minusRemaining(ordersRequest.getOrderCount(), itemId);
+        itemRepository.minusRemaining(
+                ordersRequest.getOrderCount(),
+                itemId
+        );
         userRepository.plusCount(user);
-        orderRepository.save(dtoToEntity(ordersRequest));
+        orderRepository.save(
+                dtoToEntity(ordersRequest)
+        );
     }
 
     //== 주문 취소 ==//
@@ -121,8 +124,14 @@ public class OrderService {
     public void cancelOrder(Long orderId) {
         Orders orders = orderRepository.findOneById(orderId);
 
-        orderRepository.updateStatus(OrderStatus.CANCEL, orderId);
-        itemRepository.plusRemaining(orders.getOrderCount(), orders.getItem().getId());
+        orderRepository.updateStatus(
+                OrderStatus.CANCEL,
+                orderId
+        );
+        itemRepository.plusRemaining(
+                orders.getOrderCount(),
+                orders.getItem().getId()
+        );
         userRepository.minusCount(orders.getUsers().getEmail());
     }
 }

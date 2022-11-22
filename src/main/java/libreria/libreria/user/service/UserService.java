@@ -32,24 +32,24 @@ public class UserService implements UserDetailsService {
 
     //== 이메일 중복 검증 ==//
     @Transactional(readOnly = true)
-    public int checkSameEmail(String email) {
+    public int checkDuplicateEmail(String email) {
         Users users = userRepository.findByEmail(email);
 
-        if (users == null) {  //중복 아님
+        if (users == null) {  //중복x
             return 1;
-        } else {  //중복임
+        } else {  //중복o
             return 0;
         }
     }
 
     //== 비밀번호 복호화 ==//
-    public int passwordDecode(String inputPassword, String password) {
+    public int checkPasswordMatching(String inputPassword, String password) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-        if(encoder.matches(inputPassword, password)) {
+        if(encoder.matches(inputPassword, password)) {  //match : 1
             return 1;
         } else {
-            return 0;
+            return 0;  //not match : 0
         }
     }
 
@@ -72,7 +72,7 @@ public class UserService implements UserDetailsService {
 
     //== 등급체크 후 pw없이 유저 정보 가져오기 ==//
     @Transactional(readOnly = true)
-    public UserResponse getUser(String email) {
+    public UserResponse getUserDto(String email) {
         Users users = userRepository.findByEmail(email);
 
         if (users == null) {
@@ -110,27 +110,33 @@ public class UserService implements UserDetailsService {
 
     //== 회원 가입 로직 ==//
     @Transactional
-    public Long joinUser(UserRequest userRequest) {
-        //비밀번호 암호화
+    public void joinUser(UserRequest userRequest) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        userRequest.setPassword(passwordEncoder.encode(userRequest.getPassword()));
-        userRequest.setAuth(Role.MEMBER);  //기본 권한 매핑
+        userRequest.setPassword(passwordEncoder.encode(
+                userRequest.getPassword()
+        ));
+        userRequest.setAuth(Role.MEMBER);
 
-        return userRepository.save(dtoToEntity(userRequest)).getId();
+        userRepository.save(dtoToEntity(userRequest));
     }
 
     //== 로그인 - 세션과 컨텍스트홀더 사용 ==//
     @Transactional
-    public void login(UserRequest userRequest, HttpSession httpSession) throws UsernameNotFoundException {
+    public void login(UserRequest userRequest, HttpSession httpSession)
+            throws UsernameNotFoundException
+    {
 
         String email = userRequest.getEmail();
         String password = userRequest.getPassword();
         Users user = userRepository.findByEmail(email);
 
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(email, password);
+        UsernamePasswordAuthenticationToken token =
+                new UsernamePasswordAuthenticationToken(email, password);
         SecurityContextHolder.getContext().setAuthentication(token);
-        httpSession.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
-                SecurityContextHolder.getContext());
+        httpSession.setAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+                SecurityContextHolder.getContext()
+        );
 
         List<GrantedAuthority> authorities = new ArrayList<>();
         /*
@@ -143,30 +149,39 @@ public class UserService implements UserDetailsService {
             userRepository.updateAuth(Role.ADMIN, userRequest.getEmail());
         } else if (user.getAuth() == Role.ADMIN) {
             authorities.add(new SimpleGrantedAuthority(Role.ADMIN.getValue()));
-        } else if (user.getAuth() == Role.MEMBER) {
-            authorities.add(new SimpleGrantedAuthority(Role.MEMBER.getValue()));
         } else if (user.getAuth() == Role.SELLER) {
             authorities.add(new SimpleGrantedAuthority(Role.SELLER.getValue()));
         }
-        new User(user.getEmail(), user.getPassword(), authorities);
+        authorities.add(new SimpleGrantedAuthority(Role.MEMBER.getValue()));
+
+        new User(
+                user.getEmail(),
+                user.getPassword(),
+                authorities
+        );
     }
 
     //== spring context 반환 메소드(필수) ==//
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email)
+            throws UsernameNotFoundException
+    {
         Users users = userRepository.findByEmail(email);
 
         List<GrantedAuthority> authorities = new ArrayList<>();
 
         if (users.getAuth() == Role.ADMIN) {  //어드민 아이디 지정됨, 비밀번호는 회원가입해야함
             authorities.add(new SimpleGrantedAuthority(Role.ADMIN.getValue()));
-        } else if (users.getAuth() == Role.MEMBER) {
-            authorities.add(new SimpleGrantedAuthority(Role.MEMBER.getValue()));
         } else if (users.getAuth() == Role.SELLER) {
             authorities.add(new SimpleGrantedAuthority(Role.SELLER.getValue()));
         }
+        authorities.add(new SimpleGrantedAuthority(Role.MEMBER.getValue()));
 
-        return new User(users.getEmail(), users.getPassword(), authorities);
+        return new User(
+                users.getEmail(),
+                users.getPassword(),
+                authorities
+        );
     }
 
     //== 권한 업데이트 ==//
@@ -175,25 +190,40 @@ public class UserService implements UserDetailsService {
         //권한을 업데이트(컨텍스트홀더 + db객체)
         //업데이트 한 권한 현재 객체에 저장, 로그아웃 하지 않아도 됨!
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        List<GrantedAuthority> updatedAuthorities = new ArrayList<>(auth.getAuthorities());
+        List<GrantedAuthority> updatedAuthorities =
+                new ArrayList<>(auth.getAuthorities());
         updatedAuthorities.add(new SimpleGrantedAuthority(Role.SELLER.getValue()));
-        Authentication newAuth = new UsernamePasswordAuthenticationToken(auth.getPrincipal(), auth.getCredentials(), updatedAuthorities);
+        Authentication newAuth =
+                new UsernamePasswordAuthenticationToken(
+                        auth.getPrincipal(),
+                        auth.getCredentials(),
+                        updatedAuthorities
+                );
         SecurityContextHolder.getContext().setAuthentication(newAuth);
         //컨텍스트홀더 업데이트 끝.
 
         //db업데이트
-        userRepository.updateAuth(Role.SELLER, email);
+        userRepository.updateAuth(
+                Role.SELLER,
+                email
+        );
     }
 
     //== 유저 주소 등록 ==//
     @Transactional
     public void regiAddress(String email, String address) {
-        userRepository.updateAddress(address, email);
+        userRepository.updateAddress(
+                address,
+                email
+        );
     }
 
     @Transactional
     public void updateEmail(String oldEmail, String newEmail) {
-        userRepository.updateEmail(oldEmail, newEmail);
+        userRepository.updateEmail(
+                oldEmail,
+                newEmail
+        );
     }
 
     @Transactional
@@ -202,7 +232,10 @@ public class UserService implements UserDetailsService {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String newPassword =  passwordEncoder.encode(inputPassword);
 
-        userRepository.updatePassword(id, newPassword);
+        userRepository.updatePassword(
+                id,
+                newPassword
+        );
     }
 
     @Transactional

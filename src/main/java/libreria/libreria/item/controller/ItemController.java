@@ -56,7 +56,8 @@ public class ItemController {
             }) Pageable pageable,
             @RequestParam("keyword") String keyword
     ) {
-        Page<ItemResponse> searchList = itemService.getSearchList(keyword, pageable);
+        Page<ItemResponse> searchList =
+                itemService.getSearchListByTitle(keyword, pageable);
 
         return ResponseEntity.ok(searchList);
     }
@@ -70,7 +71,8 @@ public class ItemController {
                     @SortDefault(sort = "id", direction = Sort.Direction.DESC)
             }) Pageable pageable
     ) {
-        Page<ItemResponse> categoryList = itemService.getCategoryList(category, pageable);
+        Page<ItemResponse> categoryList =
+                itemService.getCategoryList(category, pageable);
 
         return ResponseEntity.ok(categoryList);
     }
@@ -89,14 +91,21 @@ public class ItemController {
 
         if (uploadFile.isEmpty()) {
             log.info("파일이 없어서 포스팅 실패했습니다.");
-            return ResponseEntity.ok("파일이 존재하지 않아 포스팅이 실패했습니다. \n파일을 넣고 다시 등록해주세요");
+            return ResponseEntity
+                    .ok("파일이 존재하지 않아 포스팅이 실패했습니다. \n파일을 넣고 다시 등록해주세요");
         }
 
-        Long itemId = itemService.saveItem(uploadFile, itemRequest, principal.getName());
+        Long itemId = itemService.saveItem(
+                uploadFile,
+                itemRequest,
+                principal.getName()
+        );
         log.info("포스팅 성공!!");
 
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(URI.create("/item/" + itemId));
+        httpHeaders.setLocation(URI.create(
+                "/item/" + itemId
+        ));
 
         return ResponseEntity
                 .status(HttpStatus.MOVED_PERMANENTLY)
@@ -157,7 +166,9 @@ public class ItemController {
         }
 
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(URI.create("/item/" + id));
+        httpHeaders.setLocation(URI.create(
+                "/item/" + id
+        ));
 
         itemService.updateGood(id);
         log.info("좋아요 업데이트!!");
@@ -170,9 +181,14 @@ public class ItemController {
 
     @GetMapping("/item/edit/{id}")
     public ResponseEntity<?> editPage(@PathVariable("id") Long id) {
-        ItemResponse item = itemService.entityToDtoDetail(itemService.getItemEntity(id));
+        ItemResponse item
+                = itemService.entityToDtoDetail(itemService.getItemEntity(id));
 
-        return ResponseEntity.ok(Objects.requireNonNullElse(item, "해당 상품이 없어 수정이 불가능합니다."));
+        return ResponseEntity.ok(
+                Objects.requireNonNullElse(
+                        item,
+                        "해당 상품이 없어 수정이 불가능합니다.")
+        );
     }
 
     //== 상품 수정 ==//
@@ -189,8 +205,11 @@ public class ItemController {
             @RequestPart("itemRequest") ItemRequest itemRequest,
             Principal principal
     ) throws IllegalStateException, IOException {
+
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(URI.create("/item/" + id));
+        httpHeaders.setLocation(URI.create(
+                "/item/" + id
+        ));
 
         Item item = itemService.getItemEntity(id);
 
@@ -215,7 +234,11 @@ public class ItemController {
                     .build();
         }
 
-        itemService.editItemWithFile(id, itemRequest, uploadFile);
+        itemService.editItemWithFile(
+                id,
+                itemRequest,
+                uploadFile
+        );
         log.info("파일 수정 완료!!(파일교체 O)");
 
         return ResponseEntity

@@ -21,11 +21,11 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Item> findAll();
 
     @Query("select i from Item i join i.users where i.title like %:title%")
-    Page<Item> searchByTitle(@Param("title") String keyword, Pageable pageable);
+    Page<Item> searchItemByTitle(@Param("title") String keyword, Pageable pageable);
 
     /*
-    페이징을 위해 fetch를 포기했다.
-    다만, yml에 batch_fetch_size 저장해두어서 괜찮다!
+    페이징을 위해 fetch 를 포기했다.
+    다만, yml 에 batch_fetch_size 저장해두어서 괜찮다!
      */
     @Query("select i from Item i join i.users where i.category = :category")
     Page<Item> findCategoryListByCategory(@Param("category") String category, Pageable pageable);

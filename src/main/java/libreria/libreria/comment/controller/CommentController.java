@@ -60,9 +60,15 @@ public class CommentController {
         }
 
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(URI.create("/item/comment/" + itemId));
+        httpHeaders.setLocation(URI.create(
+                "/item/comment/" + itemId
+        ));
 
-        commentService.saveComment(itemId, commentRequest, principal.getName());
+        commentService.saveComment(
+                itemId,
+                commentRequest,
+                principal.getName()
+        );
         log.info("댓글 작성 성공!!");
 
         return ResponseEntity
@@ -73,9 +79,13 @@ public class CommentController {
 
     @GetMapping("/item/comment/edit/{id}")
     public ResponseEntity<?> editPage(@PathVariable("id") Long id) {
-        CommentResponse comment = commentService.entityToDtoDetail(commentService.getComment(id));
+        CommentResponse comment =
+                commentService.entityToDtoDetail(commentService.getComment(id));
 
-        return ResponseEntity.ok(Objects.requireNonNullElse(comment, "댓글을 찾을 수 없어 수정이 불가능합니다."));
+        return ResponseEntity.ok(Objects.requireNonNullElse(
+                comment,
+                "댓글을 찾을 수 없어 수정이 불가능합니다."
+        ));
     }
 
     /*
@@ -101,11 +111,16 @@ public class CommentController {
                     .build();
         }
 
-        Long itemId = commentService.editComment(id, commentRequest);
+        Long itemId = commentService.editComment(
+                id,
+                commentRequest
+        );
         log.info("리뷰 업데이트 성공!!");
 
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(URI.create("/item/comment/" + itemId));
+        httpHeaders.setLocation(URI.create(
+                "/item/comment/" + itemId
+        ));
 
         return ResponseEntity
                 .status(HttpStatus.MOVED_PERMANENTLY)
@@ -140,7 +155,9 @@ public class CommentController {
         log.info("댓글 " + id + "삭제완료!!");
 
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(URI.create("/item/comment/" + itemId));
+        httpHeaders.setLocation(URI.create(
+                "/item/comment/" + itemId
+        ));
 
         return ResponseEntity
                 .status(HttpStatus.MOVED_PERMANENTLY)

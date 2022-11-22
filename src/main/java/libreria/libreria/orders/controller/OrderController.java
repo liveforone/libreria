@@ -30,9 +30,10 @@ public class OrderController {
     item detail에서 게시글 수정 때문에 현재 접속 유저(principal)을 보내주었다.(판별을 위해)
     그것으로 판별된 유저(게시글 작성자)는 해당 링크로 접속해서 해당 상품의 주문리스트를 볼 수 있다.
      */
-    @GetMapping("/item/orderlist/{itemId}")
+    @GetMapping("/item/order-list/{itemId}")
     public ResponseEntity<List<OrdersResponse>> itemDetailOrderList(@PathVariable("itemId") Long itemId) {
-        List<OrdersResponse> ordersList = orderService.getOrderListForItemDetail(itemId);
+        List<OrdersResponse> ordersList =
+                orderService.getOrderListForItemDetail(itemId);
 
         return ResponseEntity.ok(ordersList);
     }
@@ -41,7 +42,9 @@ public class OrderController {
     public ResponseEntity<?> orderPage(@PathVariable("itemId") Long itemId) {
         Item item = itemService.getItemEntity(itemId);
 
-        return ResponseEntity.ok(Objects.requireNonNullElse(item, "해당 상품이 없어 주문이 불가능합니다."));
+        return ResponseEntity.ok(
+                Objects.requireNonNullElse(item, "해당 상품이 없어 주문이 불가능합니다.")
+        );
     }
 
     @PostMapping("/item/order/{itemId}")
@@ -69,7 +72,11 @@ public class OrderController {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(URI.create("/item/" + itemId));
 
-        orderService.saveOrder(itemId, ordersRequest, principal.getName());
+        orderService.saveOrder(
+                itemId,
+                ordersRequest,
+                principal.getName()
+        );
         log.info("주문 성공!!");
 
         return ResponseEntity
@@ -80,9 +87,14 @@ public class OrderController {
 
     @GetMapping("/item/cancel/{orderId}")
     public ResponseEntity<?> cancelPage(@PathVariable("orderId") Long orderId) {
-        OrdersResponse order = orderService.getOrder(orderId);
+        OrdersResponse order = orderService
+                .entityToDtoDetail(orderService.getOrderEntity(orderId));
 
-        return ResponseEntity.ok(Objects.requireNonNullElse(order, "해당 주문이 없어 주문취소가 불가능합니다."));
+        return ResponseEntity.ok(
+                Objects.requireNonNullElse(
+                        order,
+                        "해당 주문이 없어 주문취소가 불가능합니다.")
+        );
     }
 
     /*
@@ -97,7 +109,8 @@ public class OrderController {
         Orders orders = orderService.getOrderEntity(orderId);
 
         if (orders == null) {
-            return ResponseEntity.ok("해당 주문을 찾을 수 없어 주문 취소가 불가능합니다.");
+            return ResponseEntity
+                    .ok("해당 주문을 찾을 수 없어 주문 취소가 불가능합니다.");
         }
 
         if (!Objects.equals(principal.getName(), orders.getUsers().getEmail())) {
@@ -107,6 +120,7 @@ public class OrderController {
                     .build();
         }
 
+        //취소가능 : 1, 취소불가능 : -1
         int ableCancelDate = orderService.getOrderDay(orderId);
 
         if (ableCancelDate != 1) {  //주문 가능 날짜 판별
@@ -115,7 +129,9 @@ public class OrderController {
         }
 
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(URI.create("/user/orderlist"));
+        httpHeaders.setLocation(URI.create(
+                "/user/order-list"
+        ));
 
         orderService.cancelOrder(orderId);
         log.info("주문 취소 성공!!");
