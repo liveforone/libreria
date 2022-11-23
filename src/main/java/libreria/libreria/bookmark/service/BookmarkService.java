@@ -42,7 +42,9 @@ public class BookmarkService {
     }
 
     public Map<String, Object> getBookmarkList(String email) {
-        return entityToMap(bookmarkRepository.findByUserEmail(email));
+        return entityToMap(
+                bookmarkRepository.findByUserEmail(email)
+        );
     }
 
     public Bookmark getBookmarkDetail(Long itemId, String email) {

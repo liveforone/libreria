@@ -48,6 +48,7 @@ public class CommentService {
         for (Comment comment : commentList) {
             dtoList.add(dtoBuilder(comment));
         }
+
         return dtoList;
     }
 
@@ -57,7 +58,6 @@ public class CommentService {
         if (comment == null) {
             return null;
         }
-
         return dtoBuilder(comment);
     }
 

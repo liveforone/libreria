@@ -81,7 +81,6 @@ public class ItemService {
         if (item == null) {
             return null;
         }
-
         return dtoBuilder(item);
     }
 

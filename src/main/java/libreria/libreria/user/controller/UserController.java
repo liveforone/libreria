@@ -36,26 +36,28 @@ public class UserController {
     private final ItemService itemService;
     private final OrderService orderService;
 
-    //== 메인 페이지 ==//
+    //== ------ 상수 선언 부 ------ ==//
+    public final static int NOT_DUPLICATE = 1;
+    public final static int PASSWORD_MATCH = 1;
+
+
     @GetMapping("/")
     public ResponseEntity<?> home() {
         return ResponseEntity.ok("home");
     }
 
-    //== 회원가입 페이지 ==//
     @GetMapping("/user/signup")
     public ResponseEntity<?> signupPage() {
         return ResponseEntity.ok("회원가입페이지");
     }
 
-    //== 회원가입 처리 ==//
     @PostMapping("/user/signup")
     public ResponseEntity<?> signup(@RequestBody UserRequest userRequest) {
 
         int checkEmail =
-                userService.checkDuplicateEmail(userRequest.getEmail());  //중복o : 1, 중복x : 0
+                userService.checkDuplicateEmail(userRequest.getEmail());
 
-        if (checkEmail != 1) {
+        if (checkEmail != NOT_DUPLICATE) {
             return ResponseEntity.ok("중복되는 이메일이 있어 회원가입이 불가능합니다.");
 
         }
@@ -72,13 +74,11 @@ public class UserController {
                 .build();
     }
 
-    //== 로그인 페이지 ==//
     @GetMapping("/user/login")
     public ResponseEntity<?> loginPage() {
         return ResponseEntity.ok("로그인 페이지");
     }
 
-    //== 로그인 ==//
     @PostMapping("/user/login")
     public ResponseEntity<?> loginPage(
             @RequestBody UserRequest userRequest,
@@ -90,20 +90,22 @@ public class UserController {
             return ResponseEntity.ok("회원 조회가 되지않아 로그인이 불가능합니다.");
         }
 
-        //match : 1, not match : 0
         int checkPassword = userService.checkPasswordMatching(
                         userRequest.getPassword(),
                         users.getPassword()
-                );
+        );
 
-        if (checkPassword != 1) {
+        if (checkPassword != PASSWORD_MATCH) {
             return ResponseEntity.ok("비밀번호가 다릅니다. 다시 시도하세요.");
         }
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(URI.create("/"));
 
-        userService.login(userRequest, session);
+        userService.login(
+                userRequest,
+                session
+        );
         log.info("로그인 성공!");
 
         return ResponseEntity
@@ -117,7 +119,6 @@ public class UserController {
     /user/logout 으로 post 하면 된다.
      */
 
-    //== 이메일 변경 ==//
     @PostMapping("/user/change-email")
     public ResponseEntity<?> changeEmail(
             @RequestBody UserChangeEmailRequest userRequest,
@@ -131,18 +132,17 @@ public class UserController {
                     .ok("해당 유저를 조회할 수 없어 이메일 변경이 불가능합니다.");
         }
 
-        if (duplicateUser != null) {  //이메일 중복
+        if (duplicateUser != null) {
             return ResponseEntity
                     .ok("해당 이메일이 이미 존재합니다. 다시 입력해주세요");
         }
 
-        //match : 1, not match : 0
         int checkPassword = userService.checkPasswordMatching(
                         userRequest.getPassword(),
                         users.getPassword()
-                );
+        );
 
-        if (checkPassword != 1) {  //PW check
+        if (checkPassword != PASSWORD_MATCH) {
             log.info("비밀번호 일치하지 않음.");
             return ResponseEntity.ok("비밀번호가 다릅니다. 다시 입력해주세요.");
         }
@@ -177,13 +177,12 @@ public class UserController {
                     .ok("해당 유저를 조회할 수 없어 비밀번호 변경이 불가능합니다.");
         }
 
-        //match : 1, not match : 0
         int checkPassword = userService.checkPasswordMatching(
                         userRequest.getOldPassword(),
                         users.getPassword()
-                );
+        );
 
-        if (checkPassword != 1) {  //PW check
+        if (checkPassword != PASSWORD_MATCH) {
             log.info("비밀번호 일치하지 않음.");
             return ResponseEntity.ok("비밀번호가 다릅니다. 다시 입력해주세요.");
         }
@@ -217,13 +216,12 @@ public class UserController {
             return ResponseEntity.ok("해당 유저를 조회할 수 없어 탈퇴가 불가능합니다.");
         }
 
-        //match : 1, not match : 0
         int checkPassword = userService.checkPasswordMatching(
                 password,
                 users.getPassword()
         );
 
-        if (checkPassword != 1) {  //PW check
+        if (checkPassword != PASSWORD_MATCH) {
             log.info("비밀번호 일치하지 않음.");
             return ResponseEntity.ok("비밀번호가 다릅니다. 다시 입력해주세요.");
         }
@@ -251,8 +249,8 @@ public class UserController {
 
         return ResponseEntity
                 .status(HttpStatus.MOVED_PERMANENTLY)
-                .headers(httpHeaders).
-                build();
+                .headers(httpHeaders)
+                .build();
     }
 
     /*

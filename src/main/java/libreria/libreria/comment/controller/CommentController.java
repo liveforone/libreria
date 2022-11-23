@@ -52,7 +52,7 @@ public class CommentController {
             @PathVariable("itemId") Long itemId,
             @RequestBody CommentRequest commentRequest,
             Principal principal
-            ) {
+    ) {
         Item item = itemService.getItemEntity(itemId);
 
         if (item == null) {
@@ -131,7 +131,7 @@ public class CommentController {
     }
 
     /*
-    삭제전 js의 alert로 삭제할 것이지 물어보기.
+    삭제전 js의 alert 로 삭제할 것이지 물어보기.
     수정과 마찬가지로 뷰에서 작성자와 현재 유저 판별이 끝남.
     그러나 민감한 부분인 만큼 다시 서버단에서 작성자와 현재 유저를 판별한다.
      */

@@ -26,8 +26,10 @@ public class OrderController {
     private final OrderService orderService;
     private final ItemService itemService;
 
+    public final static int CAN_CANCEL = 1;
+
     /*
-    item detail에서 게시글 수정 때문에 현재 접속 유저(principal)을 보내주었다.(판별을 위해)
+    item detail 에서 게시글 수정 때문에 현재 접속 유저(principal)을 보내주었다.(판별을 위해)
     그것으로 판별된 유저(게시글 작성자)는 해당 링크로 접속해서 해당 상품의 주문리스트를 볼 수 있다.
      */
     @GetMapping("/item/order-list/{itemId}")
@@ -102,7 +104,7 @@ public class OrderController {
     }
 
     /*
-    myPage에 접근은 principal로 현재 객체를 가져와서 접근한다.
+    my-page 에 접근은 principal 로 현재 객체를 가져와서 접근한다.
     그럼에도 주문을 취소하는 로직은 민감한 부분이므로 본 유저와 현재 객체를 판별한다.
      */
     @PostMapping("/item/cancel/{orderId}")
@@ -127,7 +129,7 @@ public class OrderController {
         //취소가능 : 1, 취소불가능 : -1
         int ableCancelDate = orderService.getOrderDay(orderId);
 
-        if (ableCancelDate != 1) {  //주문 가능 날짜 판별
+        if (ableCancelDate != CAN_CANCEL) {  //주문 가능 날짜 판별
             log.info("주문 취소 실패!!");
             return ResponseEntity.ok("주문 한지 7일이 지나 주문 취소가 불가능합니다.");
         }

@@ -87,7 +87,7 @@ public class ItemController {
             @RequestPart MultipartFile uploadFile,
             @RequestPart("itemRequest") ItemRequest itemRequest,
             Principal principal
-            ) throws IllegalStateException, IOException {
+    ) throws IllegalStateException, IOException {
 
         if (uploadFile.isEmpty()) {
             log.info("파일이 없어서 포스팅 실패했습니다.");
@@ -115,10 +115,10 @@ public class ItemController {
 
     /*
     수정 버튼은 해당 상품의 등록자에게만 보여주기 위해서 현재 로그인 유저를 함께 보낸다.
-    remaining을 보고 뷰에서는 0일경우 주문 버튼을 품절로 바꾼다.
-    즉 remaining을 보고 뷰에서 주문 가능한지 불가능한지 판별한다.
+    remaining 을 보고 뷰에서는 0일경우 주문 버튼을 품절로 바꾼다.
+    즉 remaining 을 보고 뷰에서 주문 가능한지 불가능한지 판별한다.
     엔티티 리턴시 사용자 엔티티 전부가 적나라하게 노출되기 때문에
-    엔티티에서 유저 이메일 빼고, dto로 따로 뷰에 노출시키는 방식을 사용했다.
+    엔티티에서 유저 이메일 빼고, dto 로 따로 뷰에 노출시키는 방식을 사용했다.
     성능보단 보안이 우선 !!
      */
     @GetMapping("/item/{id}")
@@ -146,7 +146,7 @@ public class ItemController {
 
     //== 상품 상세조회 이미지 ==//
     /*
-    뷰단에서 이미지 태그(html tag)를 이용해서 해당 url을 걸면된다.
+    뷰단에서 이미지 태그(html tag)를 이용해서 해당 api 를 걸면된다.
      */
     @GetMapping("/item/image/{saveFileName}")
     @ResponseBody

@@ -26,6 +26,9 @@ public class OrderService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
+    public final static int CAN_CANCEL = 1;
+    public final static int CANT_CANCEL = 0;
+
     //== OrderResponse builder method ==//
     public OrdersResponse dtoBuilder(Orders orders) {
         return OrdersResponse.builder()
@@ -64,7 +67,6 @@ public class OrderService {
         if (orders == null) {
             return null;
         }
-
         return dtoBuilder(orders);
     }
 
@@ -94,9 +96,9 @@ public class OrderService {
         int nowDate = LocalDate.now().getDayOfYear();
 
         if (nowDate <= ableDate) {
-            return 1;  //주문취소 가능, 1
+            return CAN_CANCEL;
         }
-        return -1;  //주문취소 불가능, -1
+        return CANT_CANCEL;
     }
 
     //== 주문 ==//
