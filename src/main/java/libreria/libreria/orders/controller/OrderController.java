@@ -26,7 +26,7 @@ public class OrderController {
     private final OrderService orderService;
     private final ItemService itemService;
 
-    public final static int CAN_CANCEL = 1;
+    public static final int CAN_CANCEL = 1;
 
     /*
     item detail 에서 게시글 수정 때문에 현재 접속 유저(principal)을 보내주었다.(판별을 위해)

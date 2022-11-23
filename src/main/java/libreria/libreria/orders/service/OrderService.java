@@ -26,8 +26,8 @@ public class OrderService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
-    public final static int CAN_CANCEL = 1;
-    public final static int CANT_CANCEL = 0;
+    public static final int CAN_CANCEL = 1;
+    public static final int CANT_CANCEL = 0;
 
     //== OrderResponse builder method ==//
     public OrdersResponse dtoBuilder(Orders orders) {

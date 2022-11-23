@@ -30,10 +30,10 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
-    public final static int DUPLICATE = 0;
-    public final static int NOT_DUPLICATE = 1;
-    public final static int PASSWORD_MATCH = 1;
-    public final static int PASSWORD_NOT_MATCH = 0;
+    public static final int DUPLICATE = 0;
+    public static final int NOT_DUPLICATE = 1;
+    public static final int PASSWORD_MATCH = 1;
+    public static final int PASSWORD_NOT_MATCH = 0;
 
     //== 이메일 중복 검증 ==//
     @Transactional(readOnly = true)
