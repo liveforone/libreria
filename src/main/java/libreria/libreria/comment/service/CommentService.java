@@ -70,7 +70,11 @@ public class CommentService {
     }
 
     @Transactional
-    public void saveComment(Long itemId, CommentRequest commentRequest, String writer) {
+    public void saveComment(
+            Long itemId,
+            CommentRequest commentRequest,
+            String writer
+    ) {
         Item item = itemRepository.findOneById(itemId);
 
         commentRequest.setItem(item);

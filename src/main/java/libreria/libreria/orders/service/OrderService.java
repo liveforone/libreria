@@ -103,7 +103,11 @@ public class OrderService {
 
     //== 주문 ==//
     @Transactional
-    public void saveOrder(Long itemId, OrdersRequest ordersRequest, String user) {
+    public void saveOrder(
+            Long itemId,
+            OrdersRequest ordersRequest,
+            String user
+    ) {
         Item item = itemRepository.findOneById(itemId);
         Users users = userRepository.findByEmail(user);
 

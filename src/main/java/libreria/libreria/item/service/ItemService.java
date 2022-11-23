@@ -126,9 +126,11 @@ public class ItemService {
 
     //== 상품 등록 ==//
     @Transactional
-    public Long saveItem(MultipartFile uploadFile, ItemRequest itemRequest, String user)
-            throws IOException
-    {
+    public Long saveItem(
+            MultipartFile uploadFile,
+            ItemRequest itemRequest,
+            String user
+    ) throws IOException {
         Users users = userRepository.findByEmail(user);
         UUID uuid = UUID.randomUUID();
         String saveFileName = uuid + "_" + uploadFile.getOriginalFilename();
@@ -163,7 +165,11 @@ public class ItemService {
 
     //== 파일 수정2 - 파일 교체하며 ==//
     @Transactional
-    public void editItemWithFile(Long id, ItemRequest itemRequest, MultipartFile uploadFile) throws IOException {
+    public void editItemWithFile(
+            Long id,
+            ItemRequest itemRequest,
+            MultipartFile uploadFile
+    ) throws IOException {
         UUID uuid = UUID.randomUUID();
         String saveFileName = uuid + "_" + uploadFile.getOriginalFilename();
         Item item = itemRepository.findOneById(id);
