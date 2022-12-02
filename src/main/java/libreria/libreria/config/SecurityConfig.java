@@ -47,8 +47,10 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider())  //provider 등록
                 .authorizeRequests()
                 // 페이지 권한 설정
-                .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers("/").permitAll()
+                .antMatchers("/user/signup").permitAll()
+                .antMatchers("/user/login").permitAll()
+                .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers("/item/post").hasRole("SELLER")
                 .anyRequest().authenticated()
                 .and() // 로그아웃 설정
