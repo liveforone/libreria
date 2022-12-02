@@ -6,6 +6,7 @@ import libreria.libreria.item.dto.ItemResponse;
 import libreria.libreria.item.repository.ItemRepository;
 import libreria.libreria.user.model.Users;
 import libreria.libreria.user.repository.UserRepository;
+import libreria.libreria.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -78,7 +79,7 @@ public class ItemService {
     //== entity -> dto 편의메소드3 - 엔티티 하나 ==//
     public ItemResponse entityToDtoDetail(Item item) {
 
-        if (item == null) {
+        if (CommonUtils.isNull(item)) {
             return null;
         }
         return dtoBuilder(item);

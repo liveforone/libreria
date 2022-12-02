@@ -6,6 +6,7 @@ import libreria.libreria.item.model.Item;
 import libreria.libreria.item.repository.ItemRepository;
 import libreria.libreria.user.model.Users;
 import libreria.libreria.user.repository.UserRepository;
+import libreria.libreria.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,7 +75,7 @@ public class BookmarkService {
 
         Bookmark bookmark = bookmarkRepository.findOneBookmark(users, item);
 
-        if (bookmark != null) {
+        if (!CommonUtils.isNull(bookmark)) {
             bookmarkRepository.deleteById(bookmark.getId());
         }
     }

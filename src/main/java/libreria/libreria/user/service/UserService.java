@@ -5,6 +5,7 @@ import libreria.libreria.user.dto.UserRequest;
 import libreria.libreria.user.dto.UserResponse;
 import libreria.libreria.user.model.Users;
 import libreria.libreria.user.repository.UserRepository;
+import libreria.libreria.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -30,10 +31,10 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
-    public static final int DUPLICATE = 0;
-    public static final int NOT_DUPLICATE = 1;
-    public static final int PASSWORD_MATCH = 1;
-    public static final int PASSWORD_NOT_MATCH = 0;
+    private static final int DUPLICATE = 0;
+    private static final int NOT_DUPLICATE = 1;
+    private static final int PASSWORD_MATCH = 1;
+    private static final int PASSWORD_NOT_MATCH = 0;
 
     //== 이메일 중복 검증 ==//
     @Transactional(readOnly = true)
@@ -41,7 +42,7 @@ public class UserService implements UserDetailsService {
 
         Users users = userRepository.findByEmail(email);
 
-        if (users == null) {
+        if (CommonUtils.isNull(users)) {
             return NOT_DUPLICATE;
         }
         return DUPLICATE;
@@ -79,23 +80,29 @@ public class UserService implements UserDetailsService {
     public UserResponse getUserDto(String email) {
         Users users = userRepository.findByEmail(email);
 
-        if (users == null) {
+        if (CommonUtils.isNull(users)) {
             return null;
         }
 
         String rank;
-        // 등급 체크
-        if (users.getCount() >= 120) {
+
+        if (users.getCount() >= 120) {  // 등급 체크
             rank = "DIA";
-        } else if (users.getCount() >= 60) {
-            rank = "PLATINUM";
-        } else if (users.getCount() >= 30) {
-            rank = "GOLD";
-        } else if (users.getCount() >= 15) {
-            rank = "SILVER";
-        } else {
-            rank = "BRONZE";
         }
+
+        if (users.getCount() >= 60) {
+            rank = "PLATINUM";
+        }
+
+        if (users.getCount() >= 30) {
+            rank = "GOLD";
+        }
+
+        if (users.getCount() >= 15) {
+            rank = "SILVER";
+        }
+
+        rank = "BRONZE";
 
         return UserResponse.builder()
                 .id(users.getId())
@@ -131,7 +138,6 @@ public class UserService implements UserDetailsService {
     public void login(UserRequest userRequest, HttpSession httpSession)
             throws UsernameNotFoundException
     {
-
         String email = userRequest.getEmail();
         String password = userRequest.getPassword();
         Users user = userRepository.findByEmail(email);
@@ -153,9 +159,13 @@ public class UserService implements UserDetailsService {
         if (user.getAuth() != Role.ADMIN && ("admin@libreria.com").equals(email)) {
             authorities.add(new SimpleGrantedAuthority(Role.ADMIN.getValue()));
             userRepository.updateAuth(Role.ADMIN, userRequest.getEmail());
-        } else if (user.getAuth() == Role.ADMIN) {
+        }
+
+        if (user.getAuth() == Role.ADMIN) {
             authorities.add(new SimpleGrantedAuthority(Role.ADMIN.getValue()));
-        } else if (user.getAuth() == Role.SELLER) {
+        }
+
+        if (user.getAuth() == Role.SELLER) {
             authorities.add(new SimpleGrantedAuthority(Role.SELLER.getValue()));
         }
         authorities.add(new SimpleGrantedAuthority(Role.MEMBER.getValue()));
@@ -178,7 +188,9 @@ public class UserService implements UserDetailsService {
 
         if (users.getAuth() == Role.ADMIN) {  //어드민 아이디 지정됨, 비밀번호는 회원가입해야함
             authorities.add(new SimpleGrantedAuthority(Role.ADMIN.getValue()));
-        } else if (users.getAuth() == Role.SELLER) {
+        }
+
+        if (users.getAuth() == Role.SELLER) {
             authorities.add(new SimpleGrantedAuthority(Role.SELLER.getValue()));
         }
         authorities.add(new SimpleGrantedAuthority(Role.MEMBER.getValue()));

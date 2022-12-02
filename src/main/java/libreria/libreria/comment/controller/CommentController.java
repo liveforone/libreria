@@ -6,6 +6,7 @@ import libreria.libreria.comment.model.Comment;
 import libreria.libreria.comment.service.CommentService;
 import libreria.libreria.item.model.Item;
 import libreria.libreria.item.service.ItemService;
+import libreria.libreria.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -55,7 +56,7 @@ public class CommentController {
     ) {
         Item item = itemService.getItemEntity(itemId);
 
-        if (item == null) {
+        if (CommonUtils.isNull(item)) {
             return ResponseEntity.ok("해당 상품이 없어 댓글 작성이 불가능합니다.");
         }
 
@@ -102,7 +103,7 @@ public class CommentController {
     ) {
         Comment comment = commentService.getComment(id);
 
-        if (comment == null) {
+        if (CommonUtils.isNull(comment)) {
             return ResponseEntity.ok("댓글을 찾을 수 없어 수정이 불가능합니다.");
         }
 
@@ -142,7 +143,7 @@ public class CommentController {
     ) {
         Comment comment = commentService.getComment(id);
 
-        if (comment == null) {
+        if (CommonUtils.isNull(comment)) {
             return ResponseEntity.ok("댓글을 찾을 수 없어 삭제가 불가능합니다.");
         }
 

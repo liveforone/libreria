@@ -9,6 +9,7 @@ import libreria.libreria.orders.dto.OrdersResponse;
 import libreria.libreria.orders.repository.OrderRepository;
 import libreria.libreria.user.model.Users;
 import libreria.libreria.user.repository.UserRepository;
+import libreria.libreria.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,8 +27,8 @@ public class OrderService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
-    public static final int CAN_CANCEL = 1;
-    public static final int CANT_CANCEL = 0;
+    private static final int CAN_CANCEL = 1;
+    private static final int CANT_CANCEL = 0;
 
     //== OrderResponse builder method ==//
     public OrdersResponse dtoBuilder(Orders orders) {
@@ -64,7 +65,7 @@ public class OrderService {
     //== entity -> dto 편의 메소드2 - detail ==//
     public OrdersResponse entityToDtoDetail(Orders orders) {
 
-        if (orders == null) {
+        if (CommonUtils.isNull(orders)) {
             return null;
         }
         return dtoBuilder(orders);

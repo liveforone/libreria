@@ -6,6 +6,7 @@ import libreria.libreria.orders.dto.OrdersRequest;
 import libreria.libreria.orders.dto.OrdersResponse;
 import libreria.libreria.orders.model.Orders;
 import libreria.libreria.orders.service.OrderService;
+import libreria.libreria.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -26,16 +27,21 @@ public class OrderController {
     private final OrderService orderService;
     private final ItemService itemService;
 
-    public static final int CAN_CANCEL = 1;
+    private static final int CAN_CANCEL = 1;
+    private static final int SOLD_OUT = 0;
 
     /*
     item detail 에서 게시글 수정 때문에 현재 접속 유저(principal)을 보내주었다.(판별을 위해)
     그것으로 판별된 유저(게시글 작성자)는 해당 링크로 접속해서 해당 상품의 주문리스트를 볼 수 있다.
      */
     @GetMapping("/item/order-list/{itemId}")
-    public ResponseEntity<List<OrdersResponse>> itemDetailOrderList(@PathVariable("itemId") Long itemId) {
+    public ResponseEntity<?> itemDetailOrderList(@PathVariable("itemId") Long itemId) {
         List<OrdersResponse> ordersList =
                 orderService.getOrderListForItemDetail(itemId);
+
+        if (CommonUtils.isNull(ordersList)) {
+            return ResponseEntity.ok("주문자가 아직 없습니다.");
+        }
 
         return ResponseEntity.ok(ordersList);
     }
@@ -60,16 +66,16 @@ public class OrderController {
             ) {
         Item item = itemService.getItemEntity(itemId);
 
-        if (item == null) {
+        if (CommonUtils.isNull(item)) {
             return ResponseEntity.ok("해당 상품이 없어 주문이 불가능합니다.");
         }
 
-        if (item.getRemaining() <= 0) {
+        if (item.getRemaining() <= SOLD_OUT) {
             log.info("품절입니다.");
             return ResponseEntity.ok("품절된 상품입니다. 상품 홈으로 돌아가주세요");
         }
 
-        if (item.getRemaining() - ordersRequest.getOrderCount() <= 0) {
+        if (item.getRemaining() - ordersRequest.getOrderCount() <= SOLD_OUT) {
             log.info("주문 불가능, 수량이 재고보다 많음.");
             return ResponseEntity.ok("주문 수량이 재고보다 많아 주문이 불가능합니다.");
         }
@@ -114,7 +120,7 @@ public class OrderController {
     ) {
         Orders orders = orderService.getOrderEntity(orderId);
 
-        if (orders == null) {
+        if (CommonUtils.isNull(orders)) {
             return ResponseEntity
                     .ok("해당 주문을 찾을 수 없어 주문 취소가 불가능합니다.");
         }
@@ -126,7 +132,6 @@ public class OrderController {
                     .build();
         }
 
-        //취소가능 : 1, 취소불가능 : -1
         int ableCancelDate = orderService.getOrderDay(orderId);
 
         if (ableCancelDate != CAN_CANCEL) {  //주문 가능 날짜 판별

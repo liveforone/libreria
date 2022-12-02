@@ -4,6 +4,7 @@ import libreria.libreria.item.model.Item;
 import libreria.libreria.item.dto.ItemRequest;
 import libreria.libreria.item.dto.ItemResponse;
 import libreria.libreria.item.service.ItemService;
+import libreria.libreria.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -128,7 +129,7 @@ public class ItemController {
     ) {
         Item entity = itemService.getItemEntity(id);
 
-        if (entity == null) {
+        if (CommonUtils.isNull(entity)) {
             return ResponseEntity.ok("해당 상품이 없어 조회가 불가능합니다.");
         }
 
@@ -161,7 +162,7 @@ public class ItemController {
     public ResponseEntity<?> updateGood(@PathVariable("id") Long id) {
         Item item = itemService.getItemEntity(id);
 
-        if (item == null) {
+        if (CommonUtils.isNull(item)) {
             return ResponseEntity.ok("해당 상품이 없어 좋아요가 불가능합니다.");
         }
 
@@ -214,7 +215,7 @@ public class ItemController {
 
         Item item = itemService.getItemEntity(id);
 
-        if (item == null) {
+        if (CommonUtils.isNull(item)) {
             return ResponseEntity.ok("해당 상품이 없어 수정이 불가능합니다.");
         }
 

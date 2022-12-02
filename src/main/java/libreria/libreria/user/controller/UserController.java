@@ -11,6 +11,7 @@ import libreria.libreria.user.dto.UserRequest;
 import libreria.libreria.user.dto.UserResponse;
 import libreria.libreria.user.model.Users;
 import libreria.libreria.user.service.UserService;
+import libreria.libreria.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -37,8 +38,8 @@ public class UserController {
     private final OrderService orderService;
 
     //== ------ 상수 선언 부 ------ ==//
-    public static final int NOT_DUPLICATE = 1;
-    public static final int PASSWORD_MATCH = 1;
+    private static final int NOT_DUPLICATE = 1;
+    private static final int PASSWORD_MATCH = 1;
 
 
     @GetMapping("/")
@@ -86,7 +87,7 @@ public class UserController {
     ) {
         Users users = userService.getUserEntity(userRequest.getEmail());
 
-        if (users == null) {
+        if (CommonUtils.isNull(users)) {
             return ResponseEntity.ok("회원 조회가 되지않아 로그인이 불가능합니다.");
         }
 
@@ -127,12 +128,12 @@ public class UserController {
         Users users = userService.getUserEntity(principal.getName());
         Users duplicateUser = userService.getUserEntity(userRequest.getEmail());
 
-        if (users == null) {
+        if (CommonUtils.isNull(users)) {
             return ResponseEntity
                     .ok("해당 유저를 조회할 수 없어 이메일 변경이 불가능합니다.");
         }
 
-        if (duplicateUser != null) {
+        if (!CommonUtils.isNull(duplicateUser)) {
             return ResponseEntity
                     .ok("해당 이메일이 이미 존재합니다. 다시 입력해주세요");
         }
@@ -172,7 +173,7 @@ public class UserController {
     ) {
         Users users = userService.getUserEntity(principal.getName());
 
-        if (users == null) {
+        if (CommonUtils.isNull(users)) {
             return ResponseEntity
                     .ok("해당 유저를 조회할 수 없어 비밀번호 변경이 불가능합니다.");
         }
@@ -212,7 +213,7 @@ public class UserController {
     ) {
         Users users = userService.getUserEntity(principal.getName());
 
-        if (users == null) {
+        if (CommonUtils.isNull(users)) {
             return ResponseEntity.ok("해당 유저를 조회할 수 없어 탈퇴가 불가능합니다.");
         }
 
@@ -258,7 +259,7 @@ public class UserController {
     MEMBER일 경우 주문 리스트 버튼을 띄어서 /user/orderlist로 연결하고
     SELLER일 경우 등록 상품 버튼을 띄어서 /user/itemlist 로 연결한다.
      */
-    @GetMapping("/user/mypage")  //rest-api에서는 대문자를 쓰지않는다.
+    @GetMapping("/user/my-page")  //rest-api에서는 대문자를 쓰지않는다.
     public ResponseEntity<?> myPage(Principal principal) {
         UserResponse dto = userService.getUserDto(principal.getName());
 
@@ -286,7 +287,7 @@ public class UserController {
     ) {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(URI.create(
-                "/user/mypage"
+                "/user/my-page"
         ));
         String user = principal.getName();
 

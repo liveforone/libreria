@@ -6,6 +6,7 @@ import libreria.libreria.comment.dto.CommentResponse;
 import libreria.libreria.comment.repository.CommentRepository;
 import libreria.libreria.item.model.Item;
 import libreria.libreria.item.repository.ItemRepository;
+import libreria.libreria.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,7 +56,7 @@ public class CommentService {
     //== entity -> dto 편의 메소드2 - detail ==//
     public CommentResponse entityToDtoDetail(Comment comment) {
 
-        if (comment == null) {
+        if (CommonUtils.isNull(comment)) {
             return null;
         }
         return dtoBuilder(comment);
