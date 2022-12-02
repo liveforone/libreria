@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Orders, Long> {
 
-    //== 주문리스트 for mypage orderList - 이중 페치 조인 ==//
+    //== 주문리스트 for my-page orderList - 이중 페치 조인 ==//
     @Query("select o from Orders o join fetch o.item join fetch o.users u where u.email = :email")
     List<Orders> findOrderListByEmail(@Param("email") String email);
 

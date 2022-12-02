@@ -70,7 +70,7 @@ public class OrderService {
         return dtoBuilder(orders);
     }
 
-    //== orderList for myPage ==//
+    //== orderList for my-page ==//
     public List<OrdersResponse> getOrderListForMyPage(String email) {
         return entityToDtoList(
                 orderRepository.findOrderListByEmail(email)
