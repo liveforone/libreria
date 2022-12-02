@@ -49,9 +49,8 @@ public class SecurityConfig {
                 // 페이지 권한 설정
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers("/").permitAll()
-                .antMatchers("/item").authenticated()
                 .antMatchers("/item/post").hasRole("SELLER")
-                .antMatchers("/mypage").authenticated()
+                .anyRequest().authenticated()
                 .and() // 로그아웃 설정
                 .logout()
                 .logoutRequestMatcher(new AntPathRequestMatcher("/user/logout"))
