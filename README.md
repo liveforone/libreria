@@ -28,11 +28,11 @@
 * 상품등록시 SELLER 권한이 필요하다.
 * 회원은 등급이 있다. UserService의 getUser() 함수에서 등급을 체크한다.
 * 브론즈, 실버(주문건수 15건 이상), 골드(30건), 플래티넘(60건), 다이아(120건)
-* 등급은 mypage에서 나의 등급과 리뷰에서 게시자의 등급을 볼 수 있다.
+* 등급은 my-page에서 나의 등급과 리뷰에서 게시자의 등급을 볼 수 있다.
 * 도서의 사진은 1개만 첨부 가능하다. 도서는 많은 상품 이미지를 사실 필요로 하지않는다.(여타 사이트들도 마찬가지)
 * 또한 사진이 없다면 도서의 등록은 불가능하다.(forbidden)
 * 게시글 마다 리뷰게시판이 존재한다.
-* 게시글의 게시자는 주문 리스트를 보는 것이가능하다. mypage와 비슷한 로직이다.
+* 게시글의 게시자는 주문 리스트를 보는 것이가능하다. my-page와 비슷한 로직이다.
 * 상품을 주문 할 때마다 상품 주문 횟수는 증가한다.
 * 카테고리와 상품 홈 모두 좋아요(good) 순으로 페이징 정렬한다.
 * 주문을 취소할때에는 반드시 주문한지 7일 이내에 취소해야한다.
@@ -118,7 +118,7 @@ form-data, application/json, requestpart
 /user/login - get/post
 /user/logout - post
 /user/seller - get/post
-/user/mypage - get
+/user/my-page - get
 /user/address - get/post
 /user/item-list - get, auth가 SELLER인 user만 가능
 /user/order-list - get, auth가 MEMBER인 user만 가능
@@ -201,11 +201,11 @@ LocalDate로 저장된 생성날자에서 getDayOfYear()를 사용해서 365일�
 주문취소는 status를 CANCEL로 바꾸는 것이지, 절대 db에서 삭제가 아니다!!
 ```
 
-## mypage
+## my-page
 * 마이페이지에서는 권한에 따라 주문/등록상품 리스트를 볼 수 있다.
 * 유저의 권한을 체크해서 SELLER일경우 /user/itemlist 를 볼 수 있고,
 * 권한이 MEMBER일경우 /user/orderlist를 볼 수 있다.
-* mypage에 서버에서 유저의 정보를 넘겨줄떄 auth도 같이 넘겨진다.
+* my-page에 서버에서 유저의 정보를 넘겨줄떄 auth도 같이 넘겨진다.
 * 이떄 화면단에서는 auth를 판별해서 MEMBER일 경우 주문리스트 버튼을, SELLER일 경우 등록상품 버튼을 보여준다.
 * 유저 정보를 보내준다.
 * 주소는 언제나 등록(수정)이 가능하다.
@@ -236,7 +236,7 @@ ex) : 여행 -> travel 등
 ```
 
 ## json 리턴시 null column 생략
-* /user/mypage 가 대표적인 예시인데,
+* /user/my-page 가 대표적인 예시인데,
 * address가 처음 가입하고 등록하지 않은경우 null일 수가 있다.
 * 따라서 이때 null을 반환하고 싶지 않기때문에
 * @JsonInclude(JsonInclude.Include.NON_NULL) 를 사용하여서 null인 column을 빼고 리턴했다.
@@ -305,3 +305,5 @@ ex) : 여행 -> travel 등
 * 긴함수와 긴 변수는 줄바꿈하여 가독성을 올렸다.
 * orderlist -> order-list로 수정함. 모든 api 중 다음과 같은 형식이 있다면 전면 수정함.(오류발생시 api확인 유의)
 * 상수로 매직넘버 대체하여 가독성 향상
+* 널체크는 util 클래스를 만들고 커스텀 함수인 isNull()을 이용해 처리하는 것으로 전면 수정함.
+* [널체크 커스텀 함수](https://github.com/liveforone/study/blob/main/GoodCode/%EA%B0%9D%EC%B2%B4%20null%EC%B2%B4%ED%81%AC%EC%99%80%20%EC%A4%91%EB%B3%B5%EC%B2%B4%ED%81%AC.md)
