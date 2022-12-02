@@ -307,3 +307,4 @@ ex) : 여행 -> travel 등
 * 상수로 매직넘버 대체하여 가독성 향상
 * 널체크는 util 클래스를 만들고 커스텀 함수인 isNull()을 이용해 처리하는 것으로 전면 수정함.
 * [널체크 커스텀 함수](https://github.com/liveforone/study/blob/main/GoodCode/%EA%B0%9D%EC%B2%B4%20null%EC%B2%B4%ED%81%AC%EC%99%80%20%EC%A4%91%EB%B3%B5%EC%B2%B4%ED%81%AC.md)
+* HttpHeaders 축약 함수로 가독성 및 중복코드 제거함.
