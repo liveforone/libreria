@@ -1,5 +1,8 @@
 package libreria.libreria.utility;
 
+import org.springframework.http.HttpHeaders;
+
+import java.net.URI;
 import java.util.List;
 
 public class CommonUtils {
@@ -27,5 +30,16 @@ public class CommonUtils {
         }
 
         return false;
+    }
+
+    /*
+     * HttpHeaders 만드는 함수
+     * 리다이렉트시 ResponseEntity.header()에 넣어주면 된다.
+     */
+    public static HttpHeaders makeHeader(String uri) {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setLocation(URI.create(uri));
+
+        return httpHeaders;
     }
 }

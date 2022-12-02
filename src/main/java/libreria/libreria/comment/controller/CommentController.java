@@ -60,10 +60,8 @@ public class CommentController {
             return ResponseEntity.ok("해당 상품이 없어 댓글 작성이 불가능합니다.");
         }
 
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(URI.create(
-                "/item/comment/" + itemId
-        ));
+        String url = "/item/comment/" + itemId;
+        HttpHeaders httpHeaders = CommonUtils.makeHeader(url);
 
         commentService.saveComment(
                 itemId,
@@ -120,10 +118,8 @@ public class CommentController {
         );
         log.info("리뷰 업데이트 성공!!");
 
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(URI.create(
-                "/item/comment/" + itemId
-        ));
+        String url = "/item/comment/" + itemId;
+        HttpHeaders httpHeaders = CommonUtils.makeHeader(url);
 
         return ResponseEntity
                 .status(HttpStatus.MOVED_PERMANENTLY)
@@ -157,10 +153,8 @@ public class CommentController {
         Long itemId = commentService.deleteComment(id);
         log.info("댓글 " + id + "삭제완료!!");
 
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(URI.create(
-                "/item/comment/" + itemId
-        ));
+        String url = "/item/comment/" + itemId;
+        HttpHeaders httpHeaders = CommonUtils.makeHeader(url);
 
         return ResponseEntity
                 .status(HttpStatus.MOVED_PERMANENTLY)

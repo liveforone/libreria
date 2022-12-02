@@ -103,10 +103,8 @@ public class ItemController {
         );
         log.info("포스팅 성공!!");
 
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(URI.create(
-                "/item/" + itemId
-        ));
+        String url = "/item/" + itemId;
+        HttpHeaders httpHeaders = CommonUtils.makeHeader(url);
 
         return ResponseEntity
                 .status(HttpStatus.MOVED_PERMANENTLY)
@@ -166,10 +164,8 @@ public class ItemController {
             return ResponseEntity.ok("해당 상품이 없어 좋아요가 불가능합니다.");
         }
 
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(URI.create(
-                "/item/" + id
-        ));
+        String url = "/item/" + id;
+        HttpHeaders httpHeaders = CommonUtils.makeHeader(url);
 
         itemService.updateGood(id);
         log.info("좋아요 업데이트!!");
@@ -208,10 +204,8 @@ public class ItemController {
             Principal principal
     ) throws IllegalStateException, IOException {
 
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(URI.create(
-                "/item/" + id
-        ));
+        String url = "/item/" + id;
+        HttpHeaders httpHeaders = CommonUtils.makeHeader(url);
 
         Item item = itemService.getItemEntity(id);
 

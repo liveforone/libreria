@@ -80,8 +80,8 @@ public class OrderController {
             return ResponseEntity.ok("주문 수량이 재고보다 많아 주문이 불가능합니다.");
         }
 
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(URI.create("/item/" + itemId));
+        String url = "/item/" + itemId;
+        HttpHeaders httpHeaders = CommonUtils.makeHeader(url);
 
         orderService.saveOrder(
                 itemId,
@@ -139,10 +139,8 @@ public class OrderController {
             return ResponseEntity.ok("주문 한지 7일이 지나 주문 취소가 불가능합니다.");
         }
 
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(URI.create(
-                "/user/order-list"
-        ));
+        String url = "/user/order-list";
+        HttpHeaders httpHeaders = CommonUtils.makeHeader(url);
 
         orderService.cancelOrder(orderId);
         log.info("주문 취소 성공!!");

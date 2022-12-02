@@ -63,8 +63,8 @@ public class UserController {
 
         }
 
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(URI.create("/"));
+        String url = "/";
+        HttpHeaders httpHeaders = CommonUtils.makeHeader(url);
 
         userService.joinUser(userRequest);
         log.info("회원 가입 성공!!");
@@ -100,8 +100,8 @@ public class UserController {
             return ResponseEntity.ok("비밀번호가 다릅니다. 다시 시도하세요.");
         }
 
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(URI.create("/"));
+        String url = "/";
+        HttpHeaders httpHeaders = CommonUtils.makeHeader(url);
 
         userService.login(
                 userRequest,
@@ -148,10 +148,8 @@ public class UserController {
             return ResponseEntity.ok("비밀번호가 다릅니다. 다시 입력해주세요.");
         }
 
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(URI.create(
-                "/user/logout"
-        ));
+        String url = "/user/logout";
+        HttpHeaders httpHeaders = CommonUtils.makeHeader(url);
 
         userService.updateEmail(
                 principal.getName(),
@@ -188,10 +186,8 @@ public class UserController {
             return ResponseEntity.ok("비밀번호가 다릅니다. 다시 입력해주세요.");
         }
 
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(URI.create(
-                "/user/logout"
-        ));
+        String url = "/user/logout";
+        HttpHeaders httpHeaders = CommonUtils.makeHeader(url);
 
         userService.updatePassword(
                 users.getId(),
@@ -242,8 +238,8 @@ public class UserController {
     //== 판매자 등록 - 권한 업데이트 ==//
     @PostMapping("/user/seller")
     public ResponseEntity<?> seller(Principal principal) {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(URI.create("/"));
+        String url = "/";
+        HttpHeaders httpHeaders = CommonUtils.makeHeader(url);
 
         userService.updateAuth(principal.getName());
         log.info("seller 권한 업데이트 성공!!");
@@ -285,10 +281,9 @@ public class UserController {
             @RequestBody String address,
             Principal principal
     ) {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(URI.create(
-                "/user/my-page"
-        ));
+        String url = "/user/my-page";
+        HttpHeaders httpHeaders = CommonUtils.makeHeader(url);
+
         String user = principal.getName();
 
         userService.regiAddress(user, address);
