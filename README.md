@@ -1,7 +1,7 @@
 # libreria
 > 온라인 서점
 
-## 사용 기술 스택
+# 1. 사용 기술 스택
 * Language : Java17
 * DB : MySql
 * ORM : Spring Data Jpa
@@ -10,7 +10,7 @@
 * Gradle
 * Spring Boot 2.7.4
 
-## 설명
+# 2. 설명
 * 온라인 서점 사이트이다.
 * rest-api서버이다.
 * rest-api 서버이지만 클라이언트 단에서 어떻게 반응해야하는지에 대한 설계도 모두 적혀있다.
@@ -20,7 +20,7 @@
 * 깃의 wiki에 사용기술들과 설명들에 대해 자세히 기록했다.  
 * [나의 위키](https://github.com/liveforone/libreria/wiki)
 
-# 설계
+# 3. 설계
 * 유저는 ADMIN, MEMBER, SELLER 세 종류가 있다.
 * 어드민페이지에서 모든 유저를 확인 가능하다.
 * 유저이름은 모두 이메일 기반이다.
@@ -110,7 +110,7 @@ form-data, application/json, requestpart
 }
 ```
 
-## api 설계
+## API 설계
 ### users
 ```
 / - get
@@ -150,7 +150,16 @@ form-data, application/json, requestpart
 /item/cancel/{orderId} - get/post
 ```
 
-# 상세 설명
+# 4. 스타일 가이드
+* 유저를 제외한 모든 객체의 [널체크](https://github.com/liveforone/study/blob/main/GoodCode/%EA%B0%9D%EC%B2%B4%20null%EC%B2%B4%ED%81%AC%EC%99%80%20%EC%A4%91%EB%B3%B5%EC%B2%B4%ED%81%AC.md) + 중복 체크
+* 함수와 긴 변수의 경우 [줄바꿈 가이드](https://github.com/liveforone/study/blob/main/GoodCode/%EC%A4%84%EB%B0%94%EA%BF%88%EC%9C%BC%EB%A1%9C%20%EA%B0%80%EB%8F%85%EC%84%B1%20%ED%96%A5%EC%83%81.md)를 지켜 작성한다.
+* 매직넘버는 전부 [상수화](https://github.com/liveforone/study/blob/main/GoodCode/%EB%A7%A4%EC%A7%81%EB%84%98%EB%B2%84%20%EC%83%81%EC%88%98%EB%A1%9C%20%ED%95%B4%EA%B2%B0.md)해서 처리한다.
+* 분기문은 반드시 [게이트웨이](https://github.com/liveforone/study/blob/main/GoodCode/%EB%8D%94%20%EC%A2%8B%EC%9D%80%20%EB%B6%84%EA%B8%B0%EB%AC%B8.md) 스타일로 한다.
+* entity -> dto 변환 편의메소드는 리스트나 페이징이 아닌 경우 컨트롤러에서 사용한다.
+* [HttpHeader 처리 함수](https://github.com/liveforone/study/blob/main/GoodCode/HttpHeaders%20%EC%83%9D%EC%84%B1%20%ED%95%A8%EC%88%98.md)
+* 스프링 시큐리티에서 권한 체크 필요한것만 매핑하고 나머지(anyRequest)는 authenticated 로 설정해 코드를 줄이고 가독성 향상한다.
+
+# 5. 상세 설명
 ## 파일 저장 전략(이미지 저장전략)
 ```
 random uuid + "_" + originalFileName = saveFileName 으로 저장
@@ -247,7 +256,7 @@ ex) : 여행 -> travel 등
 * 현재 보낼 객체(데이터) : body
 * 나머지 이름은 키와 값의 이름이 동일.
 
-# 나의 고민
+# 6. 나의 고민
 ## 어드민의 로그인
 * 어드민은 회사에서 지정한 admin@libreria.com 라는 지정된 이메일을 사용한다.
 * 따라서 처음에 로그인 시 저 아이디로 접근한다면 최초 회원가입 시 모든 유저는 MEMBER 권한을 부여받기때문에,
@@ -287,7 +296,7 @@ ex) : 여행 -> travel 등
 * 줄바꿈으로 가독성을 향상했고 이에대한 내용은 아래 링크에서 확인 가능하다.
 * [줄바꿈으로 가독성 향상](https://github.com/liveforone/study/blob/main/GoodCode/%EC%A4%84%EB%B0%94%EA%BF%88%EC%9C%BC%EB%A1%9C%20%EA%B0%80%EB%8F%85%EC%84%B1%20%ED%96%A5%EC%83%81.md)
 
-# 새롭게 적용한 점
+# 7. 새롭게 적용한 점
 * 생성이나 수정시 getId()로 id입력받아서 리다이렉트 간편히 처리했다.
 * 수정과 삭제 모두 서버에서도 권한 체크.
 * dto로 리턴하여 순환참조 및 민감한 내용 뷰에 전달 막음.
@@ -308,3 +317,5 @@ ex) : 여행 -> travel 등
 * 널체크는 util 클래스를 만들고 커스텀 함수인 isNull()을 이용해 처리하는 것으로 전면 수정함.
 * [널체크 커스텀 함수](https://github.com/liveforone/study/blob/main/GoodCode/%EA%B0%9D%EC%B2%B4%20null%EC%B2%B4%ED%81%AC%EC%99%80%20%EC%A4%91%EB%B3%B5%EC%B2%B4%ED%81%AC.md)
 * HttpHeaders 축약 함수로 가독성 및 중복코드 제거함.
+* 시큐리티에 권한 매핑 필요한 것 아닌 나머지(anyRequest)에 authenticated로 설정해 가독성 향상함.
+* 문서(readme)에 스타일 가이드 추가함.
