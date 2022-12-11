@@ -62,7 +62,10 @@ public class ItemService {
 
     //== entity -> dto 편의 메소드1 - 리스트형식 ==//
     public List<ItemResponse> entityToDtoList(List<Item> itemList) {
-        return itemList.stream().map(this::dtoBuilder).collect(Collectors.toList());
+        return itemList
+                .stream()
+                .map(this::dtoBuilder)
+                .collect(Collectors.toList());
     }
 
     //== entity ->  dto 편의메소드2 - 페이징 형식 ==//
