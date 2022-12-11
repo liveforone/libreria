@@ -319,3 +319,4 @@ ex) : 여행 -> travel 등
 * HttpHeaders 축약 함수로 가독성 및 중복코드 제거함.
 * 시큐리티에 권한 매핑 필요한 것 아닌 나머지(anyRequest)에 authenticated로 설정해 가독성 향상함.
 * 문서(readme)에 스타일 가이드 추가함.
+* 향상된 for-each 문 람다 for-each 문으로 변경하여 가독성 향상
