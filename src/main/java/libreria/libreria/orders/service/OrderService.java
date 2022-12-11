@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -53,13 +54,7 @@ public class OrderService {
 
     //== entity -> dto 편의 메소드1 - 리스트 ==//
     public List<OrdersResponse> entityToDtoList(List<Orders> ordersList) {
-        List<OrdersResponse> dtoList = new ArrayList<>();
-
-        for (Orders orders : ordersList) {
-            dtoList.add(dtoBuilder(orders));
-        }
-
-        return dtoList;
+        return ordersList.stream().map(this::dtoBuilder).collect(Collectors.toList());
     }
 
     //== entity -> dto 편의 메소드2 - detail ==//

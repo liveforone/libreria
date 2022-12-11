@@ -16,9 +16,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -62,13 +62,7 @@ public class ItemService {
 
     //== entity -> dto 편의 메소드1 - 리스트형식 ==//
     public List<ItemResponse> entityToDtoList(List<Item> itemList) {
-        List<ItemResponse> dtoList = new ArrayList<>();
-
-        for (Item item : itemList) {
-            dtoList.add(dtoBuilder(item));
-        }
-
-        return dtoList;
+        return itemList.stream().map(this::dtoBuilder).collect(Collectors.toList());
     }
 
     //== entity ->  dto 편의메소드2 - 페이징 형식 ==//

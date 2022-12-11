@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -44,13 +45,7 @@ public class CommentService {
 
     //== entity -> dto 편의메소드1 - 리스트 ==//
     public List<CommentResponse> entityToDtoList(List<Comment> commentList) {
-        List<CommentResponse> dtoList = new ArrayList<>();
-
-        for (Comment comment : commentList) {
-            dtoList.add(dtoBuilder(comment));
-        }
-
-        return dtoList;
+        return commentList.stream().map(this::dtoBuilder).collect(Collectors.toList());
     }
 
     //== entity -> dto 편의 메소드2 - detail ==//
@@ -63,7 +58,9 @@ public class CommentService {
     }
 
     public List<CommentResponse> getCommentList(Long id) {
-        return entityToDtoList(commentRepository.findCommentByItemId(id));
+        return entityToDtoList(
+                commentRepository.findCommentByItemId(id)
+        );
     }
 
     public Comment getComment(Long id) {
