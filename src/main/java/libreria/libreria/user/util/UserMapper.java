@@ -16,25 +16,4 @@ public class UserMapper {
                 .address(userRequest.getAddress())
                 .build();
     }
-
-    //== user rank check ==//
-    public static String rankCheck(int count) {
-        if (count >= 120) {
-            return "DIA";
-        }
-
-        if (count >= 60) {
-            return "PLATINUM";
-        }
-
-        if (count >= 30) {
-            return "GOLD";
-        }
-
-        if (count >= 15) {
-            return "SILVER";
-        }
-
-        return "BRONZE";
-    }
 }

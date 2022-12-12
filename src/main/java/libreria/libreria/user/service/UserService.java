@@ -6,6 +6,7 @@ import libreria.libreria.user.dto.UserResponse;
 import libreria.libreria.user.model.Users;
 import libreria.libreria.user.repository.UserRepository;
 import libreria.libreria.user.util.UserMapper;
+import libreria.libreria.user.util.UserUtils;
 import libreria.libreria.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -34,8 +35,6 @@ public class UserService implements UserDetailsService {
 
     private static final int DUPLICATE = 0;
     private static final int NOT_DUPLICATE = 1;
-    private static final int PASSWORD_MATCH = 1;
-    private static final int PASSWORD_NOT_MATCH = 0;
 
     //== 이메일 중복 검증 ==//
     @Transactional(readOnly = true)
@@ -48,18 +47,6 @@ public class UserService implements UserDetailsService {
         }
         return DUPLICATE;
     }
-
-    //== 비밀번호 복호화 ==//
-    public int checkPasswordMatching(String inputPassword, String password) {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-
-        if(encoder.matches(inputPassword, password)) {
-            return PASSWORD_MATCH;
-        }
-        return PASSWORD_NOT_MATCH;
-    }
-
-
 
     @Transactional(readOnly = true)
     public Users getUserEntity(String email) {
@@ -76,7 +63,7 @@ public class UserService implements UserDetailsService {
         }
 
         //user rank check
-        String rank = UserMapper.rankCheck(users.getCount());
+        String rank = UserUtils.rankCheck(users.getCount());
 
         return UserResponse.builder()
                 .id(users.getId())
