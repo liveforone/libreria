@@ -158,6 +158,7 @@ form-data, application/json, requestpart
 * entity -> dto 변환 편의메소드는 리스트나 페이징이 아닌 경우 컨트롤러에서 사용한다.
 * [HttpHeader 처리 함수](https://github.com/liveforone/study/blob/main/GoodCode/HttpHeaders%20%EC%83%9D%EC%84%B1%20%ED%95%A8%EC%88%98.md)
 * 스프링 시큐리티에서 권한 체크 필요한것만 매핑하고 나머지(anyRequest)는 authenticated 로 설정해 코드를 줄이고 가독성 향상한다.
+* Mapper 클래스에서 dtoBuilder 메소드의 경우 반드시 private 으로 설정해 접근을 제한한다.
 
 # 5. 상세 설명
 ## 파일 저장 전략(이미지 저장전략)
