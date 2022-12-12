@@ -320,3 +320,4 @@ ex) : 여행 -> travel 등
 * 시큐리티에 권한 매핑 필요한 것 아닌 나머지(anyRequest)에 authenticated로 설정해 가독성 향상함.
 * 문서(readme)에 스타일 가이드 추가함.
 * 향상된 for-each 문 람다 for-each 문으로 변경하여 가독성 향상
+* [dto 직접조회](https://github.com/liveforone/study/blob/main/GoodCode/dto%20%EC%A7%81%EC%A0%91%EC%A1%B0%ED%9A%8C%EB%A5%BC%20%EC%95%A0%EC%9A%A9%ED%95%98%EC%9E%90.md)로 가독성과 성능 향상함.
