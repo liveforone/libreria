@@ -4,15 +4,14 @@ import libreria.libreria.comment.model.Comment;
 import libreria.libreria.comment.dto.CommentRequest;
 import libreria.libreria.comment.dto.CommentResponse;
 import libreria.libreria.comment.repository.CommentRepository;
+import libreria.libreria.comment.util.CommentMapper;
 import libreria.libreria.item.model.Item;
 import libreria.libreria.item.repository.ItemRepository;
-import libreria.libreria.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,36 +21,8 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final ItemRepository itemRepository;
 
-    //== CommentResponse builder method ==//
-    public CommentResponse dtoBuilder(Comment comment) {
-        return CommentResponse.builder()
-                .id(comment.getId())
-                .writer(comment.getWriter())
-                .content(comment.getContent())
-                .createdDate(comment.getCreatedDate())
-                .build();
-    }
-
-    //== dto -> entity ==//
-    public Comment dtoToEntity(CommentRequest comment) {
-        return Comment.builder()
-                    .id(comment.getId())
-                    .writer(comment.getWriter())
-                    .content(comment.getContent())
-                    .item(comment.getItem())
-                    .build();
-    }
-
-    //== entity -> dto 편의메소드1 - 리스트 ==//
-    public List<CommentResponse> entityToDtoList(List<Comment> commentList) {
-        return commentList
-                .stream()
-                .map(this::dtoBuilder)
-                .collect(Collectors.toList());
-    }
-
     public List<CommentResponse> getCommentList(Long id) {
-        return entityToDtoList(
+        return CommentMapper.entityToDtoList(
                 commentRepository.findCommentByItemId(id)
         );
     }
@@ -76,7 +47,7 @@ public class CommentService {
         commentRequest.setWriter(writer);
 
         commentRepository.save(
-                dtoToEntity(commentRequest)
+                CommentMapper.dtoToEntity(commentRequest)
         );
     }
 
@@ -93,7 +64,7 @@ public class CommentService {
         commentRequest.setItem(comment.getItem());
 
         commentRepository.save(
-                dtoToEntity(commentRequest)
+                CommentMapper.dtoToEntity(commentRequest)
         );
 
         return comment.getItem().getId();

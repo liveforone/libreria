@@ -4,9 +4,9 @@ import libreria.libreria.item.model.Item;
 import libreria.libreria.item.dto.ItemRequest;
 import libreria.libreria.item.dto.ItemResponse;
 import libreria.libreria.item.repository.ItemRepository;
+import libreria.libreria.item.util.ItemMapper;
 import libreria.libreria.user.model.Users;
 import libreria.libreria.user.repository.UserRepository;
-import libreria.libreria.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,88 +18,32 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ItemService {
 
-
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
-    //== ItemResponse builder method ==//
-    public ItemResponse dtoBuilder(Item item) {
-        return ItemResponse.builder()
-                .id(item.getId())
-                .title(item.getTitle())
-                .content(item.getContent())
-                .author(item.getAuthor())
-                .saveFileName(item.getSaveFileName())
-                .category(item.getCategory())
-                .remaining(item.getRemaining())
-                .year(item.getYear())
-                .good(item.getGood())
-                .build();
-    }
-
-    //== dto -> entity ==//
-    public Item dtoToEntity(ItemRequest item) {
-        return Item.builder()
-                .id(item.getId())
-                .title(item.getTitle())
-                .content(item.getContent())
-                .users(item.getUsers())
-                .author(item.getAuthor())
-                .saveFileName(item.getSaveFileName())
-                .remaining(item.getRemaining())
-                .category(item.getCategory())
-                .year(item.getYear())
-                .good(item.getGood())
-                .build();
-    }
-
-    //== entity -> dto 편의 메소드1 - 리스트형식 ==//
-    public List<ItemResponse> entityToDtoList(List<Item> itemList) {
-        return itemList
-                .stream()
-                .map(this::dtoBuilder)
-                .collect(Collectors.toList());
-    }
-
-    //== entity ->  dto 편의메소드2 - 페이징 형식 ==//
-    public Page<ItemResponse> entityToDtoPage(Page<Item> itemList) {
-        return itemList.map(this::dtoBuilder);
-    }
-
-    //== entity -> dto 편의메소드3 - 엔티티 하나 ==//
-    public ItemResponse entityToDtoDetail(Item item) {
-
-        if (CommonUtils.isNull(item)) {
-            return null;
-        }
-        return dtoBuilder(item);
-    }
-
-
     //== 마이페이지 itemList ==//
     public List<ItemResponse> getItemListForMyPage(String email) {
-        return entityToDtoList(
+        return ItemMapper.entityToDtoList(
                 itemRepository.findItemListByEmail(email)
         );
     }
 
     //== 상품 홈 itemList ==//
     public Page<ItemResponse> getItemList(Pageable pageable) {
-        return entityToDtoPage(
+        return ItemMapper.entityToDtoPage(
                 itemRepository.findAll(pageable)
         );
     }
 
     //== 상품 검색 ==//
     public Page<ItemResponse> getSearchListByTitle(String keyword, Pageable pageable) {
-        return entityToDtoPage(
+        return ItemMapper.entityToDtoPage(
                 itemRepository.searchItemByTitle(
                         keyword,
                         pageable
@@ -109,7 +53,7 @@ public class ItemService {
 
     //== 카테고리 게시판 ==//
     public Page<ItemResponse> getCategoryList(String category, Pageable pageable) {
-        return entityToDtoPage(
+        return ItemMapper.entityToDtoPage(
                 itemRepository.findCategoryListByCategory(
                     category,
                     pageable
@@ -142,7 +86,7 @@ public class ItemService {
         uploadFile.transferTo(new File(saveFileName));
 
         return itemRepository.save(
-                dtoToEntity(itemRequest)).getId();
+                ItemMapper.dtoToEntity(itemRequest)).getId();
     }
 
     @Transactional
@@ -161,7 +105,7 @@ public class ItemService {
         itemRequest.setGood(item.getGood());
 
         itemRepository.save(
-                dtoToEntity(itemRequest)
+                ItemMapper.dtoToEntity(itemRequest)
         );
     }
 
@@ -183,7 +127,7 @@ public class ItemService {
 
         uploadFile.transferTo(new File(saveFileName));
         itemRepository.save(
-                dtoToEntity(itemRequest)
+                ItemMapper.dtoToEntity(itemRequest)
         );
     }
 }

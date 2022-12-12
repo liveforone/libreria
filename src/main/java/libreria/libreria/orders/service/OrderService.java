@@ -7,6 +7,7 @@ import libreria.libreria.orders.model.Orders;
 import libreria.libreria.orders.dto.OrdersRequest;
 import libreria.libreria.orders.dto.OrdersResponse;
 import libreria.libreria.orders.repository.OrderRepository;
+import libreria.libreria.orders.util.OrdersMapper;
 import libreria.libreria.user.model.Users;
 import libreria.libreria.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,45 +29,16 @@ public class OrderService {
     private static final int CAN_CANCEL = 1;
     private static final int CANT_CANCEL = 0;
 
-    //== OrderResponse builder method ==//
-    public OrdersResponse dtoBuilder(Orders orders) {
-        return OrdersResponse.builder()
-                .id(orders.getId())
-                .status(orders.getStatus())
-                .orderCount(orders.getOrderCount())
-                .createdDate(orders.getCreatedDate())
-                .build();
-    }
-
-    //== dto -> entity ==//
-    public Orders dtoToEntity(OrdersRequest order) {
-        return Orders.builder()
-                .id(order.getId())
-                .item(order.getItem())
-                .users(order.getUsers())
-                .status(order.getStatus())
-                .orderCount(order.getOrderCount())
-                .build();
-    }
-
-    //== entity -> dto 편의 메소드1 - 리스트 ==//
-    public List<OrdersResponse> entityToDtoList(List<Orders> ordersList) {
-        return ordersList
-                .stream()
-                .map(this::dtoBuilder)
-                .collect(Collectors.toList());
-    }
-
     //== orderList for my-page ==//
     public List<OrdersResponse> getOrderListForMyPage(String email) {
-        return entityToDtoList(
+        return OrdersMapper.entityToDtoList(
                 orderRepository.findOrderListByEmail(email)
         );
     }
 
     //== orderList for item detail ==//
     public List<OrdersResponse> getOrderListForItemDetail(Long itemId) {
-        return entityToDtoList(
+        return OrdersMapper.entityToDtoList(
                 orderRepository.findOrderListByItemId(itemId)
         );
     }
@@ -113,7 +84,7 @@ public class OrderService {
         );
         userRepository.plusCount(user);
         orderRepository.save(
-                dtoToEntity(ordersRequest)
+                OrdersMapper.dtoToEntity(ordersRequest)
         );
     }
 

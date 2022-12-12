@@ -4,6 +4,7 @@ import libreria.libreria.item.model.Item;
 import libreria.libreria.item.dto.ItemRequest;
 import libreria.libreria.item.dto.ItemResponse;
 import libreria.libreria.item.service.ItemService;
+import libreria.libreria.item.util.ItemMapper;
 import libreria.libreria.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -133,7 +134,7 @@ public class ItemController {
         String user = principal.getName();
         Map<String, Object> map = new HashMap<>();
         String writer = entity.getUsers().getEmail();
-        ItemResponse item = itemService.entityToDtoDetail(entity);
+        ItemResponse item = ItemMapper.entityToDtoDetail(entity);
 
         map.put("user", user);
         map.put("body", item);

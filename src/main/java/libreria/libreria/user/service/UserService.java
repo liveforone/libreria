@@ -5,6 +5,7 @@ import libreria.libreria.user.dto.UserRequest;
 import libreria.libreria.user.dto.UserResponse;
 import libreria.libreria.user.model.Users;
 import libreria.libreria.user.repository.UserRepository;
+import libreria.libreria.user.util.UserMapper;
 import libreria.libreria.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -58,17 +59,7 @@ public class UserService implements UserDetailsService {
         return PASSWORD_NOT_MATCH;
     }
 
-    //== dto -> entity ==//
-    public Users dtoToEntity(UserRequest users) {
-        return Users.builder()
-                .id(users.getId())
-                .email(users.getEmail())
-                .password(users.getPassword())
-                .auth(users.getAuth())
-                .count(users.getCount())
-                .address(users.getAddress())
-                .build();
-    }
+
 
     @Transactional(readOnly = true)
     public Users getUserEntity(String email) {
@@ -84,25 +75,8 @@ public class UserService implements UserDetailsService {
             return null;
         }
 
-        String rank;
-
-        if (users.getCount() >= 120) {  // 등급 체크
-            rank = "DIA";
-        }
-
-        if (users.getCount() >= 60) {
-            rank = "PLATINUM";
-        }
-
-        if (users.getCount() >= 30) {
-            rank = "GOLD";
-        }
-
-        if (users.getCount() >= 15) {
-            rank = "SILVER";
-        }
-
-        rank = "BRONZE";
+        //user rank check
+        String rank = UserMapper.rankCheck(users.getCount());
 
         return UserResponse.builder()
                 .id(users.getId())
@@ -129,7 +103,7 @@ public class UserService implements UserDetailsService {
         userRequest.setAuth(Role.MEMBER);
 
         userRepository.save(
-                dtoToEntity(userRequest)
+                UserMapper.dtoToEntity(userRequest)
         );
     }
 
