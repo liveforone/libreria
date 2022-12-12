@@ -50,15 +50,6 @@ public class CommentService {
                 .collect(Collectors.toList());
     }
 
-    //== entity -> dto 편의 메소드2 - detail ==//
-    public CommentResponse entityToDtoDetail(Comment comment) {
-
-        if (CommonUtils.isNull(comment)) {
-            return null;
-        }
-        return dtoBuilder(comment);
-    }
-
     public List<CommentResponse> getCommentList(Long id) {
         return entityToDtoList(
                 commentRepository.findCommentByItemId(id)
@@ -67,6 +58,10 @@ public class CommentService {
 
     public Comment getComment(Long id) {
         return commentRepository.findOneById(id);
+    }
+
+    public CommentResponse getCommentResponse(Long id) {
+        return commentRepository.findOneDtoById(id);
     }
 
     @Transactional

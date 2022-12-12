@@ -22,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
@@ -178,15 +177,13 @@ public class ItemController {
 
     @GetMapping("/item/edit/{id}")
     public ResponseEntity<?> editPage(@PathVariable("id") Long id) {
-        ItemResponse item
-                = itemService.entityToDtoDetail(itemService.getItemEntity(id));
+        ItemResponse item = itemService.getItemResponse(id);
 
-        return ResponseEntity.ok(
-                Objects.requireNonNullElse(
-                        item,
-                        "해당 상품이 없어 수정이 불가능합니다."
-                )
-        );
+        if (CommonUtils.isNull(item)) {
+            return ResponseEntity.ok("해당 상품이 없어 수정이 불가능합니다.");
+        }
+
+        return ResponseEntity.ok(id);
     }
 
     //== 상품 수정 ==//

@@ -122,6 +122,10 @@ public class ItemService {
         return itemRepository.findOneById(id);
     }
 
+    public ItemResponse getItemResponse(Long id) {
+        return itemRepository.findOneDtoById(id);
+    }
+
     //== 상품 등록 ==//
     @Transactional
     public Long saveItem(

@@ -9,7 +9,6 @@ import libreria.libreria.orders.dto.OrdersResponse;
 import libreria.libreria.orders.repository.OrderRepository;
 import libreria.libreria.user.model.Users;
 import libreria.libreria.user.repository.UserRepository;
-import libreria.libreria.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,15 +58,6 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
-    //== entity -> dto 편의 메소드2 - detail ==//
-    public OrdersResponse entityToDtoDetail(Orders orders) {
-
-        if (CommonUtils.isNull(orders)) {
-            return null;
-        }
-        return dtoBuilder(orders);
-    }
-
     //== orderList for my-page ==//
     public List<OrdersResponse> getOrderListForMyPage(String email) {
         return entityToDtoList(
@@ -84,6 +74,10 @@ public class OrderService {
 
     public Orders getOrderEntity(Long orderId) {
         return orderRepository.findOneById(orderId);
+    }
+
+    public OrdersResponse getOrderResponse(Long id) {
+        return orderRepository.findOneDtoById(id);
     }
 
     //== 주문 날짜 - 주문 취소를 위한 ==//

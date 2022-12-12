@@ -14,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
@@ -78,15 +77,13 @@ public class CommentController {
 
     @GetMapping("/item/comment/edit/{id}")
     public ResponseEntity<?> editPage(@PathVariable("id") Long id) {
-        CommentResponse comment =
-                commentService.entityToDtoDetail(commentService.getComment(id));
+        CommentResponse comment = commentService.getCommentResponse(id);
 
-        return ResponseEntity.ok(
-                Objects.requireNonNullElse(
-                comment,
-                "댓글을 찾을 수 없어 수정이 불가능합니다."
-                )
-        );
+        if (CommonUtils.isNull(comment)) {
+            return ResponseEntity.ok("댓글을 찾을 수 없어 수정이 불가능합니다.");
+        }
+
+        return ResponseEntity.ok(comment);
     }
 
     /*

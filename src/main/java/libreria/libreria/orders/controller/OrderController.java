@@ -14,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.security.Principal;
 import java.util.List;
 import java.util.Objects;
@@ -98,15 +97,13 @@ public class OrderController {
 
     @GetMapping("/item/cancel/{orderId}")
     public ResponseEntity<?> cancelPage(@PathVariable("orderId") Long orderId) {
-        OrdersResponse order = orderService
-                .entityToDtoDetail(orderService.getOrderEntity(orderId));
+        OrdersResponse order = orderService.getOrderResponse(orderId);
 
-        return ResponseEntity.ok(
-                Objects.requireNonNullElse(
-                        order,
-                        "해당 주문이 없어 주문취소가 불가능합니다."
-                )
-        );
+        if (CommonUtils.isNull(order)) {
+            return ResponseEntity.ok("해당 주문이 없어 주문취소가 불가능합니다.");
+        }
+
+        return ResponseEntity.ok(order);
     }
 
     /*

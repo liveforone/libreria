@@ -1,6 +1,5 @@
 package libreria.libreria.item.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import libreria.libreria.user.model.Users;
 import lombok.AccessLevel;
 import lombok.Builder;

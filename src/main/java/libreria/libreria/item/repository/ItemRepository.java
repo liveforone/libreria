@@ -1,5 +1,6 @@
 package libreria.libreria.item.repository;
 
+import libreria.libreria.item.dto.ItemResponse;
 import libreria.libreria.item.model.Item;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +33,11 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     @Query("select i from Item i join fetch i.users where i.id = :id")
     Item findOneById(@Param("id") Long id);
+
+    @Query("select new libreria.libreria.item.dto.ItemResponse" +
+            "(i.id, i.title, i.content, i.author, i.saveFileName, i.remaining, i.category, i.year, i.good)" +
+            " from Item i where i.id = :id")
+    ItemResponse findOneDtoById(@Param("id") Long id);
 
     //== 좋아요 업데이트 ==//
     @Modifying

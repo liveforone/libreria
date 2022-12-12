@@ -1,13 +1,13 @@
 package libreria.libreria.comment.dto;
 
-import libreria.libreria.comment.model.Comment;
 import libreria.libreria.item.model.Item;
+import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Data
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommentRequest {
 
     private Long id;
