@@ -321,3 +321,4 @@ ex) : 여행 -> travel 등
 * 문서(readme)에 스타일 가이드 추가함.
 * 향상된 for-each 문 람다 for-each 문으로 변경하여 가독성 향상
 * [dto 직접조회](https://github.com/liveforone/study/blob/main/GoodCode/dto%20%EC%A7%81%EC%A0%91%EC%A1%B0%ED%9A%8C%EB%A5%BC%20%EC%95%A0%EC%9A%A9%ED%95%98%EC%9E%90.md)로 가독성과 성능 향상함.
+* mapper 클래스 만들어서 transaction 이 걸리지 않는 로직을 서비스로직에서 제거시켜 가독성향상과 모듈화로 객체지향을 더욱 지킴.
