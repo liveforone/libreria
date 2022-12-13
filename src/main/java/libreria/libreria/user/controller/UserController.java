@@ -11,6 +11,7 @@ import libreria.libreria.user.dto.UserRequest;
 import libreria.libreria.user.dto.UserResponse;
 import libreria.libreria.user.model.Users;
 import libreria.libreria.user.service.UserService;
+import libreria.libreria.user.util.UserConstants;
 import libreria.libreria.user.util.UserUtils;
 import libreria.libreria.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
@@ -37,10 +38,6 @@ public class UserController {
     private final ItemService itemService;
     private final OrderService orderService;
 
-    //== ------ 상수 선언 부 ------ ==//
-    private static final int NOT_DUPLICATE = 1;
-    private static final int PASSWORD_MATCH = 1;
-
 
     @GetMapping("/")
     public ResponseEntity<?> home() {
@@ -58,7 +55,7 @@ public class UserController {
         int checkEmail =
                 userService.checkDuplicateEmail(userRequest.getEmail());
 
-        if (checkEmail != NOT_DUPLICATE) {
+        if (checkEmail != UserConstants.NOT_DUPLICATE.getValue()) {
             return ResponseEntity.ok("중복되는 이메일이 있어 회원가입이 불가능합니다.");
 
         }
@@ -96,7 +93,7 @@ public class UserController {
                         users.getPassword()
         );
 
-        if (checkPassword != PASSWORD_MATCH) {
+        if (checkPassword != UserConstants.PASSWORD_MATCH.getValue()) {
             return ResponseEntity.ok("비밀번호가 다릅니다. 다시 시도하세요.");
         }
 
@@ -116,9 +113,9 @@ public class UserController {
     }
 
     /*
-    로그아웃은 시큐리티 단에서 이루어짐.
-    /user/logout 으로 post 하면 된다.
-     */
+    * 로그아웃은 시큐리티 단에서 이루어짐.
+    * /user/logout 으로 post 하면 된다.
+    */
 
     @PostMapping("/user/change-email")
     public ResponseEntity<?> changeEmail(
@@ -143,7 +140,7 @@ public class UserController {
                         users.getPassword()
         );
 
-        if (checkPassword != PASSWORD_MATCH) {
+        if (checkPassword != UserConstants.PASSWORD_MATCH.getValue()) {
             log.info("비밀번호 일치하지 않음.");
             return ResponseEntity.ok("비밀번호가 다릅니다. 다시 입력해주세요.");
         }
@@ -163,7 +160,10 @@ public class UserController {
                 .build();
     }
 
-    //== 비밀번호 변경 ==//
+
+    /*
+    * 비밀번호 변경
+     */
     @PostMapping("/user/change-password")
     public ResponseEntity<?> changePassword(
             @RequestBody UserChangePasswordRequest userRequest,
@@ -181,7 +181,7 @@ public class UserController {
                         users.getPassword()
         );
 
-        if (checkPassword != PASSWORD_MATCH) {
+        if (checkPassword != UserConstants.PASSWORD_MATCH.getValue()) {
             log.info("비밀번호 일치하지 않음.");
             return ResponseEntity.ok("비밀번호가 다릅니다. 다시 입력해주세요.");
         }
@@ -201,7 +201,9 @@ public class UserController {
                 .build();
     }
 
-    //== 회원 탈퇴 ==//
+    /*
+    * 회원 탈퇴
+     */
     @PostMapping("/user/withdraw")
     public ResponseEntity<?> userWithdraw(
             @RequestBody String password,
@@ -218,7 +220,7 @@ public class UserController {
                 users.getPassword()
         );
 
-        if (checkPassword != PASSWORD_MATCH) {
+        if (checkPassword != UserConstants.PASSWORD_MATCH.getValue()) {
             log.info("비밀번호 일치하지 않음.");
             return ResponseEntity.ok("비밀번호가 다릅니다. 다시 입력해주세요.");
         }
@@ -229,13 +231,18 @@ public class UserController {
         return ResponseEntity.ok("그동안 서비스를 이용해주셔서 감사합니다.");
     }
 
-    //== 판매자 등록 페이지 ==//
+    /*
+    * 판매자 등록 페이지
+     */
     @GetMapping("/user/seller")
     public ResponseEntity<?> sellerPage() {
         return ResponseEntity.ok("판매자 등록 페이지");
     }
 
-    //== 판매자 등록 - 권한 업데이트 ==//
+    /*
+    * 판매자 등록
+    * 필요 권한 : SELLER
+     */
     @PostMapping("/user/seller")
     public ResponseEntity<?> seller(Principal principal) {
         String url = "/";
@@ -251,11 +258,11 @@ public class UserController {
     }
 
     /*
-    README에서도 설명했지만 화면단에서 auth를 바탕으로
-    MEMBER일 경우 주문 리스트 버튼을 띄어서 /user/orderlist로 연결하고
-    SELLER일 경우 등록 상품 버튼을 띄어서 /user/itemlist 로 연결한다.
+    * README 에서도 설명했지만 화면단에서 auth 를 바탕으로
+    * MEMBER 일 경우 주문 리스트 버튼을 띄어서 /user/order-list 로 연결하고
+    * SELLER 일 경우 등록 상품 버튼을 띄어서 /user/item-list 로 연결한다.
      */
-    @GetMapping("/user/my-page")  //rest-api에서는 대문자를 쓰지않는다.
+    @GetMapping("/user/my-page")  //rest-api 에서는 대문자를 쓰지않는다.
     public ResponseEntity<?> myPage(Principal principal) {
         UserResponse dto = userService.getUserDto(principal.getName());
 
@@ -267,7 +274,9 @@ public class UserController {
         );
     }
 
-    //== 주소 등록 페이지 ==//
+    /*
+    * 주소 등록 페이지
+     */
     @GetMapping("/user/address")
     public ResponseEntity<?> regiAddressPage(Principal principal) {
         String address = userService.getUserEntity(principal.getName()).getAddress();
@@ -275,7 +284,6 @@ public class UserController {
         return ResponseEntity.ok(address);
     }
 
-    //== 주소 등록 ==//
     @PostMapping("/user/address")
     public ResponseEntity<?> regiAddress(
             @RequestBody String address,
@@ -295,7 +303,10 @@ public class UserController {
                 .build();
     }
 
-    //== 내가 등록한 상품 - 권한이 판매자일 경우 ==//
+    /*
+    * 내가 등록한 상품
+    * 권한 : SELLER
+     */
     @GetMapping("/user/item-list")
     public ResponseEntity<?> myItemList(Principal principal) {
         Users users = userService.getUserEntity(principal.getName());
@@ -309,7 +320,10 @@ public class UserController {
         return ResponseEntity.ok(itemList);
     }
 
-    //== 내가 주문한 상품 - 권한이 멤버일 경우 ==//
+    /*
+    * 내가 주문한 상품
+    * 권한 : SELLER
+     */
     @GetMapping("/user/order-list")
     public ResponseEntity<?> myOrderList(Principal principal) {
         Users users = userService.getUserEntity(principal.getName());
@@ -325,7 +339,6 @@ public class UserController {
         return ResponseEntity.ok(ordersList);
     }
 
-    //== 접근 거부 페이지 ==//
     @GetMapping("/user/prohibition")
     public ResponseEntity<?> prohibition() {
         return ResponseEntity
@@ -333,7 +346,10 @@ public class UserController {
                 .body("접근 권한이 없습니다.");
     }
 
-    //== 어드민 페이지 ==//
+    /*
+    * 어드민 페이지
+    * 권한 : ADMIN
+     */
     @GetMapping("/admin")
     public ResponseEntity<?> admin(Principal principal) {
         Users users = userService.getUserEntity(principal.getName());

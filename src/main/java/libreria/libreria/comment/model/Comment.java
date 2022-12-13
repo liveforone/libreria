@@ -22,7 +22,7 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String writer;  //users와 연관관계를 맺을 이유가 딱히 없음, 작성자.
+    private String writer;  //작성자, Users 엔티티와 연관관계 맺지 않음.
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;

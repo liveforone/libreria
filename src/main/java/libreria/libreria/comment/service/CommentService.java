@@ -52,8 +52,9 @@ public class CommentService {
     }
 
     /*
-    comment id 아닌 item id 리턴
-    이유는 리다이렉트 해주기위해서 itemId가 필요하다.
+    * 댓글 수정
+    * 반환 타입 : item id
+    * 반환 타입이 item id인 이유는 수정 후 해당 게시글로 리다이렉트 할 것이기 때문이다.
      */
     @Transactional
     public Long editComment(Long id, CommentRequest commentRequest) {
@@ -71,7 +72,9 @@ public class CommentService {
     }
 
     /*
-    edit 와 마찬가지로 redirect 해주기위해서 itemId를 리턴한다.(comment_id 아님!!)
+     * 댓글 삭제
+     * 반환 타입 : item id
+     * 반환 타입이 item id인 이유는 삭제 후 해당 게시글로 리다이렉트 할 것이기 때문이다.
      */
     @Transactional
     public Long deleteComment(Long id) {

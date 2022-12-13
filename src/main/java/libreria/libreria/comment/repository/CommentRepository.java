@@ -2,7 +2,6 @@ package libreria.libreria.comment.repository;
 
 import libreria.libreria.comment.dto.CommentResponse;
 import libreria.libreria.comment.model.Comment;
-import libreria.libreria.item.model.Item;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

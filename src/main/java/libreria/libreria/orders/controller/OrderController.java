@@ -6,6 +6,7 @@ import libreria.libreria.orders.dto.OrdersRequest;
 import libreria.libreria.orders.dto.OrdersResponse;
 import libreria.libreria.orders.model.Orders;
 import libreria.libreria.orders.service.OrderService;
+import libreria.libreria.orders.util.OrdersConstants;
 import libreria.libreria.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,12 +27,9 @@ public class OrderController {
     private final OrderService orderService;
     private final ItemService itemService;
 
-    private static final int CAN_CANCEL = 1;
-    private static final int SOLD_OUT = 0;
-
     /*
-    item detail 에서 게시글 수정 때문에 현재 접속 유저(principal)을 보내주었다.(판별을 위해)
-    그것으로 판별된 유저(게시글 작성자)는 해당 링크로 접속해서 해당 상품의 주문리스트를 볼 수 있다.
+    * 주문자 리스트
+    * who : 게시글 작성자
      */
     @GetMapping("/item/order-list/{itemId}")
     public ResponseEntity<?> itemDetailOrderList(@PathVariable("itemId") Long itemId) {
@@ -69,12 +67,12 @@ public class OrderController {
             return ResponseEntity.ok("해당 상품이 없어 주문이 불가능합니다.");
         }
 
-        if (item.getRemaining() <= SOLD_OUT) {
+        if (item.getRemaining() <= OrdersConstants.SOLD_OUT.getValue()) {
             log.info("품절입니다.");
             return ResponseEntity.ok("품절된 상품입니다. 상품 홈으로 돌아가주세요");
         }
 
-        if (item.getRemaining() - ordersRequest.getOrderCount() <= SOLD_OUT) {
+        if (item.getRemaining() - ordersRequest.getOrderCount() <= OrdersConstants.SOLD_OUT.getValue()) {
             log.info("주문 불가능, 수량이 재고보다 많음.");
             return ResponseEntity.ok("주문 수량이 재고보다 많아 주문이 불가능합니다.");
         }
@@ -107,8 +105,7 @@ public class OrderController {
     }
 
     /*
-    my-page 에 접근은 principal 로 현재 객체를 가져와서 접근한다.
-    그럼에도 주문을 취소하는 로직은 민감한 부분이므로 본 유저와 현재 객체를 판별한다.
+    * 주문취소 로직은 민감하기에 현재 유저와 주문자를 한 번 더 판별한다.
      */
     @PostMapping("/item/cancel/{orderId}")
     public ResponseEntity<?> cancel(
@@ -131,7 +128,7 @@ public class OrderController {
 
         int ableCancelDate = orderService.getOrderDay(orderId);
 
-        if (ableCancelDate != CAN_CANCEL) {  //주문 가능 날짜 판별
+        if (ableCancelDate != OrdersConstants.CAN_CANCEL.getValue()) {  //주문 가능 날짜 판별
             log.info("주문 취소 실패!!");
             return ResponseEntity.ok("주문 한지 7일이 지나 주문 취소가 불가능합니다.");
         }

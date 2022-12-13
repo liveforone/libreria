@@ -11,7 +11,9 @@ import java.util.stream.Collectors;
 
 public class ItemMapper {
 
-    //== dto -> entity ==//
+    /*
+    * dto ->  entity 변환 편의 메소드
+     */
     public static Item dtoToEntity(ItemRequest item) {
         return Item.builder()
                 .id(item.getId())
@@ -27,7 +29,9 @@ public class ItemMapper {
                 .build();
     }
 
-    //== ItemResponse builder method ==//
+    /*
+    * ItemResponse builder 편의 메소드
+     */
     private static ItemResponse dtoBuilder(Item item) {
         return ItemResponse.builder()
                 .id(item.getId())
@@ -42,7 +46,10 @@ public class ItemMapper {
                 .build();
     }
 
-    //== entity -> dto 편의 메소드1 - 리스트형식 ==//
+    /*
+    * entity -> dto 편의 메소드1
+    * 반환 타입 : 리스트형식
+     */
     public static List<ItemResponse> entityToDtoList(List<Item> itemList) {
         return itemList
                 .stream()
@@ -50,12 +57,18 @@ public class ItemMapper {
                 .collect(Collectors.toList());
     }
 
-    //== entity ->  dto 편의메소드2 - 페이징 형식 ==//
+    /*
+    * entity ->  dto 편의 메소드2
+    * 반환 타입 : 페이징 형식
+     */
     public static Page<ItemResponse> entityToDtoPage(Page<Item> itemList) {
         return itemList.map(ItemMapper::dtoBuilder);
     }
 
-    //== entity -> dto 편의메소드3 - 엔티티 하나 ==//
+    /*
+    * entity -> dto 편의 메소드3
+    * 반환 타입 : 엔티티 하나
+     */
     public static ItemResponse entityToDtoDetail(Item item) {
 
         if (CommonUtils.isNull(item)) {

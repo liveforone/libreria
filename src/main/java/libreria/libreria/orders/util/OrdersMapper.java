@@ -9,7 +9,9 @@ import java.util.stream.Collectors;
 
 public class OrdersMapper {
 
-    //== dto -> entity ==//
+    /*
+     * dto ->  entity 변환 편의 메소드
+     */
     public static Orders dtoToEntity(OrdersRequest order) {
         return Orders.builder()
                 .id(order.getId())
@@ -20,7 +22,9 @@ public class OrdersMapper {
                 .build();
     }
 
-    //== OrderResponse builder method ==//
+    /*
+     * OrdersResponse builder 편의 메소드
+     */
     private static OrdersResponse dtoBuilder(Orders orders) {
         return OrdersResponse.builder()
                 .id(orders.getId())
@@ -30,7 +34,10 @@ public class OrdersMapper {
                 .build();
     }
 
-    //== entity -> dto 편의 메소드 - 리스트 ==//
+    /*
+     * entity -> dto 편의 메소드1
+     * 반환 타입 : 리스트형식
+     */
     public static List<OrdersResponse> entityToDtoList(List<Orders> ordersList) {
         return ordersList
                 .stream()

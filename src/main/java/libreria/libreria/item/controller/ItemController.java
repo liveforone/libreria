@@ -113,12 +113,8 @@ public class ItemController {
     }
 
     /*
-    수정 버튼은 해당 상품의 등록자에게만 보여주기 위해서 현재 로그인 유저를 함께 보낸다.
-    remaining 을 보고 뷰에서는 0일경우 주문 버튼을 품절로 바꾼다.
-    즉 remaining 을 보고 뷰에서 주문 가능한지 불가능한지 판별한다.
-    엔티티 리턴시 사용자 엔티티 전부가 적나라하게 노출되기 때문에
-    엔티티에서 유저 이메일 빼고, dto 로 따로 뷰에 노출시키는 방식을 사용했다.
-    성능보단 보안이 우선 !!
+    * remaining 을 클라이언트로 내보낸다.
+    * 클라이언트는 remaining 이 0일경우 주문 버튼을 품절로 바꾼다.
      */
     @GetMapping("/item/{id}")
     public ResponseEntity<?> detail(
@@ -143,9 +139,9 @@ public class ItemController {
         return ResponseEntity.ok(map);
     }
 
-    //== 상품 상세조회 이미지 ==//
     /*
-    뷰단에서 이미지 태그(html tag)를 이용해서 해당 api 를 걸면된다.
+    * 상품 이미지
+    * 뷰단에서 이미지 태그(html tag)를 이용해서 해당 api 를 걸면된다.
      */
     @GetMapping("/item/image/{saveFileName}")
     @ResponseBody
@@ -155,7 +151,6 @@ public class ItemController {
         return new UrlResource("file:C:\\Temp\\upload\\" + saveFileName);
     }
 
-    //== 상품 좋아요 ==//
     @PostMapping("/item/good/{id}")
     public ResponseEntity<?> updateGood(@PathVariable("id") Long id) {
         Item item = itemService.getItemEntity(id);
@@ -187,12 +182,10 @@ public class ItemController {
         return ResponseEntity.ok(id);
     }
 
-    //== 상품 수정 ==//
     /*
-    상품 수정은 경우가 있음.
-    1. 기존 사진을 유지하며 게시글 수정
-    2. 사진을 수정하면서 게시글 수정
-    또한 뷰에서 작성자와 현재 유저를 판별했더라도 수정/삭제는 서버단에서 한 번 더 판별한다.
+    * 상품 수정
+    * 조건1 : 기존 사진을 유지하며 게시글 수정
+    * 조건2 : 사진을 수정하면서 게시글 수정
      */
     @PostMapping("/item/edit/{id}")
     public ResponseEntity<?> editItem(

@@ -9,7 +9,10 @@ import java.util.Map;
 
 public class BookmarkMapper {
 
-    //== entity -> map id & title ==//
+    /*
+    * entity -> map
+    * 타입 : String id, String title
+     */
     public static Map<String, Object> entityToMap(List<Bookmark> bookmarkList) {
         Map<String, Object> map = new HashMap<>();
         List<Long> itemId = new ArrayList<>();

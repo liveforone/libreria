@@ -5,6 +5,7 @@ import libreria.libreria.user.dto.UserRequest;
 import libreria.libreria.user.dto.UserResponse;
 import libreria.libreria.user.model.Users;
 import libreria.libreria.user.repository.UserRepository;
+import libreria.libreria.user.util.UserConstants;
 import libreria.libreria.user.util.UserMapper;
 import libreria.libreria.user.util.UserUtils;
 import libreria.libreria.utility.CommonUtils;
@@ -29,32 +30,29 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
-    private static final int DUPLICATE = 0;
-    private static final int NOT_DUPLICATE = 1;
-
-    //== 이메일 중복 검증 ==//
-    @Transactional(readOnly = true)
+    /*
+    * 이메일 중복 검증
+    * 반환 값 : 1(중복아님), 0(중복)
+     */
     public int checkDuplicateEmail(String email) {
 
         Users users = userRepository.findByEmail(email);
 
         if (CommonUtils.isNull(users)) {
-            return NOT_DUPLICATE;
+            return UserConstants.NOT_DUPLICATE.getValue();
         }
-        return DUPLICATE;
+        return UserConstants.DUPLICATE.getValue();
     }
 
-    @Transactional(readOnly = true)
     public Users getUserEntity(String email) {
         return userRepository.findByEmail(email);
     }
 
-    //== 등급체크 후 유저 정보 가져오기 ==//
-    @Transactional(readOnly = true)
     public UserResponse getUserDto(String email) {
         Users users = userRepository.findByEmail(email);
 
@@ -62,7 +60,7 @@ public class UserService implements UserDetailsService {
             return null;
         }
 
-        //user rank check
+        //user 등급 체크
         String rank = UserUtils.rankCheck(users.getCount());
 
         return UserResponse.builder()
@@ -74,13 +72,14 @@ public class UserService implements UserDetailsService {
                 .build();
     }
 
-    //== 전체 유저 리턴 for admin ==//
-    @Transactional(readOnly = true)
+    /*
+    * 모든 유저 반환
+    * when : 권한이 어드민인 유저가 호출할때
+     */
     public List<Users> getAllUsersForAdmin() {
         return userRepository.findAll();
     }
 
-    //== 회원 가입 로직 ==//
     @Transactional
     public void joinUser(UserRequest userRequest) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -94,7 +93,6 @@ public class UserService implements UserDetailsService {
         );
     }
 
-    //== 로그인 - 세션과 컨텍스트홀더 사용 ==//
     @Transactional
     public void login(UserRequest userRequest, HttpSession httpSession)
             throws UsernameNotFoundException
@@ -113,9 +111,9 @@ public class UserService implements UserDetailsService {
 
         List<GrantedAuthority> authorities = new ArrayList<>();
         /*
-        처음 어드민이 로그인을 하는경우 이메일로 판별해서 권한을 admin 으로 변경해주고
-        그 다음부터 어드민이 업데이트 할때에는 auth 칼럼으로 판별해서 db 업데이트 하지않고,
-        GrantedAuthority 만 업데이트 해준다.
+        * 처음 어드민이 로그인을 하는경우 이메일로 판별해서 권한을 admin 으로 변경해주고
+        * 그 다음부터 어드민이 업데이트 할때에는 auth 칼럼으로 판별해서 db 업데이트 하지않고,
+        * GrantedAuthority 만 업데이트 해준다.
          */
         if (user.getAuth() != Role.ADMIN && ("admin@libreria.com").equals(email)) {
             authorities.add(new SimpleGrantedAuthority(Role.ADMIN.getValue()));
@@ -138,7 +136,6 @@ public class UserService implements UserDetailsService {
         );
     }
 
-    //== spring context 반환 메소드(필수) ==//
     @Override
     public UserDetails loadUserByUsername(String email)
             throws UsernameNotFoundException
@@ -163,11 +160,12 @@ public class UserService implements UserDetailsService {
         );
     }
 
-    //== 권한 업데이트 ==//
     @Transactional
     public void updateAuth (String email) {
-        //권한을 업데이트(컨텍스트홀더 + db)
-        //업데이트 한 권한 현재 객체에 저장, 로그아웃 하지 않아도 됨!
+        /*
+        * 권한을 업데이트(컨텍스트홀더 + db)
+        * 업데이트 한 권한 현재 객체에 저장, 로그아웃 하지 않아도 됨!
+         */
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         List<GrantedAuthority> updatedAuthorities =
                 new ArrayList<>(auth.getAuthorities());
@@ -186,7 +184,6 @@ public class UserService implements UserDetailsService {
         );
     }
 
-    //== 유저 주소 등록 ==//
     @Transactional
     public void regiAddress(String email, String address) {
         userRepository.updateAddress(

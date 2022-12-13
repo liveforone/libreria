@@ -1,7 +1,6 @@
 package libreria.libreria.user.dto;
 
 import libreria.libreria.user.model.Role;
-import libreria.libreria.user.model.Users;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

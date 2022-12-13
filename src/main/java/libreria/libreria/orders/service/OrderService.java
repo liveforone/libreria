@@ -7,6 +7,7 @@ import libreria.libreria.orders.model.Orders;
 import libreria.libreria.orders.dto.OrdersRequest;
 import libreria.libreria.orders.dto.OrdersResponse;
 import libreria.libreria.orders.repository.OrderRepository;
+import libreria.libreria.orders.util.OrdersConstants;
 import libreria.libreria.orders.util.OrdersMapper;
 import libreria.libreria.user.model.Users;
 import libreria.libreria.user.repository.UserRepository;
@@ -26,17 +27,20 @@ public class OrderService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
-    private static final int CAN_CANCEL = 1;
-    private static final int CANT_CANCEL = 0;
-
-    //== orderList for my-page ==//
+    /*
+    * order-list
+    * when : my-page
+     */
     public List<OrdersResponse> getOrderListForMyPage(String email) {
         return OrdersMapper.entityToDtoList(
                 orderRepository.findOrderListByEmail(email)
         );
     }
 
-    //== orderList for item detail ==//
+    /*
+    * order-list
+    * when : item detail
+     */
     public List<OrdersResponse> getOrderListForItemDetail(Long itemId) {
         return OrdersMapper.entityToDtoList(
                 orderRepository.findOrderListByItemId(itemId)
@@ -51,7 +55,10 @@ public class OrderService {
         return orderRepository.findOneDtoById(id);
     }
 
-    //== 주문 날짜 - 주문 취소를 위한 ==//
+    /*
+    * 주문 날짜 조회
+    * when : 주문 취소
+     */
     public int getOrderDay(Long orderId) {
         Orders orders = orderRepository.findOneById(orderId);
 
@@ -59,12 +66,11 @@ public class OrderService {
         int nowDate = LocalDate.now().getDayOfYear();
 
         if (nowDate <= ableDate) {
-            return CAN_CANCEL;
+            return OrdersConstants.CAN_CANCEL.getValue();
         }
-        return CANT_CANCEL;
+        return OrdersConstants.CANT_CANCEL.getValue();
     }
 
-    //== 주문 ==//
     @Transactional
     public void saveOrder(
             Long itemId,
@@ -88,7 +94,6 @@ public class OrderService {
         );
     }
 
-    //== 주문 취소 ==//
     @Transactional
     public void cancelOrder(Long orderId) {
         Orders orders = orderRepository.findOneById(orderId);

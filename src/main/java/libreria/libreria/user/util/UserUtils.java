@@ -4,20 +4,21 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class UserUtils {
 
-    private static final int PASSWORD_MATCH = 1;
-    private static final int PASSWORD_NOT_MATCH = 0;
-
-    //== 비밀번호 복호화 ==//
+    /*
+    * 비밀번호 복호화
+     */
     public static int checkPasswordMatching(String inputPassword, String password) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
         if(encoder.matches(inputPassword, password)) {
-            return PASSWORD_MATCH;
+            return UserConstants.PASSWORD_MATCH.getValue();
         }
-        return PASSWORD_NOT_MATCH;
+        return UserConstants.PASSWORD_NOT_MATCH.getValue();
     }
 
-    //== user rank check ==//
+    /*
+    * 유저 등급 체크
+     */
     public static String rankCheck(int count) {
         if (count >= 120) {
             return "DIA";

@@ -28,10 +28,6 @@ public class CommentController {
     private final CommentService commentService;
     private final ItemService itemService;
 
-    /*
-    현재객체 판별을 위해 현재객체를 함께 리턴했다.
-    현재객체는 수정, 삭제 버튼 작성자 판별에 사용된다.
-     */
     @GetMapping("/item/comment/{itemId}")
     public ResponseEntity<Map<String, Object>> commentList(
             @PathVariable("itemId") Long itemId,
@@ -86,10 +82,6 @@ public class CommentController {
         return ResponseEntity.ok(comment);
     }
 
-    /*
-    수정과 삭제 모두 화면단(프론트)에서 작성자와 현재 유저 판별이 끝났다.
-    하지만 민감한 부분인 수정과 삭제시 서버단에서 다시 한번 판별한다.
-     */
     @PostMapping("/item/comment/edit/{id}")
     public ResponseEntity<?> editComment(
             @PathVariable("id") Long id,
@@ -124,11 +116,6 @@ public class CommentController {
                 .build();
     }
 
-    /*
-    삭제전 js의 alert 로 삭제할 것이지 물어보기.
-    수정과 마찬가지로 뷰에서 작성자와 현재 유저 판별이 끝남.
-    그러나 민감한 부분인 만큼 다시 서버단에서 작성자와 현재 유저를 판별한다.
-     */
     @PostMapping("/item/comment/delete/{id}")
     public ResponseEntity<?> commentDelete(
             @PathVariable("id") Long id,

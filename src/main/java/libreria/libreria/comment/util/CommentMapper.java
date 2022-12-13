@@ -9,7 +9,9 @@ import java.util.stream.Collectors;
 
 public class CommentMapper {
 
-    //== dto -> entity ==//
+    /*
+     * dto ->  entity 변환 편의 메소드
+     */
     public static Comment dtoToEntity(CommentRequest comment) {
         return Comment.builder()
                 .id(comment.getId())
@@ -19,7 +21,9 @@ public class CommentMapper {
                 .build();
     }
 
-    //== CommentResponse builder method ==//
+    /*
+     * CommentResponse builder 편의 메소드
+     */
     private static CommentResponse dtoBuilder(Comment comment) {
         return CommentResponse.builder()
                 .id(comment.getId())
@@ -29,7 +33,10 @@ public class CommentMapper {
                 .build();
     }
 
-    //== entity -> dto 편의메소드 - 리스트 ==//
+    /*
+     * entity -> dto 편의 메소드1
+     * 반환 타입 : 리스트형식
+     */
     public static List<CommentResponse> entityToDtoList(List<Comment> commentList) {
         return commentList
                 .stream()

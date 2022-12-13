@@ -27,21 +27,29 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
-    //== 마이페이지 itemList ==//
+    /*
+    * item list
+    * when : my-page
+     */
     public List<ItemResponse> getItemListForMyPage(String email) {
         return ItemMapper.entityToDtoList(
                 itemRepository.findItemListByEmail(email)
         );
     }
 
-    //== 상품 홈 itemList ==//
+    /*
+    * item list
+    * when : 상품 home
+     */
     public Page<ItemResponse> getItemList(Pageable pageable) {
         return ItemMapper.entityToDtoPage(
                 itemRepository.findAll(pageable)
         );
     }
 
-    //== 상품 검색 ==//
+    /*
+    * 상품 검색
+     */
     public Page<ItemResponse> getSearchListByTitle(String keyword, Pageable pageable) {
         return ItemMapper.entityToDtoPage(
                 itemRepository.searchItemByTitle(
@@ -51,7 +59,6 @@ public class ItemService {
         );
     }
 
-    //== 카테고리 게시판 ==//
     public Page<ItemResponse> getCategoryList(String category, Pageable pageable) {
         return ItemMapper.entityToDtoPage(
                 itemRepository.findCategoryListByCategory(
@@ -61,7 +68,6 @@ public class ItemService {
         );
     }
 
-    //== 연관관계인 작성자(user)를 뽑아주는 경우에만 사용한다. ==//
     public Item getItemEntity(Long id) {
         return itemRepository.findOneById(id);
     }
@@ -70,7 +76,6 @@ public class ItemService {
         return itemRepository.findOneDtoById(id);
     }
 
-    //== 상품 등록 ==//
     @Transactional
     public Long saveItem(
             MultipartFile uploadFile,
@@ -94,7 +99,10 @@ public class ItemService {
         itemRepository.updateGood(id);
     }
 
-    //== 파일 수정1 - 기존 파일 유지하며 ==//
+    /*
+    * 파일 수정 1
+    * 조건 : 기존 파일 유지
+     */
     @Transactional
     public void editItemNoFileChange(Long id, ItemRequest itemRequest) {
         Item item = itemRepository.findOneById(id);
@@ -109,7 +117,10 @@ public class ItemService {
         );
     }
 
-    //== 파일 수정2 - 파일 교체하며 ==//
+    /*
+    * 파일 수정 2
+    * 조건 : 기존 파일 변경
+     */
     @Transactional
     public void editItemWithFile(
             Long id,
