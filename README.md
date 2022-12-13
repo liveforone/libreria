@@ -151,16 +151,18 @@ form-data, application/json, requestpart
 ```
 
 # 4. 스타일 가이드
-* 유저를 제외한 모든 객체의 [널체크](https://github.com/liveforone/study/blob/main/GoodCode/%EA%B0%9D%EC%B2%B4%20null%EC%B2%B4%ED%81%AC%EC%99%80%20%EC%A4%91%EB%B3%B5%EC%B2%B4%ED%81%AC.md) + 중복 체크
-* 함수와 긴 변수의 경우 [줄바꿈 가이드](https://github.com/liveforone/study/blob/main/GoodCode/%EC%A4%84%EB%B0%94%EA%BF%88%EC%9C%BC%EB%A1%9C%20%EA%B0%80%EB%8F%85%EC%84%B1%20%ED%96%A5%EC%83%81.md)를 지켜 작성한다.
-* 매직넘버는 전부 [상수화](https://github.com/liveforone/study/blob/main/GoodCode/%EB%A7%A4%EC%A7%81%EB%84%98%EB%B2%84%20%EC%83%81%EC%88%98%EB%A1%9C%20%ED%95%B4%EA%B2%B0.md)해서 처리한다.
-* 분기문은 반드시 [게이트웨이](https://github.com/liveforone/study/blob/main/GoodCode/%EB%8D%94%20%EC%A2%8B%EC%9D%80%20%EB%B6%84%EA%B8%B0%EB%AC%B8.md) 스타일로 한다.
-* [HttpHeader 처리 함수](https://github.com/liveforone/study/blob/main/GoodCode/HttpHeaders%20%EC%83%9D%EC%84%B1%20%ED%95%A8%EC%88%98.md)
-* 스프링 시큐리티에서 권한 체크 필요한것만 매핑하고 나머지(anyRequest)는 authenticated 로 설정해 코드를 줄이고 가독성 향상한다.
-* [Utils 클래스](https://github.com/liveforone/study/blob/main/GoodCode/Util%20%ED%81%B4%EB%9E%98%EC%8A%A4.md)를 적극 활용하고, 서비스로직에서 트랜잭션이 걸리지 않는 로직은 Utils 클래스에 담아서 모듈화한다.
-* 가능하면 [dto직접조회한다](https://github.com/liveforone/study/blob/main/GoodCode/dto%20%EC%A7%81%EC%A0%91%EC%A1%B0%ED%9A%8C%EB%A5%BC%20%EC%95%A0%EC%9A%A9%ED%95%98%EC%9E%90.md).
-* 단순 for-each문은 [람다](https://github.com/liveforone/study/blob/main/GoodCode/%EB%8B%A8%EC%88%9C%20for-each%EB%AC%B8%EC%9D%84%20%EB%9E%8C%EB%8B%A4%EB%A1%9C.md)로 작성하고, 람다식을 적극 활용한다.
-* Mapper 클래스에서 dtoBuilder 메소드의 경우 반드시 private 으로 설정해 접근을 제한한다.
+* 유저를 제외한 모든 객체의 [널체크](https://github.com/liveforone/study/blob/main/GoodCode/%EA%B0%9D%EC%B2%B4%20null%EC%B2%B4%ED%81%AC%EC%99%80%20%EC%A4%91%EB%B3%B5%EC%B2%B4%ED%81%AC.md) + 중복 체크를 꼭 하라.
+* 함수와 긴 변수의 경우 [줄바꿈 가이드](https://github.com/liveforone/study/blob/main/GoodCode/%EC%A4%84%EB%B0%94%EA%BF%88%EC%9C%BC%EB%A1%9C%20%EA%B0%80%EB%8F%85%EC%84%B1%20%ED%96%A5%EC%83%81.md)를 지켜 작성하라.
+* 매직넘버는 전부 [상수화](https://github.com/liveforone/study/blob/main/GoodCode/%EB%A7%A4%EC%A7%81%EB%84%98%EB%B2%84%20%EC%83%81%EC%88%98%EB%A1%9C%20%ED%95%B4%EA%B2%B0.md)해서 처리하라.
+* 분기문은 반드시 [게이트웨이](https://github.com/liveforone/study/blob/main/GoodCode/%EB%8D%94%20%EC%A2%8B%EC%9D%80%20%EB%B6%84%EA%B8%B0%EB%AC%B8.md) 스타일로 하라.
+* [HttpHeader 처리 함수를 사용해 모듈화 하라](https://github.com/liveforone/study/blob/main/GoodCode/HttpHeaders%20%EC%83%9D%EC%84%B1%20%ED%95%A8%EC%88%98.md)
+* 스프링 시큐리티에서 권한 체크 필요한것만 매핑하고 나머지(anyRequest)는 authenticated 로 설정해 코드를 줄이고 가독성 향상하라.
+* [Utils 클래스](https://github.com/liveforone/study/blob/main/GoodCode/Util%20%ED%81%B4%EB%9E%98%EC%8A%A4.md)를 적극 활용하고, 서비스로직에서 트랜잭션이 걸리지 않는 로직은 Utils 클래스에 담아서 모듈화하라.
+* 가능하면 [dto직접조회하라](https://github.com/liveforone/study/blob/main/GoodCode/dto%20%EC%A7%81%EC%A0%91%EC%A1%B0%ED%9A%8C%EB%A5%BC%20%EC%95%A0%EC%9A%A9%ED%95%98%EC%9E%90.md).
+* 단순 for-each문은 [람다](https://github.com/liveforone/study/blob/main/GoodCode/%EB%8B%A8%EC%88%9C%20for-each%EB%AC%B8%EC%9D%84%20%EB%9E%8C%EB%8B%A4%EB%A1%9C.md)로 작성하고, 람다식을 적극 활용하라.
+* Mapper 클래스에서 dtoBuilder 메소드의 경우 반드시 private 으로 설정해 접근을 제한하라.
+* 주석은 c언어 스타일 주석으로 선언하라.
+* [상수는 enum으로 선언](https://github.com/liveforone/study/blob/main/GoodCode/%EC%83%81%EC%88%98%EB%8A%94%20enum%EC%9C%BC%EB%A1%9C%20%EC%84%A0%EC%96%B8%ED%95%98%EB%9D%BC.md)하라.
 
 # 5. 상세 설명
 ## 파일 저장 전략(이미지 저장전략)
@@ -325,3 +327,5 @@ ex) : 여행 -> travel 등
 * 향상된 for-each 문 람다 for-each 문으로 변경하여 가독성 향상
 * [dto 직접조회](https://github.com/liveforone/study/blob/main/GoodCode/dto%20%EC%A7%81%EC%A0%91%EC%A1%B0%ED%9A%8C%EB%A5%BC%20%EC%95%A0%EC%9A%A9%ED%95%98%EC%9E%90.md)로 가독성과 성능 향상함.
 * mapper 클래스와 XxUtils 클래스를 만들어서 dto <-> entity 로직은 mapper로, transaction 이 걸리지 않는 로직은 XxUtils로 모듈화 하여 서비스로직의 가독성향상과 모듈화로 객체지향을 더욱 지킴.
+* 주석은 c언어 스타일의 주석으로 변경함.
+* 상수는 enum으로 선언하여 타입 안전성을 보장하고 인스턴스가 하나씩만 존재함을 보장한다.
