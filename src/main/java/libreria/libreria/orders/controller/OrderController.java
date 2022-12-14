@@ -1,5 +1,6 @@
 package libreria.libreria.orders.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import libreria.libreria.item.model.Item;
 import libreria.libreria.item.service.ItemService;
 import libreria.libreria.orders.dto.OrdersRequest;
@@ -10,7 +11,6 @@ import libreria.libreria.orders.util.OrdersConstants;
 import libreria.libreria.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -59,8 +59,9 @@ public class OrderController {
     public ResponseEntity<?> order(
             @PathVariable("itemId") Long itemId,
             @RequestBody OrdersRequest ordersRequest,
-            Principal principal
-            ) {
+            Principal principal,
+            HttpServletRequest request
+    ) {
         Item item = itemService.getItemEntity(itemId);
 
         if (CommonUtils.isNull(item)) {
@@ -77,9 +78,6 @@ public class OrderController {
             return ResponseEntity.ok("주문 수량이 재고보다 많아 주문이 불가능합니다.");
         }
 
-        String url = "/item/" + itemId;
-        HttpHeaders httpHeaders = CommonUtils.makeHeader(url);
-
         orderService.saveOrder(
                 itemId,
                 ordersRequest,
@@ -87,10 +85,9 @@ public class OrderController {
         );
         log.info("주문 성공!!");
 
-        return ResponseEntity
-                .status(HttpStatus.MOVED_PERMANENTLY)
-                .headers(httpHeaders)
-                .build();
+        String url = "/item/" + itemId;
+
+        return CommonUtils.makeRedirect(url, request);
     }
 
     @GetMapping("/item/cancel/{orderId}")
@@ -110,7 +107,8 @@ public class OrderController {
     @PostMapping("/item/cancel/{orderId}")
     public ResponseEntity<?> cancel(
             @PathVariable("orderId") Long orderId,
-            Principal principal
+            Principal principal,
+            HttpServletRequest request
     ) {
         Orders orders = orderService.getOrderEntity(orderId);
 
@@ -133,15 +131,11 @@ public class OrderController {
             return ResponseEntity.ok("주문 한지 7일이 지나 주문 취소가 불가능합니다.");
         }
 
-        String url = "/user/order-list";
-        HttpHeaders httpHeaders = CommonUtils.makeHeader(url);
-
         orderService.cancelOrder(orderId);
         log.info("주문 취소 성공!!");
 
-        return ResponseEntity
-                .status(HttpStatus.MOVED_PERMANENTLY)
-                .headers(httpHeaders)
-                .build();
+        String url = "/user/order-list";
+
+        return CommonUtils.makeRedirect(url, request);
     }
 }

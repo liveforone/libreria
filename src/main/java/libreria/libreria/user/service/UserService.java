@@ -1,5 +1,7 @@
 package libreria.libreria.user.service;
 
+import libreria.libreria.jwt.JwtTokenProvider;
+import libreria.libreria.jwt.TokenInfo;
 import libreria.libreria.user.model.Role;
 import libreria.libreria.user.dto.UserRequest;
 import libreria.libreria.user.dto.UserResponse;
@@ -11,29 +13,27 @@ import libreria.libreria.user.util.UserUtils;
 import libreria.libreria.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class UserService implements UserDetailsService {
+public class UserService {
 
     private final UserRepository userRepository;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final JwtTokenProvider jwtTokenProvider;
 
     /*
     * 이메일 중복 검증
@@ -86,7 +86,12 @@ public class UserService implements UserDetailsService {
         userRequest.setPassword(passwordEncoder.encode(
                 userRequest.getPassword()
         ));
-        userRequest.setAuth(Role.MEMBER);
+
+        if (Objects.equals(userRequest.getEmail(), "admin@libreria.com")) {
+            userRequest.setAuth(Role.ADMIN);
+        } else {
+            userRequest.setAuth(Role.MEMBER);
+        }
 
         userRepository.save(
                 UserMapper.dtoToEntity(userRequest)
@@ -94,70 +99,20 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void login(UserRequest userRequest, HttpSession httpSession)
-            throws UsernameNotFoundException
-    {
+    public TokenInfo login(UserRequest userRequest) {
         String email = userRequest.getEmail();
         String password = userRequest.getPassword();
-        Users user = userRepository.findByEmail(email);
 
-        UsernamePasswordAuthenticationToken token =
-                new UsernamePasswordAuthenticationToken(email, password);
-        SecurityContextHolder.getContext().setAuthentication(token);
-        httpSession.setAttribute(
-                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
-                SecurityContextHolder.getContext()
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                email,
+                password
         );
+        Authentication authentication = authenticationManagerBuilder
+                .getObject()
+                .authenticate(authenticationToken);
 
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        /*
-        * 처음 어드민이 로그인을 하는경우 이메일로 판별해서 권한을 admin 으로 변경해주고
-        * 그 다음부터 어드민이 업데이트 할때에는 auth 칼럼으로 판별해서 db 업데이트 하지않고,
-        * GrantedAuthority 만 업데이트 해준다.
-         */
-        if (user.getAuth() != Role.ADMIN && ("admin@libreria.com").equals(email)) {
-            authorities.add(new SimpleGrantedAuthority(Role.ADMIN.getValue()));
-            userRepository.updateAuth(Role.ADMIN, userRequest.getEmail());
-        }
-
-        if (user.getAuth() == Role.ADMIN) {
-            authorities.add(new SimpleGrantedAuthority(Role.ADMIN.getValue()));
-        }
-
-        if (user.getAuth() == Role.SELLER) {
-            authorities.add(new SimpleGrantedAuthority(Role.SELLER.getValue()));
-        }
-        authorities.add(new SimpleGrantedAuthority(Role.MEMBER.getValue()));
-
-        new User(
-                user.getEmail(),
-                user.getPassword(),
-                authorities
-        );
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(String email)
-            throws UsernameNotFoundException
-    {
-        Users users = userRepository.findByEmail(email);
-
-        List<GrantedAuthority> authorities = new ArrayList<>();
-
-        if (users.getAuth() == Role.ADMIN) {  //어드민 아이디 지정됨, 비밀번호는 회원가입해야함
-            authorities.add(new SimpleGrantedAuthority(Role.ADMIN.getValue()));
-        }
-
-        if (users.getAuth() == Role.SELLER) {
-            authorities.add(new SimpleGrantedAuthority(Role.SELLER.getValue()));
-        }
-        authorities.add(new SimpleGrantedAuthority(Role.MEMBER.getValue()));
-
-        return new User(
-                users.getEmail(),
-                users.getPassword(),
-                authorities
-        );
+        return jwtTokenProvider
+                .generateToken(authentication);
     }
 
     @Transactional

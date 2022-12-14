@@ -1,5 +1,6 @@
 package libreria.libreria.item.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import libreria.libreria.item.model.Item;
 import libreria.libreria.item.dto.ItemRequest;
 import libreria.libreria.item.dto.ItemResponse;
@@ -15,8 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -87,7 +86,8 @@ public class ItemController {
     public ResponseEntity<?> itemPost(
             @RequestPart MultipartFile uploadFile,
             @RequestPart("itemRequest") ItemRequest itemRequest,
-            Principal principal
+            Principal principal,
+            HttpServletRequest request
     ) throws IllegalStateException, IOException {
 
         if (uploadFile.isEmpty()) {
@@ -104,12 +104,8 @@ public class ItemController {
         log.info("포스팅 성공!!");
 
         String url = "/item/" + itemId;
-        HttpHeaders httpHeaders = CommonUtils.makeHeader(url);
 
-        return ResponseEntity
-                .status(HttpStatus.MOVED_PERMANENTLY)
-                .headers(httpHeaders)
-                .build();
+        return CommonUtils.makeRedirect(url, request);
     }
 
     /*
@@ -152,23 +148,22 @@ public class ItemController {
     }
 
     @PostMapping("/item/good/{id}")
-    public ResponseEntity<?> updateGood(@PathVariable("id") Long id) {
+    public ResponseEntity<?> updateGood(
+            @PathVariable("id") Long id,
+            HttpServletRequest request
+    ) {
         Item item = itemService.getItemEntity(id);
 
         if (CommonUtils.isNull(item)) {
             return ResponseEntity.ok("해당 상품이 없어 좋아요가 불가능합니다.");
         }
 
-        String url = "/item/" + id;
-        HttpHeaders httpHeaders = CommonUtils.makeHeader(url);
-
         itemService.updateGood(id);
         log.info("좋아요 업데이트!!");
 
-        return ResponseEntity
-                .status(HttpStatus.MOVED_PERMANENTLY)
-                .headers(httpHeaders)
-                .build();
+        String url = "/item/" + id;
+
+        return CommonUtils.makeRedirect(url, request);
     }
 
     @GetMapping("/item/edit/{id}")
@@ -192,11 +187,12 @@ public class ItemController {
             @PathVariable("id") Long id,
             @RequestPart MultipartFile uploadFile,
             @RequestPart("itemRequest") ItemRequest itemRequest,
-            Principal principal
+            Principal principal,
+            HttpServletRequest request
     ) throws IllegalStateException, IOException {
 
         String url = "/item/" + id;
-        HttpHeaders httpHeaders = CommonUtils.makeHeader(url);
+        ResponseEntity<String> response = CommonUtils.makeRedirect(url, request);
 
         Item item = itemService.getItemEntity(id);
 
@@ -206,19 +202,14 @@ public class ItemController {
 
         if (!Objects.equals(item.getUsers().getEmail(), principal.getName())) {
             log.info("작성자와 현재 유저가 달라 수정 불가능.");
-            return ResponseEntity
-                    .status(HttpStatus.FORBIDDEN)
-                    .build();
+            return ResponseEntity.ok("작성자가 아니라서 수정이 불가능합니다.");
         }
 
         if (uploadFile.isEmpty()) {
             itemService.editItemNoFileChange(id, itemRequest);
             log.info("파일 수정 완료!!(파일교체 X)");
 
-            return ResponseEntity
-                    .status(HttpStatus.MOVED_PERMANENTLY)
-                    .headers(httpHeaders)
-                    .build();
+            return response;
         }
 
         itemService.editItemWithFile(
@@ -228,9 +219,6 @@ public class ItemController {
         );
         log.info("파일 수정 완료!!(파일교체 O)");
 
-        return ResponseEntity
-                .status(HttpStatus.MOVED_PERMANENTLY)
-                .headers(httpHeaders)
-                .build();
+        return response;
     }
 }

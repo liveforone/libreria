@@ -1,5 +1,6 @@
 package libreria.libreria.comment.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import libreria.libreria.comment.dto.CommentRequest;
 import libreria.libreria.comment.dto.CommentResponse;
 import libreria.libreria.comment.model.Comment;
@@ -9,7 +10,6 @@ import libreria.libreria.item.service.ItemService;
 import libreria.libreria.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,16 +47,14 @@ public class CommentController {
     public ResponseEntity<?> commentPost(
             @PathVariable("itemId") Long itemId,
             @RequestBody CommentRequest commentRequest,
-            Principal principal
+            Principal principal,
+            HttpServletRequest request
     ) {
         Item item = itemService.getItemEntity(itemId);
 
         if (CommonUtils.isNull(item)) {
             return ResponseEntity.ok("해당 상품이 없어 댓글 작성이 불가능합니다.");
         }
-
-        String url = "/item/comment/" + itemId;
-        HttpHeaders httpHeaders = CommonUtils.makeHeader(url);
 
         commentService.saveComment(
                 itemId,
@@ -65,10 +63,9 @@ public class CommentController {
         );
         log.info("댓글 작성 성공!!");
 
-        return ResponseEntity
-                .status(HttpStatus.MOVED_PERMANENTLY)
-                .headers(httpHeaders)
-                .build();
+        String url = "/item/comment/" + itemId;
+
+        return CommonUtils.makeRedirect(url, request);
     }
 
     @GetMapping("/item/comment/edit/{id}")
@@ -86,7 +83,8 @@ public class CommentController {
     public ResponseEntity<?> editComment(
             @PathVariable("id") Long id,
             @RequestBody CommentRequest commentRequest,
-            Principal principal
+            Principal principal,
+            HttpServletRequest request
     ) {
         Comment comment = commentService.getComment(id);
 
@@ -108,18 +106,15 @@ public class CommentController {
         log.info("리뷰 업데이트 성공!!");
 
         String url = "/item/comment/" + itemId;
-        HttpHeaders httpHeaders = CommonUtils.makeHeader(url);
 
-        return ResponseEntity
-                .status(HttpStatus.MOVED_PERMANENTLY)
-                .headers(httpHeaders)
-                .build();
+        return CommonUtils.makeRedirect(url, request);
     }
 
     @PostMapping("/item/comment/delete/{id}")
     public ResponseEntity<?> commentDelete(
             @PathVariable("id") Long id,
-            Principal principal
+            Principal principal,
+            HttpServletRequest request
     ) {
         Comment comment = commentService.getComment(id);
 
@@ -138,11 +133,7 @@ public class CommentController {
         log.info("댓글 " + id + "삭제완료!!");
 
         String url = "/item/comment/" + itemId;
-        HttpHeaders httpHeaders = CommonUtils.makeHeader(url);
 
-        return ResponseEntity
-                .status(HttpStatus.MOVED_PERMANENTLY)
-                .headers(httpHeaders)
-                .build();
+        return CommonUtils.makeRedirect(url, request);
     }
 }

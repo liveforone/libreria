@@ -1,5 +1,6 @@
 package libreria.libreria.bookmark.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import libreria.libreria.bookmark.model.Bookmark;
 import libreria.libreria.bookmark.service.BookmarkService;
 import libreria.libreria.item.model.Item;
@@ -7,8 +8,6 @@ import libreria.libreria.item.service.ItemService;
 import libreria.libreria.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,7 +36,8 @@ public class BookmarkController {
     @PostMapping("/bookmark/post/{itemId}")
     public ResponseEntity<?> bookmarking(
             @PathVariable("itemId") Long itemId,
-            Principal principal
+            Principal principal,
+            HttpServletRequest request
     ) {
         Item item = itemService.getItemEntity(itemId);
         Bookmark bookmark =
@@ -51,25 +51,22 @@ public class BookmarkController {
             return ResponseEntity.ok("이미 북마크 하였습니다.");
         }
 
-        String url = "/item/" + itemId;
-        HttpHeaders httpHeaders = CommonUtils.makeHeader(url);
-
         bookmarkService.saveBookmark(
                 principal.getName(),
                 itemId
         );
         log.info("북마킹 성공!!");
 
-        return ResponseEntity
-                .status(HttpStatus.MOVED_PERMANENTLY)
-                .headers(httpHeaders)
-                .build();
+        String url = "/item/" + itemId;
+
+        return CommonUtils.makeRedirect(url, request);
     }
 
     @PostMapping("/bookmark/cancel/{itemId}")
     public ResponseEntity<?> bookmarkCancel(
             @PathVariable("itemId") Long itemId,
-            Principal principal
+            Principal principal,
+            HttpServletRequest request
     ) {
         Item item = itemService.getItemEntity(itemId);
         Bookmark bookmark =
@@ -83,18 +80,14 @@ public class BookmarkController {
             return ResponseEntity.ok("이미 북마크가 취소되었습니다.");
         }
 
-        String url = "/item/" + itemId;
-        HttpHeaders httpHeaders = CommonUtils.makeHeader(url);
-
         bookmarkService.cancelBookmark(
                 principal.getName(),
                 itemId
         );
         log.info("북마크 취소 성공!!");
 
-        return ResponseEntity
-                .status(HttpStatus.MOVED_PERMANENTLY)
-                .headers(httpHeaders)
-                .build();
+        String url = "/item/" + itemId;
+
+        return CommonUtils.makeRedirect(url, request);
     }
 }

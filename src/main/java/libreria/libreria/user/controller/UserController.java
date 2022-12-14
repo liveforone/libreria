@@ -1,7 +1,10 @@
 package libreria.libreria.user.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import libreria.libreria.item.dto.ItemResponse;
 import libreria.libreria.item.service.ItemService;
+import libreria.libreria.jwt.JwtAuthenticationFilter;
+import libreria.libreria.jwt.TokenInfo;
 import libreria.libreria.orders.dto.OrdersResponse;
 import libreria.libreria.orders.service.OrderService;
 import libreria.libreria.user.dto.UserChangeEmailRequest;
@@ -16,15 +19,13 @@ import libreria.libreria.user.util.UserUtils;
 import libreria.libreria.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpSession;
+import java.net.URI;
 import java.security.Principal;
 import java.util.List;
 import java.util.Objects;
@@ -50,8 +51,10 @@ public class UserController {
     }
 
     @PostMapping("/user/signup")
-    public ResponseEntity<?> signup(@RequestBody UserRequest userRequest) {
-
+    public ResponseEntity<?> signup(
+            @RequestBody UserRequest userRequest,
+            HttpServletRequest request
+    ) {
         int checkEmail =
                 userService.checkDuplicateEmail(userRequest.getEmail());
 
@@ -60,11 +63,14 @@ public class UserController {
 
         }
 
-        String url = "/";
-        HttpHeaders httpHeaders = CommonUtils.makeHeader(url);
-
         userService.joinUser(userRequest);
         log.info("회원 가입 성공!!");
+
+        String url = "/user/login";
+        HttpHeaders httpHeaders = new HttpHeaders();
+        String token = JwtAuthenticationFilter.resolveToken(request);
+        httpHeaders.setBearerAuth(token);
+        httpHeaders.setLocation(URI.create(url));
 
         return ResponseEntity
                 .status(HttpStatus.MOVED_PERMANENTLY)
@@ -79,8 +85,7 @@ public class UserController {
 
     @PostMapping("/user/login")
     public ResponseEntity<?> loginPage(
-            @RequestBody UserRequest userRequest,
-            HttpSession session
+            @RequestBody UserRequest userRequest
     ) {
         Users users = userService.getUserEntity(userRequest.getEmail());
 
@@ -97,19 +102,10 @@ public class UserController {
             return ResponseEntity.ok("비밀번호가 다릅니다. 다시 시도하세요.");
         }
 
-        String url = "/";
-        HttpHeaders httpHeaders = CommonUtils.makeHeader(url);
-
-        userService.login(
-                userRequest,
-                session
-        );
+        TokenInfo tokenInfo = userService.login(userRequest);
         log.info("로그인 성공!");
 
-        return ResponseEntity
-                .status(HttpStatus.MOVED_PERMANENTLY)
-                .headers(httpHeaders)
-                .build();
+        return ResponseEntity.ok(tokenInfo);
     }
 
     /*
@@ -120,7 +116,8 @@ public class UserController {
     @PostMapping("/user/change-email")
     public ResponseEntity<?> changeEmail(
             @RequestBody UserChangeEmailRequest userRequest,
-            Principal principal
+            Principal principal,
+            HttpServletRequest request
     ) {
         Users users = userService.getUserEntity(principal.getName());
         Users duplicateUser = userService.getUserEntity(userRequest.getEmail());
@@ -145,19 +142,15 @@ public class UserController {
             return ResponseEntity.ok("비밀번호가 다릅니다. 다시 입력해주세요.");
         }
 
-        String url = "/user/logout";
-        HttpHeaders httpHeaders = CommonUtils.makeHeader(url);
-
         userService.updateEmail(
                 principal.getName(),
                 userRequest.getEmail()
         );
         log.info("이메일 변경 성공!!");
 
-        return ResponseEntity
-                .status(HttpStatus.MOVED_PERMANENTLY)
-                .headers(httpHeaders)
-                .build();
+        String url = "/user/logout";
+
+        return CommonUtils.makeRedirect(url, request);
     }
 
 
@@ -167,7 +160,8 @@ public class UserController {
     @PostMapping("/user/change-password")
     public ResponseEntity<?> changePassword(
             @RequestBody UserChangePasswordRequest userRequest,
-            Principal principal
+            Principal principal,
+            HttpServletRequest request
     ) {
         Users users = userService.getUserEntity(principal.getName());
 
@@ -186,19 +180,15 @@ public class UserController {
             return ResponseEntity.ok("비밀번호가 다릅니다. 다시 입력해주세요.");
         }
 
-        String url = "/user/logout";
-        HttpHeaders httpHeaders = CommonUtils.makeHeader(url);
-
         userService.updatePassword(
                 users.getId(),
                 userRequest.getNewPassword()
         );
         log.info("비밀번호 변경 성공!!");
 
-        return ResponseEntity
-                .status(HttpStatus.MOVED_PERMANENTLY)
-                .headers(httpHeaders)
-                .build();
+        String url = "/user/logout";
+
+        return CommonUtils.makeRedirect(url, request);
     }
 
     /*
@@ -244,17 +234,16 @@ public class UserController {
     * 필요 권한 : SELLER
      */
     @PostMapping("/user/seller")
-    public ResponseEntity<?> seller(Principal principal) {
-        String url = "/";
-        HttpHeaders httpHeaders = CommonUtils.makeHeader(url);
-
+    public ResponseEntity<?> seller(
+            Principal principal,
+            HttpServletRequest request
+    ) {
         userService.updateAuth(principal.getName());
         log.info("seller 권한 업데이트 성공!!");
 
-        return ResponseEntity
-                .status(HttpStatus.MOVED_PERMANENTLY)
-                .headers(httpHeaders)
-                .build();
+        String url = "/user/logout";
+
+        return CommonUtils.makeRedirect(url, request);
     }
 
     /*
@@ -287,20 +276,17 @@ public class UserController {
     @PostMapping("/user/address")
     public ResponseEntity<?> regiAddress(
             @RequestBody String address,
-            Principal principal
+            Principal principal,
+            HttpServletRequest request
     ) {
-        String url = "/user/my-page";
-        HttpHeaders httpHeaders = CommonUtils.makeHeader(url);
-
         String user = principal.getName();
 
         userService.regiAddress(user, address);
         log.info("주소 등록 성공!!");
 
-        return ResponseEntity
-                .status(HttpStatus.MOVED_PERMANENTLY)
-                .headers(httpHeaders)
-                .build();
+        String url = "/user/my-page";
+
+        return CommonUtils.makeRedirect(url, request);
     }
 
     /*
