@@ -1,13 +1,12 @@
 package libreria.libreria.bookmark.model;
 
+import jakarta.persistence.*;
 import libreria.libreria.item.model.Item;
 import libreria.libreria.user.model.Users;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
 
 @Entity
 @Getter

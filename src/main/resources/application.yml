@@ -20,8 +20,5 @@ logging:
   level:
     org.hibernate.SQL: debug
     org.springframework.web: debug
-server:
-  servlet:
-    session:
-      tracking-modes: cookie
-      timeout: 30m
+jwt:
+  secret: VlwEyVBsYt9V7zq57TejMnVUyzblYcfPQye08f7MGVA9XkHa
