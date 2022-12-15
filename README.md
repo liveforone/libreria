@@ -2,13 +2,15 @@
 > 온라인 서점
 
 # 1. 사용 기술 스택
+* Spring Boot 2.7.4 -> 3.0.0(마이그레이션)
 * Language : Java17
 * DB : MySql
 * ORM : Spring Data Jpa
 * Spring Security
 * LomBok
 * Gradle
-* Spring Boot 2.7.4 -> 3.0.0
+* jwt
+
 
 # 2. 설명
 * 온라인 서점 사이트이다.
@@ -26,11 +28,11 @@
 * 유저이름은 모두 이메일 기반이다.
 * 멤버는 서적을 주문, 리뷰 등록이 가능하다.
 * 상품등록시 SELLER 권한이 필요하다.
-* 회원은 등급이 있다. UserService의 getUser() 함수에서 등급을 체크한다.
+* 회원은 등급이 있다.
 * 브론즈, 실버(주문건수 15건 이상), 골드(30건), 플래티넘(60건), 다이아(120건)
 * 등급은 my-page에서 나의 등급과 리뷰에서 게시자의 등급을 볼 수 있다.
 * 도서의 사진은 1개만 첨부 가능하다. 도서는 많은 상품 이미지를 사실 필요로 하지않는다.(여타 사이트들도 마찬가지)
-* 또한 사진이 없다면 도서의 등록은 불가능하다.(forbidden)
+* 또한 사진이 없다면 도서의 등록은 불가능하다.
 * 게시글 마다 리뷰게시판이 존재한다.
 * 게시글의 게시자는 주문 리스트를 보는 것이가능하다. my-page와 비슷한 로직이다.
 * 상품을 주문 할 때마다 상품 주문 횟수는 증가한다.
@@ -46,27 +48,34 @@
 ## json body 설계 및 예시
 ### users
 ```
+[일반 유저1]
 {
     "email" : "yc1234@gmail.com",
     "password" : "1234"
 }
+[일반 유저2]
 {
     "email" : "ms1234@gmail.com",
     "password" : "1234"
 }
+[어드민]
 {
     "email" : "admin@libreria.com",
     "password" : "1234"
 }
+[비밀번호 변경]
 {
     "oldPassword" : "1234",
     "newPassword" : "1111"
 }
-seoul - body, raw, text, /user/address, post
+[주소 등록/변경]
+body(raw, text) : seoul
 ```
 ### item
 ```
-form-data, application/json, requestpart
+[도서 등록1]
+form-data 에 application/json 형태로 아래 json 삽입
+json 다음에 uploadFile 이라는 이름으로 파일 등록
 {
     "title" : "test1",
     "content" : "this is content",
@@ -76,6 +85,7 @@ form-data, application/json, requestpart
     "year" : "2022-10-12",
     "good" : 1
 }
+[도서 등록2] - 형식은 위와 동일
 {
     "title" : "test2",
     "content" : "this is content2",
@@ -85,6 +95,7 @@ form-data, application/json, requestpart
     "year" : "2022-10-14",
     "good" : 3
 }
+[도서 등록3] - 형식은 위와 동일
 {
     "title" : "updated Title",
     "content" : "updated content",
@@ -96,15 +107,18 @@ form-data, application/json, requestpart
 ```
 ### comment
 ```
+[댓글 등록]
 {
     "content" : "this is comment"
 }
+[댓글 수정]
 {
     "content" : "updated comment"
 }
 ```
 ### orders
 ```
+[주문]
 {
     "orderCount" : "2"
 }
@@ -251,6 +265,10 @@ ex) : 여행 -> travel 등
 * 권한 업데이트 시 해당 토큰에 업데이트된 권한이 반영이 안된다.
 * 따라서 로그아웃으로 리다이렉트 하였다.
 * 다시 로그인하면 권한이 업데이트된다.
+* 토큰은 만료될때까지 유효하지만 재로그인을 한 이유는 권한은 토큰과 관계없기 때문이다.
+* CustomUserDetailService에서 createUserDetails 메소드가 유저를 db에서 끌어와서
+* 권한, 이메일, 비밀번호등을 set하는데 이 메소드를 호출하는 메소드는 loadUserByUsername() 메소드이다.
+* loadUserByUsername() 메소드는 로그인을 할때 호출되므로 권한을 업데이트 한 경우에는 반드시 재로그인을 해야 위의 로직을 돌고 제대로 권한이 매핑된다.
 
 ## Postman으로 로그아웃
 * 로그아웃시 Http Method는 get이다.
@@ -296,6 +314,37 @@ public static ResponseEntity<String> makeRedirect(String inputUrl, HttpServletRe
                 String.class
         );
 }
+```
+
+## 스프링부트 마이그레이션
+* 스프링부트를 2.7.4에서 3.0.0으로 마이그레이션 하였다.
+* 마이그레이션의 가장 큰 이유는 3.0.0에서의 스프링 부트 성능 변화와 스프링의 자카르타에 대한 전폭적인 지원,
+* 마지막으로 스프링 시큐리티도 많은 부분 변화되었기 때문이다.
+* 큰 변화가 있을때 마이그레이션 하지 않으면 나중에 마이그레이션 작업을 할 때 힘들어 질것같아 마이그레이션을 결정했다.
+* 마이그레이션 진행은 아래와 같다.
+```
+디펜던시에 
+runtimeOnly 'org.springframework.boot:spring-boot-properties-migrator' 를 추가한다.
+
+plugin { } 에서 자바의 버전을 원하는 버전으로 변경하는데
+2.7.4에서 3.0.0 으로 넘어갈때 plugin에는 약간의 변화가 있다.
+
+id 'io.spring.dependency-management' version '1.1.0' 요 친구가 추가되었다.
+
+따라서 아래와 같이 변경하면된다.
+
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.0.0'
+	id 'io.spring.dependency-management' version '1.1.0'
+}
+
+gradle을 동기화 해주고 거의 모든 로직은 동일하나 엔티티와 스프링 시큐리티만 변경을 해주었다.
+엔티티는 import에서 persistance가 jakarta.persistence로 변경되었기 때문에 
+alt + enter를 눌러서 적절한 값들을 import 해주면된다.
+큰 이슈는 없었다. 딱히 큰 에러도 발생하지 않았다.
+모든 마이그레이션 작업이 끝나면 runtimeOnly 'org.springframework.boot:spring-boot-properties-migrator'는 삭제하여 
+다시 gradle을 동기화 해주면된다.
 ```
 
 # 6. 나의 고민
@@ -366,3 +415,4 @@ public static ResponseEntity<String> makeRedirect(String inputUrl, HttpServletRe
 * mapper 클래스와 XxUtils 클래스를 만들어서 dto <-> entity 로직은 mapper로, transaction 이 걸리지 않는 로직은 XxUtils로 모듈화 하여 서비스로직의 가독성향상과 모듈화로 객체지향을 더욱 지킴.
 * 주석은 c언어 스타일의 주석으로 변경함.
 * 상수는 enum으로 선언하여 타입 안전성을 보장하고 인스턴스가 하나씩만 존재함을 보장한다.
+* 스프링부트의 버전을 2.7.4에서 3.0.0 버전으로 마이그레이션 하였다.
