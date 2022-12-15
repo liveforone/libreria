@@ -42,7 +42,7 @@
 * 게시자는 상품의 수정이 가능하며, 품절시 재고 등록도 수정으로 한다.(게시자 판별은 서버와 화면단 모두에서함)
 * 여타 다른 사이트가 그렇듯 상품은 품절됬음 품절됬지 게시글을 삭제하는것은 불가능하다.(어드민은 가능)
 
-## DB ERD diagram
+## DB ER Diagram
 ![스크린샷(140)](https://user-images.githubusercontent.com/88976237/201450990-04df79cd-1da2-4e63-9cee-badda3cf2039.png)
 
 ## json body 설계 및 예시
