@@ -269,6 +269,7 @@ ex) : 여행 -> travel 등
 * CustomUserDetailService에서 createUserDetails 메소드가 유저를 db에서 끌어와서
 * 권한, 이메일, 비밀번호등을 set하는데 이 메소드를 호출하는 메소드는 loadUserByUsername() 메소드이다.
 * loadUserByUsername() 메소드는 로그인을 할때 호출되므로 권한을 업데이트 한 경우에는 반드시 재로그인을 해야 위의 로직을 돌고 제대로 권한이 매핑된다.
+* 다시 말해서 로그인을 할때마다 token이 생성되는데, 권한을 업데이트하고 리매핑 하려면 다시 재 로그인해서 토큰을 재발급 받으면 된다는 것이다.
 
 ## Postman으로 로그아웃
 * 로그아웃시 Http Method는 get이다.
