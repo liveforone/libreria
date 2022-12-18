@@ -11,7 +11,6 @@
 * Gradle
 * jwt
 
-
 # 2. 설명
 * 온라인 서점 사이트이다.
 * rest-api서버이다.
@@ -42,9 +41,6 @@
 * 게시자는 상품의 수정이 가능하며, 품절시 재고 등록도 수정으로 한다.(게시자 판별은 서버와 화면단 모두에서함)
 * 여타 다른 사이트가 그렇듯 상품은 품절됬음 품절됬지 게시글을 삭제하는것은 불가능하다.(어드민은 가능)
 * 테스트 코드는 기능에 대해서 작성했다. 예를 들어 주문을 취소할때 7일 안에 취소가 가능하다면 이런 날짜를 체크하는 함수를 테스트한다고 보면된다.
-
-## DB ER Diagram
-![스크린샷(140)](https://user-images.githubusercontent.com/88976237/201450990-04df79cd-1da2-4e63-9cee-badda3cf2039.png)
 
 ## json body 설계 및 예시
 ### users
@@ -165,7 +161,77 @@ json 다음에 uploadFile 이라는 이름으로 파일 등록
 /item/cancel/{orderId} - get/post
 ```
 
-# 4. 스타일 가이드
+# 4. 데이터 베이스 설계
+## 간단 설명
+* 쿼리 생성이 귀찮을 경우 ddl-auto를 create로 설정하고 create, alter 쿼리를 복사하여 나만의 제약조건을 넣는다.
+* ddl-auto를 create-drop으로 설정하여 모든 테이블을 다 날려준다.
+* 위에서 만들어놓은 쿼리를 mysql workbench에서 실행시켜 테이블을 생성한다.
+* ddl-auto를 none으로 놓고 사용한다.
+* 이번 프로젝트에서는 쿼리를 직접 사용하는 것을 목표로 하였기에 대단한 성능을 생각하는 제약조건은 딱히 없다.
+## 쿼리
+```
+create table users (
+    id bigint not null auto_increment,
+    email varchar(255) not null,
+    password varchar(255) not null,
+    auth varchar(255),
+    address varchar(255),
+    count integer default 0,
+    primary key (id)
+);
+
+create table item (
+    id bigint not null auto_increment,
+    title varchar(255) not null,
+    content TEXT,
+    author varchar(255),
+    category varchar(255),
+    year varchar(255),
+    save_file_name varchar(255),
+    good integer default 0,
+    remaining integer not null,
+    users_id bigint,
+    primary key (id)
+);
+
+create table orders (
+    id bigint not null auto_increment,
+    status varchar(255),
+    created_date date,
+    order_count integer default 0,
+    item_id bigint,
+    users_id bigint,
+    primary key (id)
+);
+
+create table comment (
+    id bigint not null auto_increment,
+    content TEXT not null,
+    writer varchar(255),
+    created_date datetime(6),
+    item_id bigint,
+    primary key (id)
+);
+
+create table bookmark (
+    id bigint not null auto_increment,
+    item_id bigint,
+    users_id bigint,
+    primary key (id)
+);
+
+alter table item add foreign key (users_id) references users (id);
+alter table orders add foreign key (item_id) references item (id);
+alter table orders add foreign key (users_id) references users (id);
+alter table comment add foreign key (item_id) references item (id);
+alter table bookmark add foreign key (item_id) references item (id);
+alter table bookmark add foreign key (users_id) references users (id);
+```
+## DB ER Diagram
+![스크린샷(140)](https://user-images.githubusercontent.com/88976237/201450990-04df79cd-1da2-4e63-9cee-badda3cf2039.png)
+
+
+# 5. 스타일 가이드
 * 유저를 제외한 모든 객체의 [널체크](https://github.com/liveforone/study/blob/main/%5B%EB%82%98%EB%A7%8C%EC%9D%98%20%EC%8A%A4%ED%83%80%EC%9D%BC%20%EA%B0%80%EC%9D%B4%EB%93%9C%5D/3.%20%EA%B0%9D%EC%B2%B4%EC%9D%98%20Null%EA%B3%BC%20%EC%A4%91%EB%B3%B5%EC%9D%84%20%EC%B2%B4%ED%81%AC%ED%95%98%EB%9D%BC.md) + 중복 체크를 꼭 하라.
 * 함수와 긴 변수의 경우 [줄바꿈 가이드](https://github.com/liveforone/study/blob/main/%5B%EB%82%98%EB%A7%8C%EC%9D%98%20%EC%8A%A4%ED%83%80%EC%9D%BC%20%EA%B0%80%EC%9D%B4%EB%93%9C%5D/2.%20%EC%A4%84%EB%B0%94%EA%BF%88%EC%9C%BC%EB%A1%9C%20%EA%B0%80%EB%8F%85%EC%84%B1%EC%9D%84%20%ED%96%A5%EC%83%81%ED%95%98%EC%9E%90.md)를 지켜 작성하라.
 * 매직넘버는 전부 [enum](https://github.com/liveforone/study/blob/main/%5B%EB%82%98%EB%A7%8C%EC%9D%98%20%EC%8A%A4%ED%83%80%EC%9D%BC%20%EA%B0%80%EC%9D%B4%EB%93%9C%5D/8.%20%EB%A7%A4%EC%A7%81%EB%84%98%EB%B2%84%EB%A5%BC%20enum%EC%9C%BC%EB%A1%9C%20%ED%95%B4%EA%B2%B0%ED%95%98%EB%9D%BC.md)으로 처리하라.
@@ -177,7 +243,7 @@ json 다음에 uploadFile 이라는 이름으로 파일 등록
 * 단순 for-each문은 [람다](https://github.com/liveforone/study/blob/main/%5B%EB%82%98%EB%A7%8C%EC%9D%98%20%EC%8A%A4%ED%83%80%EC%9D%BC%20%EA%B0%80%EC%9D%B4%EB%93%9C%5D/6.%20%EB%8B%A8%EC%88%9C%20for-each%EB%AC%B8%EC%9D%84%20%EB%9E%8C%EB%8B%A4%EB%A1%9C%20%EB%B0%94%EA%BE%B8%EC%9E%90.md)로 작성하고, 람다식을 적극 활용하라.
 * 주석은 c언어 스타일 주석으로 선언하라.
 
-# 5. 상세 설명
+# 6. 상세 설명
 ## 파일 저장 전략(이미지 저장전략)
 ```
 random uuid + "_" + originalFileName = saveFileName 으로 저장
@@ -349,7 +415,7 @@ alt + enter를 눌러서 적절한 값들을 import 해주면된다.
 다시 gradle을 동기화 해주면된다.
 ```
 
-# 6. 나의 고민
+# 7. 나의 고민
 ## 어드민의 로그인
 * 어드민은 회사에서 지정한 admin@libreria.com 라는 지정된 이메일을 사용한다.
 * 따라서 처음에 로그인 시 저 아이디로 접근한다면 최초 회원가입 시 모든 유저는 MEMBER 권한을 부여받기때문에,
@@ -396,7 +462,7 @@ alt + enter를 눌러서 적절한 값들을 import 해주면된다.
 * 포워드를 쓸경우에는 rest-api서버에서 ResponseEntity.ok("메세지") 로 메세지만 클라이언트에 넘겨주도록 한다.
 * 하지만 프로젝트에서 대부분의 경우에는 시스템에 변화가 생기는 요청이 대부분이다. 따라서 거의 리다이렉트가 쓰였다.
 
-# 7. 릴리즈 노트
+# 8. 릴리즈 노트
 * 생성이나 수정시 getId()로 id입력받아서 리다이렉트 간편히 처리했다.
 * 수정과 삭제 모두 서버에서도 권한 체크.
 * dto로 리턴하여 순환참조 및 민감한 내용 뷰에 전달 막음.
