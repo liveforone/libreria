@@ -454,7 +454,7 @@ alt + enter를 눌러서 적절한 값들을 import 해주면된다.
 * 긴 함수, 매개변수가 많은 함수, 긴 변수에서 가독성이 많이 떨어졌다.
 * 또한 매개변수로 문자열이 들어가는 경우에도 가독성이 많이떨어졌다.
 * 줄바꿈으로 가독성을 향상했고 이에대한 내용은 아래 링크에서 확인 가능하다.
-* [줄바꿈으로 가독성 향상](https://github.com/liveforone/study/blob/main/GoodCode/%EC%A4%84%EB%B0%94%EA%BF%88%EC%9C%BC%EB%A1%9C%20%EA%B0%80%EB%8F%85%EC%84%B1%20%ED%96%A5%EC%83%81.md)
+* [줄바꿈으로 가독성 향상](https://github.com/liveforone/study/blob/main/%5B%EB%82%98%EB%A7%8C%EC%9D%98%20%EC%8A%A4%ED%83%80%EC%9D%BC%20%EA%B0%80%EC%9D%B4%EB%93%9C%5D/b.%20%EC%A4%84%EB%B0%94%EA%BF%88%EC%9C%BC%EB%A1%9C%20%EA%B0%80%EB%8F%85%EC%84%B1%EC%9D%84%20%ED%96%A5%EC%83%81%ED%95%98%EC%9E%90.md)
 
 ## 언제 리다이렉트 하고, 언제 포워드를 쓸까? 또 포워드인 경우에 어떻게 서버는 응답해줄까?
 * 리다이렉트와 포워드를 구분할 필요가있다고 느꼈다.
@@ -482,12 +482,12 @@ alt + enter를 눌러서 적절한 값들을 import 해주면된다.
 * orderlist -> order-list로 수정함. 모든 api 중 다음과 같은 형식이 있다면 전면 수정함.(오류발생시 api확인 유의)
 * 상수로 매직넘버 대체하여 가독성 향상
 * 널체크는 util 클래스를 만들고 커스텀 함수인 isNull()을 이용해 처리하는 것으로 전면 수정함.
-* [널체크 커스텀 함수](https://github.com/liveforone/study/blob/main/GoodCode/%EA%B0%9D%EC%B2%B4%20null%EC%B2%B4%ED%81%AC%EC%99%80%20%EC%A4%91%EB%B3%B5%EC%B2%B4%ED%81%AC.md)
+* 널체크 커스텀 함수 추가함.
 * HttpHeaders 축약 함수로 가독성 및 중복코드 제거함.
 * 시큐리티에 권한 매핑 필요한 것 아닌 나머지(anyRequest)에 authenticated로 설정해 가독성 향상함.
 * 문서(readme)에 스타일 가이드 추가함.
 * 향상된 for-each 문 람다 for-each 문으로 변경하여 가독성 향상
-* [dto 직접조회](https://github.com/liveforone/study/blob/main/GoodCode/dto%20%EC%A7%81%EC%A0%91%EC%A1%B0%ED%9A%8C%EB%A5%BC%20%EC%95%A0%EC%9A%A9%ED%95%98%EC%9E%90.md)로 가독성과 성능 향상함.
+* dto 직접조회로 가독성과 성능 향상함.
 * mapper 클래스와 XxUtils 클래스를 만들어서 dto <-> entity 로직은 mapper로, transaction 이 걸리지 않는 로직은 XxUtils로 모듈화 하여 서비스로직의 가독성향상과 모듈화로 객체지향을 더욱 지킴.
 * 주석은 c언어 스타일의 주석으로 변경함.
 * 상수는 enum으로 선언하여 타입 안전성을 보장하고 인스턴스가 하나씩만 존재함을 보장한다.
