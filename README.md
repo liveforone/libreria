@@ -130,7 +130,7 @@ json 다음에 uploadFile 이라는 이름으로 파일 등록
 /user/logout - post
 /user/seller - get/post
 /user/my-page - get
-/user/address - get/post
+/user/regi-address - get/post
 /user/item-list - get, auth가 SELLER인 user만 가능
 /user/order-list - get, auth가 MEMBER인 user만 가능
 /user/prohibition - get
