@@ -42,13 +42,13 @@ public class ItemController {
                     @SortDefault(sort = "id", direction = Sort.Direction.DESC)
             }) Pageable pageable
     ) {
-        Page<ItemResponse> itemList = itemService.getItemList(pageable);
+        Page<ItemResponse> itemList = itemService.getAllItems(pageable);
 
         return ResponseEntity.ok(itemList);
     }
 
     @GetMapping("/item/search")
-    public ResponseEntity<Page<ItemResponse>> itemSearch(
+    public ResponseEntity<Page<ItemResponse>> itemSearchPage(
             @PageableDefault(page = 0, size = 10)
             @SortDefault.SortDefaults({
                     @SortDefault(sort = "good", direction = Sort.Direction.DESC),
@@ -57,7 +57,7 @@ public class ItemController {
             @RequestParam("keyword") String keyword
     ) {
         Page<ItemResponse> searchList =
-                itemService.getSearchListByTitle(keyword, pageable);
+                itemService.searchItemsByTitle(keyword, pageable);
 
         return ResponseEntity.ok(searchList);
     }
@@ -72,7 +72,7 @@ public class ItemController {
             }) Pageable pageable
     ) {
         Page<ItemResponse> categoryList =
-                itemService.getCategoryList(category, pageable);
+                itemService.getCategories(category, pageable);
 
         return ResponseEntity.ok(categoryList);
     }
@@ -105,7 +105,7 @@ public class ItemController {
 
         String url = "/item/" + itemId;
 
-        return CommonUtils.makeRedirect(url, request);
+        return CommonUtils.makeResponseEntityForRedirect(url, request);
     }
 
     /*
@@ -113,7 +113,7 @@ public class ItemController {
     * 클라이언트는 remaining 이 0일경우 주문 버튼을 품절로 바꾼다.
      */
     @GetMapping("/item/{id}")
-    public ResponseEntity<?> detail(
+    public ResponseEntity<?> itemDetail(
             @PathVariable("id") Long id,
             Principal principal
     ) {
@@ -163,12 +163,12 @@ public class ItemController {
 
         String url = "/item/" + id;
 
-        return CommonUtils.makeRedirect(url, request);
+        return CommonUtils.makeResponseEntityForRedirect(url, request);
     }
 
     @GetMapping("/item/edit/{id}")
-    public ResponseEntity<?> editPage(@PathVariable("id") Long id) {
-        ItemResponse item = itemService.getItemResponse(id);
+    public ResponseEntity<?> editItemPage(@PathVariable("id") Long id) {
+        ItemResponse item = itemService.getItemDto(id);
 
         if (CommonUtils.isNull(item)) {
             return ResponseEntity.ok("해당 상품이 없어 수정이 불가능합니다.");
@@ -192,7 +192,7 @@ public class ItemController {
     ) throws IllegalStateException, IOException {
 
         String url = "/item/" + id;
-        ResponseEntity<String> response = CommonUtils.makeRedirect(url, request);
+        ResponseEntity<String> response = CommonUtils.makeResponseEntityForRedirect(url, request);
 
         Item item = itemService.getItemEntity(id);
 
@@ -206,7 +206,7 @@ public class ItemController {
         }
 
         if (uploadFile.isEmpty()) {
-            itemService.editItemNoFileChange(id, itemRequest);
+            itemService.editItemWithNoFile(id, itemRequest);
             log.info("파일 수정 완료!!(파일교체 X)");
 
             return response;

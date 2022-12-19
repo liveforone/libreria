@@ -21,17 +21,17 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final ItemRepository itemRepository;
 
-    public List<CommentResponse> getCommentList(Long id) {
+    public List<CommentResponse> getComments(Long id) {
         return CommentMapper.entityToDtoList(
-                commentRepository.findCommentByItemId(id)
+                commentRepository.findCommentsByItemId(id)
         );
     }
 
-    public Comment getComment(Long id) {
+    public Comment getCommentEntity(Long id) {
         return commentRepository.findOneById(id);
     }
 
-    public CommentResponse getCommentResponse(Long id) {
+    public CommentResponse getCommentDto(Long id) {
         return commentRepository.findOneDtoById(id);
     }
 

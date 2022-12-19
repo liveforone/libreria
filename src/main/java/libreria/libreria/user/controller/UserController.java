@@ -84,9 +84,7 @@ public class UserController {
     }
 
     @PostMapping("/user/login")
-    public ResponseEntity<?> loginPage(
-            @RequestBody UserRequest userRequest
-    ) {
+    public ResponseEntity<?> login(@RequestBody UserRequest userRequest) {
         Users users = userService.getUserEntity(userRequest.getEmail());
 
         if (CommonUtils.isNull(users)) {
@@ -110,7 +108,7 @@ public class UserController {
 
     /*
     * 로그아웃은 시큐리티 단에서 이루어짐.
-    * /user/logout 으로 post 하면 된다.
+    * /user/logout 으로 get 하면 된다.
     */
 
     @PostMapping("/user/change-email")
@@ -150,13 +148,10 @@ public class UserController {
 
         String url = "/user/logout";
 
-        return CommonUtils.makeRedirect(url, request);
+        return CommonUtils.makeResponseEntityForRedirect(url, request);
     }
 
 
-    /*
-    * 비밀번호 변경
-     */
     @PostMapping("/user/change-password")
     public ResponseEntity<?> changePassword(
             @RequestBody UserChangePasswordRequest userRequest,
@@ -188,14 +183,11 @@ public class UserController {
 
         String url = "/user/logout";
 
-        return CommonUtils.makeRedirect(url, request);
+        return CommonUtils.makeResponseEntityForRedirect(url, request);
     }
 
-    /*
-    * 회원 탈퇴
-     */
     @PostMapping("/user/withdraw")
-    public ResponseEntity<?> userWithdraw(
+    public ResponseEntity<?> withdraw(
             @RequestBody String password,
             Principal principal
     ) {
@@ -221,18 +213,11 @@ public class UserController {
         return ResponseEntity.ok("그동안 서비스를 이용해주셔서 감사합니다.");
     }
 
-    /*
-    * 판매자 등록 페이지
-     */
     @GetMapping("/user/seller")
     public ResponseEntity<?> sellerPage() {
         return ResponseEntity.ok("판매자 등록 페이지");
     }
 
-    /*
-    * 판매자 등록
-    * 필요 권한 : SELLER
-     */
     @PostMapping("/user/seller")
     public ResponseEntity<?> seller(
             Principal principal,
@@ -243,7 +228,7 @@ public class UserController {
 
         String url = "/user/logout";
 
-        return CommonUtils.makeRedirect(url, request);
+        return CommonUtils.makeResponseEntityForRedirect(url, request);
     }
 
     /*
@@ -251,7 +236,7 @@ public class UserController {
     * MEMBER 일 경우 주문 리스트 버튼을 띄어서 /user/order-list 로 연결하고
     * SELLER 일 경우 등록 상품 버튼을 띄어서 /user/item-list 로 연결한다.
      */
-    @GetMapping("/user/my-page")  //rest-api 에서는 대문자를 쓰지않는다.
+    @GetMapping("/user/my-page")
     public ResponseEntity<?> myPage(Principal principal) {
         UserResponse dto = userService.getUserDto(principal.getName());
 
@@ -266,14 +251,14 @@ public class UserController {
     /*
     * 주소 등록 페이지
      */
-    @GetMapping("/user/address")
+    @GetMapping("/user/regi-address")
     public ResponseEntity<?> regiAddressPage(Principal principal) {
         String address = userService.getUserEntity(principal.getName()).getAddress();
 
         return ResponseEntity.ok(address);
     }
 
-    @PostMapping("/user/address")
+    @PostMapping("/user/regi-address")
     public ResponseEntity<?> regiAddress(
             @RequestBody String address,
             Principal principal,
@@ -286,7 +271,7 @@ public class UserController {
 
         String url = "/user/my-page";
 
-        return CommonUtils.makeRedirect(url, request);
+        return CommonUtils.makeResponseEntityForRedirect(url, request);
     }
 
     /*
@@ -302,7 +287,7 @@ public class UserController {
         }
 
         List<ItemResponse> itemList =
-                itemService.getItemListForMyPage(users.getEmail());
+                itemService.getItemsForMyPage(users.getEmail());
         return ResponseEntity.ok(itemList);
     }
 
@@ -321,7 +306,7 @@ public class UserController {
         }
 
         List<OrdersResponse> ordersList =
-                orderService.getOrderListForMyPage(users.getEmail());
+                orderService.getOrdersForMyPage(users.getEmail());
         return ResponseEntity.ok(ordersList);
     }
 

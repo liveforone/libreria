@@ -29,13 +29,13 @@ public class CommentController {
     private final ItemService itemService;
 
     @GetMapping("/item/comment/{itemId}")
-    public ResponseEntity<Map<String, Object>> commentList(
+    public ResponseEntity<Map<String, Object>> commentHome(
             @PathVariable("itemId") Long itemId,
             Principal principal
     ) {
         Map<String, Object> map = new HashMap<>();
         String user = principal.getName();
-        List<CommentResponse> commentList = commentService.getCommentList(itemId);
+        List<CommentResponse> commentList = commentService.getComments(itemId);
 
         map.put("user", user);
         map.put("body", commentList);
@@ -65,12 +65,12 @@ public class CommentController {
 
         String url = "/item/comment/" + itemId;
 
-        return CommonUtils.makeRedirect(url, request);
+        return CommonUtils.makeResponseEntityForRedirect(url, request);
     }
 
     @GetMapping("/item/comment/edit/{id}")
-    public ResponseEntity<?> editPage(@PathVariable("id") Long id) {
-        CommentResponse comment = commentService.getCommentResponse(id);
+    public ResponseEntity<?> editCommentPage(@PathVariable("id") Long id) {
+        CommentResponse comment = commentService.getCommentDto(id);
 
         if (CommonUtils.isNull(comment)) {
             return ResponseEntity.ok("댓글을 찾을 수 없어 수정이 불가능합니다.");
@@ -86,7 +86,7 @@ public class CommentController {
             Principal principal,
             HttpServletRequest request
     ) {
-        Comment comment = commentService.getComment(id);
+        Comment comment = commentService.getCommentEntity(id);
 
         if (CommonUtils.isNull(comment)) {
             return ResponseEntity.ok("댓글을 찾을 수 없어 수정이 불가능합니다.");
@@ -107,16 +107,16 @@ public class CommentController {
 
         String url = "/item/comment/" + itemId;
 
-        return CommonUtils.makeRedirect(url, request);
+        return CommonUtils.makeResponseEntityForRedirect(url, request);
     }
 
     @PostMapping("/item/comment/delete/{id}")
-    public ResponseEntity<?> commentDelete(
+    public ResponseEntity<?> deleteComment(
             @PathVariable("id") Long id,
             Principal principal,
             HttpServletRequest request
     ) {
-        Comment comment = commentService.getComment(id);
+        Comment comment = commentService.getCommentEntity(id);
 
         if (CommonUtils.isNull(comment)) {
             return ResponseEntity.ok("댓글을 찾을 수 없어 삭제가 불가능합니다.");
@@ -134,6 +134,6 @@ public class CommentController {
 
         String url = "/item/comment/" + itemId;
 
-        return CommonUtils.makeRedirect(url, request);
+        return CommonUtils.makeResponseEntityForRedirect(url, request);
     }
 }

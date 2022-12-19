@@ -23,9 +23,9 @@ public class BookmarkService {
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
 
-    public Map<String, Object> getBookmarkList(String email) {
+    public Map<String, Object> getBookmarks(String email) {
         return BookmarkMapper.entityToMap(
-                bookmarkRepository.findByUserEmail(email)
+                bookmarkRepository.findBookmarksByUserEmail(email)
         );
     }
 

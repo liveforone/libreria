@@ -18,20 +18,20 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     * when : my-page
      */
     @Query("select i from Item i join fetch i.users u where u.email = :email")
-    List<Item> findItemListByEmail(@Param("email") String email);
+    List<Item> findItemsByEmail(@Param("email") String email);
 
     @Override
     @Query("select i from Item i join fetch i.users")
     List<Item> findAll();
 
     @Query("select i from Item i join i.users where i.title like %:title%")
-    Page<Item> searchItemByTitle(@Param("title") String keyword, Pageable pageable);
+    Page<Item> searchItemsByTitle(@Param("title") String keyword, Pageable pageable);
 
     /*
     * 페이징은 fetch join 이 불가능하다.
      */
     @Query("select i from Item i join i.users where i.category = :category")
-    Page<Item> findCategoryListByCategory(@Param("category") String category, Pageable pageable);
+    Page<Item> findCategoriesByCategory(@Param("category") String category, Pageable pageable);
 
     @Query("select i from Item i join fetch i.users where i.id = :id")
     Item findOneById(@Param("id") Long id);

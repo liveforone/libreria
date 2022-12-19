@@ -18,7 +18,7 @@ public interface UserRepository extends JpaRepository<Users, Long> {
      */
     @Modifying
     @Query("update Users u set u.auth = :auth where u.email = :email")
-    void updateAuth(@Param("auth") Role auth, @Param("email") String email);
+    void updateUserAuth(@Param("auth") Role auth, @Param("email") String email);
 
     /*
     * 주소 업데이트

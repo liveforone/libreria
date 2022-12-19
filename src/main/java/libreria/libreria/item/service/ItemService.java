@@ -31,9 +31,9 @@ public class ItemService {
     * item list
     * when : my-page
      */
-    public List<ItemResponse> getItemListForMyPage(String email) {
+    public List<ItemResponse> getItemsForMyPage(String email) {
         return ItemMapper.entityToDtoList(
-                itemRepository.findItemListByEmail(email)
+                itemRepository.findItemsByEmail(email)
         );
     }
 
@@ -41,7 +41,7 @@ public class ItemService {
     * item list
     * when : 상품 home
      */
-    public Page<ItemResponse> getItemList(Pageable pageable) {
+    public Page<ItemResponse> getAllItems(Pageable pageable) {
         return ItemMapper.entityToDtoPage(
                 itemRepository.findAll(pageable)
         );
@@ -50,18 +50,18 @@ public class ItemService {
     /*
     * 상품 검색
      */
-    public Page<ItemResponse> getSearchListByTitle(String keyword, Pageable pageable) {
+    public Page<ItemResponse> searchItemsByTitle(String keyword, Pageable pageable) {
         return ItemMapper.entityToDtoPage(
-                itemRepository.searchItemByTitle(
+                itemRepository.searchItemsByTitle(
                         keyword,
                         pageable
                 )
         );
     }
 
-    public Page<ItemResponse> getCategoryList(String category, Pageable pageable) {
+    public Page<ItemResponse> getCategories(String category, Pageable pageable) {
         return ItemMapper.entityToDtoPage(
-                itemRepository.findCategoryListByCategory(
+                itemRepository.findCategoriesByCategory(
                     category,
                     pageable
                 )
@@ -72,7 +72,7 @@ public class ItemService {
         return itemRepository.findOneById(id);
     }
 
-    public ItemResponse getItemResponse(Long id) {
+    public ItemResponse getItemDto(Long id) {
         return itemRepository.findOneDtoById(id);
     }
 
@@ -104,7 +104,7 @@ public class ItemService {
     * 조건 : 기존 파일 유지
      */
     @Transactional
-    public void editItemNoFileChange(Long id, ItemRequest itemRequest) {
+    public void editItemWithNoFile(Long id, ItemRequest itemRequest) {
         Item item = itemRepository.findOneById(id);
 
         itemRequest.setId(id);

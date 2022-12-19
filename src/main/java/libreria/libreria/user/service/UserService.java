@@ -60,14 +60,11 @@ public class UserService {
             return null;
         }
 
-        //user 등급 체크
-        String rank = UserUtils.rankCheck(users.getCount());
-
         return UserResponse.builder()
                 .id(users.getId())
                 .email(users.getEmail())
                 .address(users.getAddress())
-                .rank(rank)
+                .rank(UserUtils.checkUserRank(users.getCount()))
                 .auth(users.getAuth())
                 .build();
     }
@@ -133,7 +130,7 @@ public class UserService {
         SecurityContextHolder.getContext().setAuthentication(newAuth);
         //컨텍스트홀더 업데이트 끝.
 
-        userRepository.updateAuth(
+        userRepository.updateUserAuth(
                 Role.SELLER,
                 email
         );

@@ -32,9 +32,9 @@ public class OrderController {
     * who : 게시글 작성자
      */
     @GetMapping("/item/order-list/{itemId}")
-    public ResponseEntity<?> itemDetailOrderList(@PathVariable("itemId") Long itemId) {
+    public ResponseEntity<?> ordersListPage(@PathVariable("itemId") Long itemId) {
         List<OrdersResponse> ordersList =
-                orderService.getOrderListForItemDetail(itemId);
+                orderService.getOrdersForItemDetail(itemId);
 
         if (CommonUtils.isNull(ordersList)) {
             return ResponseEntity.ok("주문자가 아직 없습니다.");
@@ -87,12 +87,12 @@ public class OrderController {
 
         String url = "/item/" + itemId;
 
-        return CommonUtils.makeRedirect(url, request);
+        return CommonUtils.makeResponseEntityForRedirect(url, request);
     }
 
     @GetMapping("/item/cancel/{orderId}")
     public ResponseEntity<?> cancelPage(@PathVariable("orderId") Long orderId) {
-        OrdersResponse order = orderService.getOrderResponse(orderId);
+        OrdersResponse order = orderService.getOrderDto(orderId);
 
         if (CommonUtils.isNull(order)) {
             return ResponseEntity.ok("해당 주문이 없어 주문취소가 불가능합니다.");
@@ -136,6 +136,6 @@ public class OrderController {
 
         String url = "/user/order-list";
 
-        return CommonUtils.makeRedirect(url, request);
+        return CommonUtils.makeResponseEntityForRedirect(url, request);
     }
 }

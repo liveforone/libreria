@@ -31,9 +31,9 @@ public class OrderService {
     * order-list
     * when : my-page
      */
-    public List<OrdersResponse> getOrderListForMyPage(String email) {
+    public List<OrdersResponse> getOrdersForMyPage(String email) {
         return OrdersMapper.entityToDtoList(
-                orderRepository.findOrderListByEmail(email)
+                orderRepository.findOrdersByEmail(email)
         );
     }
 
@@ -41,9 +41,9 @@ public class OrderService {
     * order-list
     * when : item detail
      */
-    public List<OrdersResponse> getOrderListForItemDetail(Long itemId) {
+    public List<OrdersResponse> getOrdersForItemDetail(Long itemId) {
         return OrdersMapper.entityToDtoList(
-                orderRepository.findOrderListByItemId(itemId)
+                orderRepository.findOrdersByItemId(itemId)
         );
     }
 
@@ -51,7 +51,7 @@ public class OrderService {
         return orderRepository.findOneById(orderId);
     }
 
-    public OrdersResponse getOrderResponse(Long id) {
+    public OrdersResponse getOrderDto(Long id) {
         return orderRepository.findOneDtoById(id);
     }
 
@@ -62,10 +62,10 @@ public class OrderService {
     public int getOrderDay(Long orderId) {
         Orders orders = orderRepository.findOneById(orderId);
 
-        int ableDate = orders.getCreatedDate().getDayOfYear() + 7;  //생성날짜 + 7일
+        int cancelLimitDate = orders.getCreatedDate().getDayOfYear() + 7;  //생성날짜 + 7일
         int nowDate = LocalDate.now().getDayOfYear();
 
-        if (nowDate <= ableDate) {
+        if (nowDate <= cancelLimitDate) {
             return OrdersConstants.CAN_CANCEL.getValue();
         }
         return OrdersConstants.CANT_CANCEL.getValue();

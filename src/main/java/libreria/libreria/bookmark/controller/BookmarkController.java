@@ -28,7 +28,7 @@ public class BookmarkController {
     @GetMapping("/my-bookmark")
     public ResponseEntity<Map<String, Object>> myBookmark(Principal principal) {
         Map<String, Object> bookmarkList =
-                bookmarkService.getBookmarkList(principal.getName());
+                bookmarkService.getBookmarks(principal.getName());
 
         return ResponseEntity.ok(bookmarkList);
     }
@@ -59,11 +59,11 @@ public class BookmarkController {
 
         String url = "/item/" + itemId;
 
-        return CommonUtils.makeRedirect(url, request);
+        return CommonUtils.makeResponseEntityForRedirect(url, request);
     }
 
     @PostMapping("/bookmark/cancel/{itemId}")
-    public ResponseEntity<?> bookmarkCancel(
+    public ResponseEntity<?> cancelBookmark(
             @PathVariable("itemId") Long itemId,
             Principal principal,
             HttpServletRequest request
@@ -88,6 +88,6 @@ public class BookmarkController {
 
         String url = "/item/" + itemId;
 
-        return CommonUtils.makeRedirect(url, request);
+        return CommonUtils.makeResponseEntityForRedirect(url, request);
     }
 }

@@ -19,7 +19,7 @@ public class UserUtils {
     /*
     * 유저 등급 체크
      */
-    public static String rankCheck(int count) {
+    public static String checkUserRank(int count) {
         if (count >= 120) {
             return "DIA";
         }

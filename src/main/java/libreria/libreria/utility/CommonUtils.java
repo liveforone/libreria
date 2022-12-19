@@ -38,10 +38,10 @@ public class CommonUtils {
     }
 
     /*
-     * 리다이렉트 ResponseEntity를 만드는 함수
+     * 리다이렉트 ResponseEntity 를 만드는 함수
      * input url 은 반드시 '/'로 시작해야한다.
      */
-    public static ResponseEntity<String> makeRedirect(String inputUrl, HttpServletRequest request) {
+    public static ResponseEntity<String> makeResponseEntityForRedirect(String inputUrl, HttpServletRequest request) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();
 
