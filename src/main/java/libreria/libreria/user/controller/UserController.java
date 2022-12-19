@@ -272,9 +272,9 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        List<ItemResponse> itemList =
+        List<ItemResponse> items =
                 itemService.getItemsForMyPage(users.getEmail());
-        return ResponseEntity.ok(itemList);
+        return ResponseEntity.ok(items);
     }
 
     /*
@@ -291,9 +291,9 @@ public class UserController {
                     .build();
         }
 
-        List<OrdersResponse> ordersList =
+        List<OrdersResponse> orderDtos =
                 orderService.getOrdersForMyPage(users.getEmail());
-        return ResponseEntity.ok(ordersList);
+        return ResponseEntity.ok(orderDtos);
     }
 
     @GetMapping("/user/prohibition")
@@ -318,6 +318,8 @@ public class UserController {
         }
 
         log.info("어드민이 어드민 페이지에 접속했습니다.");
-        return ResponseEntity.ok(userService.getAllUsersForAdmin());
+        return ResponseEntity.ok(
+                userService.getAllUsersForAdmin()
+        );
     }
 }

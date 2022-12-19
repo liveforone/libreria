@@ -7,7 +7,6 @@ import libreria.libreria.orders.model.Orders;
 import libreria.libreria.orders.dto.OrdersRequest;
 import libreria.libreria.orders.dto.OrdersResponse;
 import libreria.libreria.orders.repository.OrderRepository;
-import libreria.libreria.orders.util.OrdersConstants;
 import libreria.libreria.orders.util.OrdersMapper;
 import libreria.libreria.user.model.Users;
 import libreria.libreria.user.repository.UserRepository;
@@ -15,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -53,22 +51,6 @@ public class OrderService {
 
     public OrdersResponse getOrderDto(Long id) {
         return orderRepository.findOneDtoById(id);
-    }
-
-    /*
-    * 주문 날짜 조회
-    * when : 주문 취소
-     */
-    public int getOrderDay(Long orderId) {
-        Orders orders = orderRepository.findOneById(orderId);
-
-        int cancelLimitDate = orders.getCreatedDate().getDayOfYear() + 7;  //생성날짜 + 7일
-        int nowDate = LocalDate.now().getDayOfYear();
-
-        if (nowDate <= cancelLimitDate) {
-            return OrdersConstants.CAN_CANCEL.getValue();
-        }
-        return OrdersConstants.CANT_CANCEL.getValue();
     }
 
     @Transactional

@@ -8,6 +8,7 @@ import libreria.libreria.orders.dto.OrdersResponse;
 import libreria.libreria.orders.model.Orders;
 import libreria.libreria.orders.service.OrderService;
 import libreria.libreria.orders.util.OrdersConstants;
+import libreria.libreria.orders.util.OrdersUtils;
 import libreria.libreria.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,14 +34,14 @@ public class OrderController {
      */
     @GetMapping("/item/order-list/{itemId}")
     public ResponseEntity<?> ordersListPage(@PathVariable("itemId") Long itemId) {
-        List<OrdersResponse> ordersList =
+        List<OrdersResponse> orderDtos =
                 orderService.getOrdersForItemDetail(itemId);
 
-        if (CommonUtils.isNull(ordersList)) {
+        if (CommonUtils.isNull(orderDtos)) {
             return ResponseEntity.ok("주문자가 아직 없습니다.");
         }
 
-        return ResponseEntity.ok(ordersList);
+        return ResponseEntity.ok(orderDtos);
     }
 
     @GetMapping("/item/order/{itemId}")
@@ -124,9 +125,9 @@ public class OrderController {
                     .build();
         }
 
-        int ableCancelDate = orderService.getOrderDay(orderId);
+        int cancelLimitDate = OrdersUtils.getOrderDay(orders);
 
-        if (ableCancelDate != OrdersConstants.CAN_CANCEL.getValue()) {  //주문 가능 날짜 판별
+        if (cancelLimitDate != OrdersConstants.CAN_CANCEL.getValue()) {  //주문 가능 날짜 판별
             log.info("주문 취소 실패!!");
             return ResponseEntity.ok("주문 한지 7일이 지나 주문 취소가 불가능합니다.");
         }

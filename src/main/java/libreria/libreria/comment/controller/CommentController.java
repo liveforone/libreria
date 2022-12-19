@@ -35,10 +35,10 @@ public class CommentController {
     ) {
         Map<String, Object> map = new HashMap<>();
         String user = principal.getName();
-        List<CommentResponse> commentList = commentService.getComments(itemId);
+        List<CommentResponse> comments = commentService.getComments(itemId);
 
         map.put("user", user);
-        map.put("body", commentList);
+        map.put("body", comments);
 
         return ResponseEntity.ok(map);
     }

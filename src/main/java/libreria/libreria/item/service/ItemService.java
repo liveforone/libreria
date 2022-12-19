@@ -5,6 +5,7 @@ import libreria.libreria.item.dto.ItemRequest;
 import libreria.libreria.item.dto.ItemResponse;
 import libreria.libreria.item.repository.ItemRepository;
 import libreria.libreria.item.util.ItemMapper;
+import libreria.libreria.item.util.ItemUtils;
 import libreria.libreria.user.model.Users;
 import libreria.libreria.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -83,8 +83,7 @@ public class ItemService {
             String user
     ) throws IOException {
         Users users = userRepository.findByEmail(user);
-        UUID uuid = UUID.randomUUID();
-        String saveFileName = uuid + "_" + uploadFile.getOriginalFilename();
+        String saveFileName = ItemUtils.makeSaveFileName(uploadFile.getOriginalFilename());
 
         itemRequest.setSaveFileName(saveFileName);
         itemRequest.setUsers(users);
@@ -127,9 +126,8 @@ public class ItemService {
             ItemRequest itemRequest,
             MultipartFile uploadFile
     ) throws IOException {
-        UUID uuid = UUID.randomUUID();
-        String saveFileName = uuid + "_" + uploadFile.getOriginalFilename();
         Item item = itemRepository.findOneById(id);
+        String saveFileName = ItemUtils.makeSaveFileName(uploadFile.getOriginalFilename());
 
         itemRequest.setId(id);
         itemRequest.setUsers(item.getUsers());

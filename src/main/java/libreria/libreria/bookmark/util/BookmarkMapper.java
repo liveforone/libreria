@@ -13,18 +13,18 @@ public class BookmarkMapper {
     * entity -> map
     * 타입 : String id, String title
      */
-    public static Map<String, Object> entityToMap(List<Bookmark> bookmarkList) {
+    public static Map<String, Object> entityToMap(List<Bookmark> bookmarks) {
         Map<String, Object> map = new HashMap<>();
         List<Long> itemId = new ArrayList<>();
         List<String> itemTitle = new ArrayList<>();
 
-        for (Bookmark bookmark : bookmarkList) {
+        for (Bookmark bookmark : bookmarks) {
             itemId.add(bookmark.getItem().getId());
             itemTitle.add(bookmark.getItem().getTitle());
         }
 
-        map.put("boardId", itemId);
-        map.put("boardTitle", itemTitle);
+        map.put("itemId", itemId);
+        map.put("itemTitle", itemTitle);
 
         return map;
     }

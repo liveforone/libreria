@@ -42,9 +42,9 @@ public class ItemController {
                     @SortDefault(sort = "id", direction = Sort.Direction.DESC)
             }) Pageable pageable
     ) {
-        Page<ItemResponse> itemList = itemService.getAllItems(pageable);
+        Page<ItemResponse> items = itemService.getAllItems(pageable);
 
-        return ResponseEntity.ok(itemList);
+        return ResponseEntity.ok(items);
     }
 
     @GetMapping("/item/search")
@@ -56,10 +56,10 @@ public class ItemController {
             }) Pageable pageable,
             @RequestParam("keyword") String keyword
     ) {
-        Page<ItemResponse> searchList =
+        Page<ItemResponse> items =
                 itemService.searchItemsByTitle(keyword, pageable);
 
-        return ResponseEntity.ok(searchList);
+        return ResponseEntity.ok(items);
     }
 
     @GetMapping("/item/category/{category}")
@@ -71,10 +71,10 @@ public class ItemController {
                     @SortDefault(sort = "id", direction = Sort.Direction.DESC)
             }) Pageable pageable
     ) {
-        Page<ItemResponse> categoryList =
+        Page<ItemResponse> categories =
                 itemService.getCategories(category, pageable);
 
-        return ResponseEntity.ok(categoryList);
+        return ResponseEntity.ok(categories);
     }
 
     @GetMapping("/item/post")
@@ -117,16 +117,16 @@ public class ItemController {
             @PathVariable("id") Long id,
             Principal principal
     ) {
-        Item entity = itemService.getItemEntity(id);
+        Item itemEntity = itemService.getItemEntity(id);
 
-        if (CommonUtils.isNull(entity)) {
+        if (CommonUtils.isNull(itemEntity)) {
             return ResponseEntity.ok("해당 상품이 없어 조회가 불가능합니다.");
         }
 
-        String user = principal.getName();
         Map<String, Object> map = new HashMap<>();
-        String writer = entity.getUsers().getEmail();
-        ItemResponse item = ItemMapper.entityToDtoDetail(entity);
+        String user = principal.getName();
+        String writer = itemEntity.getUsers().getEmail();
+        ItemResponse item = ItemMapper.entityToDtoDetail(itemEntity);
 
         map.put("user", user);
         map.put("body", item);

@@ -27,10 +27,10 @@ public class BookmarkController {
 
     @GetMapping("/my-bookmark")
     public ResponseEntity<Map<String, Object>> myBookmark(Principal principal) {
-        Map<String, Object> bookmarkList =
+        Map<String, Object> bookmarks =
                 bookmarkService.getBookmarks(principal.getName());
 
-        return ResponseEntity.ok(bookmarkList);
+        return ResponseEntity.ok(bookmarks);
     }
 
     @PostMapping("/bookmark/post/{itemId}")
