@@ -55,12 +55,12 @@ public class UserController {
             @RequestBody UserRequest userRequest,
             HttpServletRequest request
     ) {
-        int checkEmail =
-                userService.checkDuplicateEmail(userRequest.getEmail());
+        int checkEmail = UserUtils.checkDuplicateEmail(
+                userService.getUserEntity(userRequest.getEmail())
+        );
 
         if (checkEmail != UserConstants.NOT_DUPLICATE.getValue()) {
             return ResponseEntity.ok("중복되는 이메일이 있어 회원가입이 불가능합니다.");
-
         }
 
         userService.joinUser(userRequest);
@@ -118,14 +118,12 @@ public class UserController {
             HttpServletRequest request
     ) {
         Users users = userService.getUserEntity(principal.getName());
-        Users duplicateUser = userService.getUserEntity(userRequest.getEmail());
 
-        if (CommonUtils.isNull(users)) {
-            return ResponseEntity
-                    .ok("해당 유저를 조회할 수 없어 이메일 변경이 불가능합니다.");
-        }
+        int checkEmail = UserUtils.checkDuplicateEmail(
+                userService.getUserEntity(userRequest.getEmail())
+        );
 
-        if (!CommonUtils.isNull(duplicateUser)) {
+        if (checkEmail != UserConstants.NOT_DUPLICATE.getValue()) {
             return ResponseEntity
                     .ok("해당 이메일이 이미 존재합니다. 다시 입력해주세요");
         }
@@ -160,11 +158,6 @@ public class UserController {
     ) {
         Users users = userService.getUserEntity(principal.getName());
 
-        if (CommonUtils.isNull(users)) {
-            return ResponseEntity
-                    .ok("해당 유저를 조회할 수 없어 비밀번호 변경이 불가능합니다.");
-        }
-
         int checkPassword = UserUtils.checkPasswordMatching(
                         userRequest.getOldPassword(),
                         users.getPassword()
@@ -192,10 +185,6 @@ public class UserController {
             Principal principal
     ) {
         Users users = userService.getUserEntity(principal.getName());
-
-        if (CommonUtils.isNull(users)) {
-            return ResponseEntity.ok("해당 유저를 조회할 수 없어 탈퇴가 불가능합니다.");
-        }
 
         int checkPassword = UserUtils.checkPasswordMatching(
                 password,
@@ -248,9 +237,6 @@ public class UserController {
         );
     }
 
-    /*
-    * 주소 등록 페이지
-     */
     @GetMapping("/user/regi-address")
     public ResponseEntity<?> regiAddressPage(Principal principal) {
         String address = userService.getUserEntity(principal.getName()).getAddress();

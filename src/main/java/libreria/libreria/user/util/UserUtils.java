@@ -1,5 +1,7 @@
 package libreria.libreria.user.util;
 
+import libreria.libreria.user.model.Users;
+import libreria.libreria.utility.CommonUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class UserUtils {
@@ -14,6 +16,18 @@ public class UserUtils {
             return UserConstants.PASSWORD_MATCH.getValue();
         }
         return UserConstants.PASSWORD_NOT_MATCH.getValue();
+    }
+
+    /*
+     * 이메일 중복 검증
+     * 반환 값 : 1(중복아님), 0(중복)
+     */
+    public static int checkDuplicateEmail(Users users) {
+
+        if (CommonUtils.isNull(users)) {
+            return UserConstants.NOT_DUPLICATE.getValue();
+        }
+        return UserConstants.DUPLICATE.getValue();
     }
 
     /*

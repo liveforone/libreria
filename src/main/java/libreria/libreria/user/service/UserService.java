@@ -7,9 +7,7 @@ import libreria.libreria.user.dto.UserRequest;
 import libreria.libreria.user.dto.UserResponse;
 import libreria.libreria.user.model.Users;
 import libreria.libreria.user.repository.UserRepository;
-import libreria.libreria.user.util.UserConstants;
 import libreria.libreria.user.util.UserMapper;
-import libreria.libreria.user.util.UserUtils;
 import libreria.libreria.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -35,20 +33,6 @@ public class UserService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
 
-    /*
-    * 이메일 중복 검증
-    * 반환 값 : 1(중복아님), 0(중복)
-     */
-    public int checkDuplicateEmail(String email) {
-
-        Users users = userRepository.findByEmail(email);
-
-        if (CommonUtils.isNull(users)) {
-            return UserConstants.NOT_DUPLICATE.getValue();
-        }
-        return UserConstants.DUPLICATE.getValue();
-    }
-
     public Users getUserEntity(String email) {
         return userRepository.findByEmail(email);
     }
@@ -60,13 +44,7 @@ public class UserService {
             return null;
         }
 
-        return UserResponse.builder()
-                .id(users.getId())
-                .email(users.getEmail())
-                .address(users.getAddress())
-                .rank(UserUtils.checkUserRank(users.getCount()))
-                .auth(users.getAuth())
-                .build();
+        return UserMapper.dtoBuilder(users);
     }
 
     /*
