@@ -14,7 +14,6 @@ import libreria.libreria.user.dto.UserRequest;
 import libreria.libreria.user.dto.UserResponse;
 import libreria.libreria.user.model.Users;
 import libreria.libreria.user.service.UserService;
-import libreria.libreria.user.util.UserConstants;
 import libreria.libreria.user.util.UserUtils;
 import libreria.libreria.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
@@ -55,11 +54,9 @@ public class UserController {
             @RequestBody UserRequest userRequest,
             HttpServletRequest request
     ) {
-        int checkEmail = UserUtils.checkDuplicateEmail(
+        if (UserUtils.isDuplicateEmail(
                 userService.getUserEntity(userRequest.getEmail())
-        );
-
-        if (checkEmail != UserConstants.NOT_DUPLICATE.getValue()) {
+        )) {
             return ResponseEntity.ok("중복되는 이메일이 있어 회원가입이 불가능합니다.");
         }
 
@@ -91,12 +88,10 @@ public class UserController {
             return ResponseEntity.ok("회원 조회가 되지않아 로그인이 불가능합니다.");
         }
 
-        int checkPassword = UserUtils.checkPasswordMatching(
-                        userRequest.getPassword(),
-                        users.getPassword()
-        );
-
-        if (checkPassword != UserConstants.PASSWORD_MATCH.getValue()) {
+        if (UserUtils.isNotMatchingPassword(
+                userRequest.getPassword(),
+                users.getPassword()
+        )) {
             return ResponseEntity.ok("비밀번호가 다릅니다. 다시 시도하세요.");
         }
 
@@ -119,21 +114,17 @@ public class UserController {
     ) {
         Users users = userService.getUserEntity(principal.getName());
 
-        int checkEmail = UserUtils.checkDuplicateEmail(
+        if (UserUtils.isDuplicateEmail(
                 userService.getUserEntity(userRequest.getEmail())
-        );
-
-        if (checkEmail != UserConstants.NOT_DUPLICATE.getValue()) {
+        )) {
             return ResponseEntity
                     .ok("해당 이메일이 이미 존재합니다. 다시 입력해주세요");
         }
 
-        int checkPassword = UserUtils.checkPasswordMatching(
-                        userRequest.getPassword(),
-                        users.getPassword()
-        );
-
-        if (checkPassword != UserConstants.PASSWORD_MATCH.getValue()) {
+        if (UserUtils.isNotMatchingPassword(
+                userRequest.getPassword(),
+                users.getPassword()
+        )) {
             log.info("비밀번호 일치하지 않음.");
             return ResponseEntity.ok("비밀번호가 다릅니다. 다시 입력해주세요.");
         }
@@ -158,12 +149,10 @@ public class UserController {
     ) {
         Users users = userService.getUserEntity(principal.getName());
 
-        int checkPassword = UserUtils.checkPasswordMatching(
-                        userRequest.getOldPassword(),
-                        users.getPassword()
-        );
-
-        if (checkPassword != UserConstants.PASSWORD_MATCH.getValue()) {
+        if (UserUtils.isNotMatchingPassword(
+                userRequest.getOldPassword(),
+                users.getPassword()
+        )) {
             log.info("비밀번호 일치하지 않음.");
             return ResponseEntity.ok("비밀번호가 다릅니다. 다시 입력해주세요.");
         }
@@ -186,12 +175,10 @@ public class UserController {
     ) {
         Users users = userService.getUserEntity(principal.getName());
 
-        int checkPassword = UserUtils.checkPasswordMatching(
+        if (UserUtils.isNotMatchingPassword(
                 password,
                 users.getPassword()
-        );
-
-        if (checkPassword != UserConstants.PASSWORD_MATCH.getValue()) {
+        )) {
             log.info("비밀번호 일치하지 않음.");
             return ResponseEntity.ok("비밀번호가 다릅니다. 다시 입력해주세요.");
         }

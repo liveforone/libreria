@@ -7,27 +7,22 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class UserUtils {
 
     /*
-    * 비밀번호 복호화
+    * 비밀번호 같지 않은지 검증
+    * 반환 값 : true(같지 않을때), false(같을때)
      */
-    public static int checkPasswordMatching(String inputPassword, String password) {
+    public static boolean isNotMatchingPassword(String inputPassword, String password) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-        if(encoder.matches(inputPassword, password)) {
-            return UserConstants.PASSWORD_MATCH.getValue();
-        }
-        return UserConstants.PASSWORD_NOT_MATCH.getValue();
+        return !encoder.matches(inputPassword, password);
     }
 
     /*
      * 이메일 중복 검증
-     * 반환 값 : 1(중복아님), 0(중복)
+     * 반환 값 : false(중복X), true(중복)
      */
-    public static int checkDuplicateEmail(Users users) {
+    public static boolean isDuplicateEmail(Users users) {
 
-        if (CommonUtils.isNull(users)) {
-            return UserConstants.NOT_DUPLICATE.getValue();
-        }
-        return UserConstants.DUPLICATE.getValue();
+        return !CommonUtils.isNull(users);
     }
 
     /*
