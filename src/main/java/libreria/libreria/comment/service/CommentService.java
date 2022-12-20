@@ -5,7 +5,6 @@ import libreria.libreria.comment.dto.CommentRequest;
 import libreria.libreria.comment.dto.CommentResponse;
 import libreria.libreria.comment.repository.CommentRepository;
 import libreria.libreria.comment.util.CommentMapper;
-import libreria.libreria.item.model.Item;
 import libreria.libreria.item.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -41,9 +40,7 @@ public class CommentService {
             CommentRequest commentRequest,
             String writer
     ) {
-        Item item = itemRepository.findOneById(itemId);
-
-        commentRequest.setItem(item);
+        commentRequest.setItem(itemRepository.findOneById(itemId));
         commentRequest.setWriter(writer);
 
         commentRepository.save(

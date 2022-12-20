@@ -8,6 +8,7 @@ import libreria.libreria.orders.dto.OrdersResponse;
 import libreria.libreria.orders.model.Orders;
 import libreria.libreria.orders.service.OrderService;
 import libreria.libreria.orders.util.OrdersUtils;
+import libreria.libreria.user.service.UserService;
 import libreria.libreria.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,7 @@ public class OrderController {
 
     private final OrderService orderService;
     private final ItemService itemService;
+    private final UserService userService;
 
     /*
     * 주문자 리스트
@@ -79,10 +81,15 @@ public class OrderController {
         }
 
         orderService.saveOrder(
-                itemId,
+                item,
                 ordersRequest,
                 principal.getName()
         );
+        itemService.minusItemRemaining(
+                ordersRequest.getOrderCount(),
+                itemId
+        );
+        userService.plusCount(principal.getName());
         log.info("주문 성공!!");
 
         String url = "/item/" + itemId;
@@ -130,6 +137,11 @@ public class OrderController {
         }
 
         orderService.cancelOrder(orderId);
+        itemService.plusItemRemaining(
+                orders.getOrderCount(),
+                orders.getItem().getId()
+        );
+        userService.minusCount(orders.getUsers().getEmail());
         log.info("주문 취소 성공!!");
 
         String url = "/user/order-list";

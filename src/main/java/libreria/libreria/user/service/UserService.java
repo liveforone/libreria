@@ -143,6 +143,16 @@ public class UserService {
     }
 
     @Transactional
+    public void plusCount(String email) {
+        userRepository.plusCount(email);
+    }
+
+    @Transactional
+    public void minusCount(String email) {
+        userRepository.minusCount(email);
+    }
+
+    @Transactional
     public void deleteUser(Long userId) {
         userRepository.deleteById(userId);
     }

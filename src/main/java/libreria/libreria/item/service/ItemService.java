@@ -6,7 +6,6 @@ import libreria.libreria.item.dto.ItemResponse;
 import libreria.libreria.item.repository.ItemRepository;
 import libreria.libreria.item.util.ItemMapper;
 import libreria.libreria.item.util.ItemUtils;
-import libreria.libreria.user.model.Users;
 import libreria.libreria.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -80,13 +79,12 @@ public class ItemService {
     public Long saveItem(
             MultipartFile uploadFile,
             ItemRequest itemRequest,
-            String user
+            String email
     ) throws IOException {
-        Users users = userRepository.findByEmail(user);
         String saveFileName = ItemUtils.makeSaveFileName(uploadFile.getOriginalFilename());
 
         itemRequest.setSaveFileName(saveFileName);
-        itemRequest.setUsers(users);
+        itemRequest.setUsers(userRepository.findByEmail(email));
         uploadFile.transferTo(new File(saveFileName));
 
         return itemRepository.save(
@@ -138,5 +136,15 @@ public class ItemService {
         itemRepository.save(
                 ItemMapper.dtoToEntity(itemRequest)
         );
+    }
+
+    @Transactional
+    public void plusItemRemaining(int count, Long itemId) {
+        itemRepository.plusRemaining(count, itemId);
+    }
+
+    @Transactional
+    public void minusItemRemaining(int count, Long itemId) {
+        itemRepository.minusRemaining(count, itemId);
     }
 }

@@ -1,14 +1,12 @@
 package libreria.libreria.orders.service;
 
 import libreria.libreria.item.model.Item;
-import libreria.libreria.item.repository.ItemRepository;
 import libreria.libreria.orders.model.OrderStatus;
 import libreria.libreria.orders.model.Orders;
 import libreria.libreria.orders.dto.OrdersRequest;
 import libreria.libreria.orders.dto.OrdersResponse;
 import libreria.libreria.orders.repository.OrderRepository;
 import libreria.libreria.orders.util.OrdersMapper;
-import libreria.libreria.user.model.Users;
 import libreria.libreria.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +20,6 @@ import java.util.List;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
     /*
@@ -55,22 +52,14 @@ public class OrderService {
 
     @Transactional
     public void saveOrder(
-            Long itemId,
+            Item item,
             OrdersRequest ordersRequest,
-            String user
+            String email
     ) {
-        Item item = itemRepository.findOneById(itemId);
-        Users users = userRepository.findByEmail(user);
-
         ordersRequest.setItem(item);
-        ordersRequest.setUsers(users);
+        ordersRequest.setUsers(userRepository.findByEmail(email));
         ordersRequest.setStatus(OrderStatus.ORDER);
 
-        itemRepository.minusRemaining(
-                ordersRequest.getOrderCount(),
-                itemId
-        );
-        userRepository.plusCount(user);
         orderRepository.save(
                 OrdersMapper.dtoToEntity(ordersRequest)
         );
@@ -78,16 +67,9 @@ public class OrderService {
 
     @Transactional
     public void cancelOrder(Long orderId) {
-        Orders orders = orderRepository.findOneById(orderId);
-
         orderRepository.updateStatus(
                 OrderStatus.CANCEL,
                 orderId
         );
-        itemRepository.plusRemaining(
-                orders.getOrderCount(),
-                orders.getItem().getId()
-        );
-        userRepository.minusCount(orders.getUsers().getEmail());
     }
 }
