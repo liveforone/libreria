@@ -46,8 +46,8 @@ public class OrderService {
         return orderRepository.findOneById(orderId);
     }
 
-    public OrdersResponse getOrderDto(Long id) {
-        return orderRepository.findOneDtoById(id);
+    public OrdersResponse getOrderDto(Long orderId) {
+        return orderRepository.findOneDtoById(orderId);
     }
 
     @Transactional
@@ -66,10 +66,10 @@ public class OrderService {
     }
 
     @Transactional
-    public void cancelOrder(Long orderId) {
+    public void cancelOrder(Long id) {
         orderRepository.updateStatus(
                 OrderStatus.CANCEL,
-                orderId
+                id
         );
     }
 }

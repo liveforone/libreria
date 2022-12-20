@@ -12,12 +12,12 @@ public class CommentMapper {
     /*
      * dto ->  entity 변환 편의 메소드
      */
-    public static Comment dtoToEntity(CommentRequest comment) {
+    public static Comment dtoToEntity(CommentRequest commentRequest) {
         return Comment.builder()
-                .id(comment.getId())
-                .writer(comment.getWriter())
-                .content(comment.getContent())
-                .item(comment.getItem())
+                .id(commentRequest.getId())
+                .writer(commentRequest.getWriter())
+                .content(commentRequest.getContent())
+                .item(commentRequest.getItem())
                 .build();
     }
 
@@ -37,8 +37,8 @@ public class CommentMapper {
      * entity -> dto 편의 메소드1
      * 반환 타입 : 리스트형식
      */
-    public static List<CommentResponse> entityToDtoList(List<Comment> commentList) {
-        return commentList
+    public static List<CommentResponse> entityToDtoList(List<Comment> comments) {
+        return comments
                 .stream()
                 .map(CommentMapper::dtoBuilder)
                 .collect(Collectors.toList());

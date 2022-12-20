@@ -10,10 +10,10 @@ public class UserUtils {
     * 비밀번호 같지 않은지 검증
     * 반환 값 : true(같지 않을때), false(같을때)
      */
-    public static boolean isNotMatchingPassword(String inputPassword, String password) {
+    public static boolean isNotMatchingPassword(String inputPassword, String originalPassword) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-        return !encoder.matches(inputPassword, password);
+        return !encoder.matches(inputPassword, originalPassword);
     }
 
     /*

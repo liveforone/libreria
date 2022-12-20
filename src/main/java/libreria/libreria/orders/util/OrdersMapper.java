@@ -12,13 +12,13 @@ public class OrdersMapper {
     /*
      * dto ->  entity 변환 편의 메소드
      */
-    public static Orders dtoToEntity(OrdersRequest order) {
+    public static Orders dtoToEntity(OrdersRequest ordersRequest) {
         return Orders.builder()
-                .id(order.getId())
-                .item(order.getItem())
-                .users(order.getUsers())
-                .status(order.getStatus())
-                .orderCount(order.getOrderCount())
+                .id(ordersRequest.getId())
+                .item(ordersRequest.getItem())
+                .users(ordersRequest.getUsers())
+                .status(ordersRequest.getStatus())
+                .orderCount(ordersRequest.getOrderCount())
                 .build();
     }
 
@@ -38,8 +38,8 @@ public class OrdersMapper {
      * entity -> dto 편의 메소드1
      * 반환 타입 : 리스트형식
      */
-    public static List<OrdersResponse> entityToDtoList(List<Orders> ordersList) {
-        return ordersList
+    public static List<OrdersResponse> entityToDtoList(List<Orders> orders) {
+        return orders
                 .stream()
                 .map(OrdersMapper::dtoBuilder)
                 .collect(Collectors.toList());

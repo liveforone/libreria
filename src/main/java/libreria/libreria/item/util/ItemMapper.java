@@ -14,18 +14,18 @@ public class ItemMapper {
     /*
     * dto ->  entity 변환 편의 메소드
      */
-    public static Item dtoToEntity(ItemRequest item) {
+    public static Item dtoToEntity(ItemRequest itemRequest) {
         return Item.builder()
-                .id(item.getId())
-                .title(item.getTitle())
-                .content(item.getContent())
-                .users(item.getUsers())
-                .author(item.getAuthor())
-                .saveFileName(item.getSaveFileName())
-                .remaining(item.getRemaining())
-                .category(item.getCategory())
-                .year(item.getYear())
-                .good(item.getGood())
+                .id(itemRequest.getId())
+                .title(itemRequest.getTitle())
+                .content(itemRequest.getContent())
+                .users(itemRequest.getUsers())
+                .author(itemRequest.getAuthor())
+                .saveFileName(itemRequest.getSaveFileName())
+                .remaining(itemRequest.getRemaining())
+                .category(itemRequest.getCategory())
+                .year(itemRequest.getYear())
+                .good(itemRequest.getGood())
                 .build();
     }
 
@@ -50,8 +50,8 @@ public class ItemMapper {
     * entity -> dto 편의 메소드1
     * 반환 타입 : 리스트형식
      */
-    public static List<ItemResponse> entityToDtoList(List<Item> itemList) {
-        return itemList
+    public static List<ItemResponse> entityToDtoList(List<Item> items) {
+        return items
                 .stream()
                 .map(ItemMapper::dtoBuilder)
                 .collect(Collectors.toList());
@@ -61,8 +61,8 @@ public class ItemMapper {
     * entity ->  dto 편의 메소드2
     * 반환 타입 : 페이징 형식
      */
-    public static Page<ItemResponse> entityToDtoPage(Page<Item> itemList) {
-        return itemList.map(ItemMapper::dtoBuilder);
+    public static Page<ItemResponse> entityToDtoPage(Page<Item> items) {
+        return items.map(ItemMapper::dtoBuilder);
     }
 
     /*

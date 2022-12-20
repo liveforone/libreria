@@ -28,7 +28,7 @@ public class CommentController {
     private final CommentService commentService;
     private final ItemService itemService;
 
-    @GetMapping("/item/comment/{itemId}")
+    @GetMapping("/comment/{itemId}")
     public ResponseEntity<Map<String, Object>> commentHome(
             @PathVariable("itemId") Long itemId,
             Principal principal
@@ -43,7 +43,7 @@ public class CommentController {
         return ResponseEntity.ok(map);
     }
     
-    @PostMapping("/item/comment/post/{itemId}")
+    @PostMapping("/comment/post/{itemId}")
     public ResponseEntity<?> commentPost(
             @PathVariable("itemId") Long itemId,
             @RequestBody CommentRequest commentRequest,
@@ -68,7 +68,7 @@ public class CommentController {
         return CommonUtils.makeResponseEntityForRedirect(url, request);
     }
 
-    @GetMapping("/item/comment/edit/{id}")
+    @GetMapping("/comment/edit/{id}")
     public ResponseEntity<?> editCommentPage(@PathVariable("id") Long id) {
         CommentResponse comment = commentService.getCommentDto(id);
 
@@ -79,7 +79,7 @@ public class CommentController {
         return ResponseEntity.ok(comment);
     }
 
-    @PostMapping("/item/comment/edit/{id}")
+    @PostMapping("/comment/edit/{id}")
     public ResponseEntity<?> editComment(
             @PathVariable("id") Long id,
             @RequestBody CommentRequest commentRequest,
@@ -110,7 +110,7 @@ public class CommentController {
         return CommonUtils.makeResponseEntityForRedirect(url, request);
     }
 
-    @PostMapping("/item/comment/delete/{id}")
+    @PostMapping("/comment/delete/{id}")
     public ResponseEntity<?> deleteComment(
             @PathVariable("id") Long id,
             Principal principal,

@@ -185,8 +185,8 @@ public class ItemController {
     @PostMapping("/item/edit/{id}")
     public ResponseEntity<?> editItem(
             @PathVariable("id") Long id,
-            @RequestPart MultipartFile uploadFile,
             @RequestPart("itemRequest") ItemRequest itemRequest,
+            @RequestPart MultipartFile uploadFile,
             Principal principal,
             HttpServletRequest request
     ) throws IllegalStateException, IOException {
