@@ -3,7 +3,6 @@ package libreria.libreria.user.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import libreria.libreria.item.dto.ItemResponse;
 import libreria.libreria.item.service.ItemService;
-import libreria.libreria.jwt.JwtAuthenticationFilter;
 import libreria.libreria.jwt.TokenInfo;
 import libreria.libreria.orders.dto.OrdersResponse;
 import libreria.libreria.orders.service.OrderService;
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.net.URI;
 import java.security.Principal;
 import java.util.List;
 import java.util.Objects;
@@ -63,15 +61,9 @@ public class UserController {
         userService.joinUser(userRequest);
         log.info("회원 가입 성공!!");
 
-        String url = "/user/login";
-        HttpHeaders httpHeaders = new HttpHeaders();
-        String token = JwtAuthenticationFilter.resolveToken(request);
-        httpHeaders.setBearerAuth(token);
-        httpHeaders.setLocation(URI.create(url));
-
         return ResponseEntity
                 .status(HttpStatus.MOVED_PERMANENTLY)
-                .headers(httpHeaders)
+                .headers(UserUtils.makeHttpHeadersWhenSignupRedirect(request))
                 .build();
     }
 

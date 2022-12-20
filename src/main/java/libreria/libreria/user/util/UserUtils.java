@@ -1,8 +1,13 @@
 package libreria.libreria.user.util;
 
+import jakarta.servlet.http.HttpServletRequest;
+import libreria.libreria.jwt.JwtAuthenticationFilter;
 import libreria.libreria.user.model.Users;
 import libreria.libreria.utility.CommonUtils;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import java.net.URI;
 
 public class UserUtils {
 
@@ -46,5 +51,17 @@ public class UserUtils {
         }
 
         return "BRONZE";
+    }
+
+    public static HttpHeaders makeHttpHeadersWhenSignupRedirect(HttpServletRequest request) {
+        HttpHeaders httpHeaders = new HttpHeaders();
+
+        String url = "/user/login";
+        String token = JwtAuthenticationFilter.resolveToken(request);
+
+        httpHeaders.setBearerAuth(token);
+        httpHeaders.setLocation(URI.create(url));
+
+        return httpHeaders;
     }
 }
