@@ -255,7 +255,7 @@ public class UserController {
     public ResponseEntity<?> myItemList(Principal principal) {
         Users users = userService.getUserEntity(principal.getName());
 
-        if (users.getAuth() != Role.SELLER) {
+        if (!users.getAuth().equals(Role.SELLER)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
@@ -272,7 +272,7 @@ public class UserController {
     public ResponseEntity<?> myOrderList(Principal principal) {
         Users users = userService.getUserEntity(principal.getName());
 
-        if (users.getAuth() != Role.MEMBER) {
+        if (!users.getAuth().equals(Role.MEMBER)) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
                     .build();
