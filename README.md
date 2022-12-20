@@ -149,10 +149,10 @@ json 다음에 uploadFile 이라는 이름으로 파일 등록
 ```
 ### comment
 ```
-/item/comment/{itemId} - get
-/item/comment/post/{itemId} - post, 댓글 홈에서 바로 댓글 작성함(textarea있음)
-/item/comment/edit/{id} - get/post
-/item/comment/delete/{id} - post
+/comment/{itemId} - get
+/comment/post/{itemId} - post, 댓글 홈에서 바로 댓글 작성함(textarea있음)
+/comment/edit/{id} - get/post
+/comment/delete/{id} - post
 ```
 ### orders
 ```
