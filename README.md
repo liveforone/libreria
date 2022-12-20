@@ -243,6 +243,7 @@ alter table bookmark add foreign key (users_id) references users (id);
 * [Utils 클래스](https://github.com/liveforone/study/blob/main/%5B%EB%82%98%EB%A7%8C%EC%9D%98%20%EC%8A%A4%ED%83%80%EC%9D%BC%20%EA%B0%80%EC%9D%B4%EB%93%9C%5D/i.%20Util%20%ED%81%B4%EB%9E%98%EC%8A%A4%EB%A5%BC%20%EB%A7%8C%EB%93%A4%EC%96%B4%20%ED%8E%B8%EC%9D%98%EC%84%B1%EC%9D%84%20%EB%86%92%EC%97%AC%EB%9D%BC.md)를 적극 활용하고, 서비스로직에서 트랜잭션이 걸리지 않는 로직은 Utils 클래스에 담아서 모듈화하라.
 * [네이밍은 직관적이게 하라](https://github.com/liveforone/study/blob/main/%5B%EB%82%98%EB%A7%8C%EC%9D%98%20%EC%8A%A4%ED%83%80%EC%9D%BC%20%EA%B0%80%EC%9D%B4%EB%93%9C%5D/j.%20%EB%84%A4%EC%9D%B4%EB%B0%8D%EC%9D%80%20%EC%A7%81%EA%B4%80%EC%A0%81%EC%9D%B4%EA%B2%8C%20%ED%95%98%EB%9D%BC.md)
 * 주석은 c언어 스타일 주석으로 선언하라.
+* [함수 규칙](https://github.com/liveforone/study/blob/main/%5B%EB%82%98%EB%A7%8C%EC%9D%98%20%EC%8A%A4%ED%83%80%EC%9D%BC%20%EA%B0%80%EC%9D%B4%EB%93%9C%5D/k.%20%ED%95%A8%EC%88%98%20%EA%B7%9C%EC%B9%99.md)을 지켜라.
 
 # 6. 상세 설명
 ## 파일 저장 전략(이미지 저장전략)
@@ -492,3 +493,7 @@ alt + enter를 눌러서 적절한 값들을 import 해주면된다.
 * 주석은 c언어 스타일의 주석으로 변경함.
 * 상수는 enum으로 선언하여 타입 안전성을 보장하고 인스턴스가 하나씩만 존재함을 보장한다.
 * 스프링부트의 버전을 2.7.4에서 3.0.0 버전으로 마이그레이션 하였다.
+* Jwt를 도입하여 기존 세션기반에서 jwt 토큰 기반의 회원관리로 변경하였다.
+* ddl-auto의 옵션을 변경하였다. 기존의 create에서 none으로 하여 직접 create, alter쿼리를 날리는 실무에 가까운 방식으로 변경했다.
+* 모든 파일과 변수, 함수의 네이밍은 스타일가이드에 작성된 내용대로 리팩토링하여 코드를 보다 깨끗하게 만들었다.
+* 함수는 스타일 가이드를 만들고 추가하여 스타일 가이드대로 리팩터링 했다.
