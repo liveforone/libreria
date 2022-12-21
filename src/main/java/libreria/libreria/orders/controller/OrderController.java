@@ -49,12 +49,11 @@ public class OrderController {
     public ResponseEntity<?> orderPage(@PathVariable("itemId") Long itemId) {
         Item item = itemService.getItemEntity(itemId);
 
-        return ResponseEntity.ok(
-                Objects.requireNonNullElse(
-                        item,
-                        "해당 상품이 없어 주문이 불가능합니다."
-                )
-        );
+        if (CommonUtils.isNull(item)) {
+            return ResponseEntity.ok("해당 상품이 없어 주문이 불가능합니다.");
+        }
+
+        return ResponseEntity.ok(item);
     }
 
     @PostMapping("/item/order/{itemId}")

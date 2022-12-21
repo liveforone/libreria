@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
@@ -206,14 +205,13 @@ public class UserController {
      */
     @GetMapping("/user/my-page")
     public ResponseEntity<?> myPage(Principal principal) {
-        UserResponse dto = userService.getUserDto(principal.getName());
+        UserResponse users = userService.getUserDto(principal.getName());
 
-        return ResponseEntity.ok(
-                Objects.requireNonNullElse(
-                        dto,
-                        "회원님을 조회할 수 없어 회원님 정보제공이 불가능합니다."
-                )
-        );
+        if (CommonUtils.isNull(users)) {
+            return ResponseEntity.ok("회원님을 조회할 수 없어 회원님 정보제공이 불가능합니다.");
+        }
+
+        return ResponseEntity.ok(users);
     }
 
     @GetMapping("/user/regi-address")
