@@ -79,7 +79,7 @@ json 다음에 uploadFile 이라는 이름으로 파일 등록
     "author" : "chan",
     "remaining" : 3,
     "category" : "종교",
-    "year" : "2022-10-12",
+    "publishedYear" : "2022-10-12",
     "good" : 1
 }
 [도서 등록2] - 형식은 위와 동일
@@ -89,7 +89,7 @@ json 다음에 uploadFile 이라는 이름으로 파일 등록
     "author" : "park",
     "remaining" : 3,
     "category" : "travel",
-    "year" : "2022-10-14",
+    "publishedYear" : "2022-10-14",
     "good" : 3
 }
 [도서 등록3] - 형식은 위와 동일
@@ -99,7 +99,7 @@ json 다음에 uploadFile 이라는 이름으로 파일 등록
     "author" : "park",
     "remaining" : 10,
     "category" : "travel",
-    "year" : "2022-10-14"
+    "publishedYear" : "2022-10-14"
 }
 ```
 ### comment
@@ -125,9 +125,9 @@ json 다음에 uploadFile 이라는 이름으로 파일 등록
 ### users
 ```
 / - get
-/user/signup - get/post
-/user/login - get/post
-/user/logout - post
+/user/signup - get/post, Authorization 헤더 설정하지 마라!! 해당 헤더가 필요없는 api이며 설정시 에러 발생한다. 
+/user/login - get/post, Authorization 헤더 설정하지 마라!! 해당 헤더가 필요없는 api이며 설정시 에러 발생한다.
+/user/logout - get, Authorization 헤더 설정하지 마라!! 해당 헤더가 필요없는 api이며 설정시 에러 발생한다.
 /user/seller - get/post
 /user/my-page - get
 /user/regi-address - get/post
@@ -143,7 +143,6 @@ json 다음에 uploadFile 이라는 이름으로 파일 등록
 /item/category/{category} - get
 /item/post - get/post
 /item/{id} - get
-/item/image/{saveFileName} - image url
 /item/good/{id} - post
 /item/edit/{id} - get/post
 ```
@@ -159,6 +158,10 @@ json 다음에 uploadFile 이라는 이름으로 파일 등록
 /item/order-list/{itemId} - get, myPage에서 조회할 나의 주문리스트
 /item/order/{itemId} - get/post
 /item/cancel/{orderId} - get/post
+```
+### file
+```
+/file/{saveFileName} - image url
 ```
 
 # 4. 데이터 베이스 설계
@@ -186,8 +189,7 @@ create table item (
     content TEXT,
     author varchar(255),
     category varchar(255),
-    year varchar(255),
-    save_file_name varchar(255),
+    published_year varchar(255),
     good integer default 0,
     remaining integer not null,
     users_id bigint,
@@ -220,15 +222,23 @@ create table bookmark (
     primary key (id)
 );
 
+create table upload_file (
+       id bigint not null auto_increment,
+        save_file_name varchar(255),
+        item_id bigint,
+        primary key (id)
+);
+
 alter table item add foreign key (users_id) references users (id);
 alter table orders add foreign key (item_id) references item (id);
 alter table orders add foreign key (users_id) references users (id);
 alter table comment add foreign key (item_id) references item (id);
 alter table bookmark add foreign key (item_id) references item (id);
 alter table bookmark add foreign key (users_id) references users (id);
+alter table upload_file add foreign key (item_id) references item (id);
 ```
 ## DB ER Diagram
-![스크린샷(140)](https://user-images.githubusercontent.com/88976237/201450990-04df79cd-1da2-4e63-9cee-badda3cf2039.png)
+![스크린샷(153)](https://user-images.githubusercontent.com/88976237/208883315-0f0c9f25-7471-4d88-a566-2cbe6b53a130.png)
 
 
 # 5. 스타일 가이드
@@ -246,6 +256,12 @@ alter table bookmark add foreign key (users_id) references users (id);
 * [함수 규칙](https://github.com/liveforone/study/blob/main/%5B%EB%82%98%EB%A7%8C%EC%9D%98%20%EC%8A%A4%ED%83%80%EC%9D%BC%20%EA%B0%80%EC%9D%B4%EB%93%9C%5D/k.%20%ED%95%A8%EC%88%98%20%EA%B7%9C%EC%B9%99.md)을 지켜라.
 
 # 6. 상세 설명
+## Authorization 헤더 설정하면 안되는 api
+* 회원가입, 로그인, 로그아웃을 할때에는 postman 뿐만 아니라 프론트엔드에서도 authorization 헤더를 설정하면 안된다.
+* 왜냐하면 해당 api들은 authorization 헤더가 필요없는 api들이기 때문이다.
+* 따라서 이러한 api들에 authorization 헤더를 걸게되면 SignatureException이 발생하게된다.
+* 따라서 위의 api들은 꼭! authorization 헤더를 넣지말자.
+
 ## 파일 저장 전략(이미지 저장전략)
 ```
 random uuid + "_" + originalFileName = saveFileName 으로 저장
@@ -497,3 +513,4 @@ alt + enter를 눌러서 적절한 값들을 import 해주면된다.
 * ddl-auto의 옵션을 변경하였다. 기존의 create에서 none으로 하여 직접 create, alter쿼리를 날리는 실무에 가까운 방식으로 변경했다.
 * 모든 파일과 변수, 함수의 네이밍은 스타일가이드에 작성된 내용대로 리팩토링하여 코드를 보다 깨끗하게 만들었다.
 * 함수는 스타일 가이드를 만들고 추가하여 스타일 가이드대로 리팩터링 했다.
+* 아이템에 파일을 저장하는 구조에서 파일(UploadFile)과 아이템을 분리했다. 이로써 각각 단일 책임만 갖도록 하였다.
