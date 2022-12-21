@@ -40,7 +40,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     * dto 직접 조회
      */
     @Query("select new libreria.libreria.item.dto.ItemResponse" +
-            "(i.id, i.title, i.content, i.author, i.saveFileName, i.remaining, i.category, i.year, i.good)" +
+            "(i.id, i.title, i.content, i.author, i.remaining, i.category, i.publishedYear, i.good)" +
             " from Item i where i.id = :id")
     ItemResponse findOneDtoById(@Param("id") Long id);
 

@@ -6,11 +6,10 @@ import libreria.libreria.item.dto.ItemRequest;
 import libreria.libreria.item.dto.ItemResponse;
 import libreria.libreria.item.service.ItemService;
 import libreria.libreria.item.util.ItemMapper;
+import libreria.libreria.uploadFile.service.UploadFileService;
 import libreria.libreria.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,6 +31,7 @@ import java.util.Objects;
 public class ItemController {
 
     private final ItemService itemService;
+    private final UploadFileService uploadFileService;
 
     @GetMapping("/item")
     public ResponseEntity<Page<ItemResponse>> itemHome(
@@ -97,11 +96,13 @@ public class ItemController {
         }
 
         Long itemId = itemService.saveItem(
-                uploadFile,
                 itemRequest,
                 principal.getName()
         );
-        log.info("포스팅 성공!!");
+        log.info("포스팅 성공");
+
+        uploadFileService.saveFile(uploadFile, itemId);
+        log.info("파일 저장 성공");
 
         String url = "/item/" + itemId;
 
@@ -127,24 +128,14 @@ public class ItemController {
         String user = principal.getName();
         String writer = itemEntity.getUsers().getEmail();
         ItemResponse item = ItemMapper.entityToDtoDetail(itemEntity);
+        String saveFileName = uploadFileService.getSaveFileName(id);
 
         map.put("user", user);
         map.put("body", item);
         map.put("writer", writer);
+        map.put("saveFileName", saveFileName);
 
         return ResponseEntity.ok(map);
-    }
-
-    /*
-    * 상품 이미지
-    * 뷰단에서 이미지 태그(html tag)를 이용해서 해당 api 를 걸면된다.
-     */
-    @GetMapping("/item/image/{saveFileName}")
-    @ResponseBody
-    public Resource showImage(
-            @PathVariable("saveFileName") String saveFileName
-    ) throws MalformedURLException {
-        return new UrlResource("file:C:\\Temp\\upload\\" + saveFileName);
     }
 
     @PostMapping("/item/good/{id}")
@@ -207,17 +198,19 @@ public class ItemController {
 
         if (uploadFile.isEmpty()) {
             itemService.editItemWithNoFile(id, itemRequest);
-            log.info("파일 수정 완료!!(파일교체 X)");
+            log.info("게시글 수정 완료");
 
             return response;
         }
 
         itemService.editItemWithFile(
                 id,
-                itemRequest,
-                uploadFile
+                itemRequest
         );
-        log.info("파일 수정 완료!!(파일교체 O)");
+        log.info("게시글 수정 완료");
+
+        uploadFileService.editFile(uploadFile, id);
+        log.info("파일 교체 완료");
 
         return response;
     }

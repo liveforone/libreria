@@ -1,8 +1,8 @@
-package libreria.libreria.item.util;
+package libreria.libreria.uploadFile.util;
 
 import java.util.UUID;
 
-public class ItemUtils {
+public class UploadFileUtils {
 
     public static String makeSaveFileName(String originalFileName) {
         UUID uuid = UUID.randomUUID();

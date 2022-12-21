@@ -21,10 +21,9 @@ public class ItemMapper {
                 .content(itemRequest.getContent())
                 .users(itemRequest.getUsers())
                 .author(itemRequest.getAuthor())
-                .saveFileName(itemRequest.getSaveFileName())
                 .remaining(itemRequest.getRemaining())
                 .category(itemRequest.getCategory())
-                .year(itemRequest.getYear())
+                .publishedYear(itemRequest.getPublishedYear())
                 .good(itemRequest.getGood())
                 .build();
     }
@@ -38,10 +37,9 @@ public class ItemMapper {
                 .title(item.getTitle())
                 .content(item.getContent())
                 .author(item.getAuthor())
-                .saveFileName(item.getSaveFileName())
                 .category(item.getCategory())
                 .remaining(item.getRemaining())
-                .year(item.getYear())
+                .publishedYear(item.getPublishedYear())
                 .good(item.getGood())
                 .build();
     }

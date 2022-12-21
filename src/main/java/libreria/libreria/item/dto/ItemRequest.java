@@ -13,10 +13,9 @@ public class ItemRequest {
     private String title;
     private String content;
     private String author;
-    private String saveFileName;
     private int remaining;
     private Users users;
     private String category;
-    private String year;
+    private String publishedYear;
     private int good;
 }

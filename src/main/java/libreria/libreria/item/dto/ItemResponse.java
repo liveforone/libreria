@@ -15,9 +15,8 @@ public class ItemResponse {
     private String title;
     private String content;
     private String author;
-    private String saveFileName;
     private int remaining;
     private String category;
-    private String year;
+    private String publishedYear;
     private int good;
 }

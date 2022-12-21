@@ -22,31 +22,29 @@ public class Item {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    private String author;  //책의 저자
+    private String author;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "users_id")
-    private Users users;  //상품 등록자
+    private Users users;
 
-    private String saveFileName;  //파일 이름
-    private int remaining;  //재고수량
+    private int remaining;
     private String category;
-    private String year;  //출판년도
+    private String publishedYear;
 
     @Column(columnDefinition = "integer default 0")
-    private int good;  //좋아요
+    private int good;
 
     @Builder
-    public Item(Long id, String title, String content, Users users, String author, String saveFileName, int remaining, String category, String year, int good) {
+    public Item(Long id, String title, String content, Users users, String author, int remaining, String category, String publishedYear, int good) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.users = users;
         this.author = author;
-        this.saveFileName = saveFileName;
         this.remaining = remaining;
         this.category = category;
-        this.year = year;
+        this.publishedYear = publishedYear;
         this.good = good;
     }
 }
