@@ -121,6 +121,7 @@ public class ItemController {
         Item itemEntity = itemService.getItemEntity(id);
 
         if (CommonUtils.isNull(itemEntity)) {
+            log.info("상품이 존재하지 않음. 잘못된 경로.");
             return ResponseEntity.ok("해당 상품이 없어 조회가 불가능합니다.");
         }
 
@@ -146,11 +147,12 @@ public class ItemController {
         Item item = itemService.getItemEntity(id);
 
         if (CommonUtils.isNull(item)) {
+            log.info("상품이 존재하지 않음. 잘못된 경로.");
             return ResponseEntity.ok("해당 상품이 없어 좋아요가 불가능합니다.");
         }
 
         itemService.updateGood(id);
-        log.info("좋아요 업데이트!!");
+        log.info("좋아요 업데이트");
 
         String url = "/item/" + id;
 
@@ -162,6 +164,7 @@ public class ItemController {
         ItemResponse item = itemService.getItemDto(id);
 
         if (CommonUtils.isNull(item)) {
+            log.info("상품이 존재하지 않음. 잘못된 경로.");
             return ResponseEntity.ok("해당 상품이 없어 수정이 불가능합니다.");
         }
 
@@ -188,6 +191,7 @@ public class ItemController {
         Item item = itemService.getItemEntity(id);
 
         if (CommonUtils.isNull(item)) {
+            log.info("상품이 존재하지 않음. 잘못된 경로.");
             return ResponseEntity.ok("해당 상품이 없어 수정이 불가능합니다.");
         }
 

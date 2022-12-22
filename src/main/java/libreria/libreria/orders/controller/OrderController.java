@@ -50,6 +50,7 @@ public class OrderController {
         Item item = itemService.getItemEntity(itemId);
 
         if (CommonUtils.isNull(item)) {
+            log.info("상품이 존재하지 않음. 잘못된 경로.");
             return ResponseEntity.ok("해당 상품이 없어 주문이 불가능합니다.");
         }
 
@@ -66,6 +67,7 @@ public class OrderController {
         Item item = itemService.getItemEntity(itemId);
 
         if (CommonUtils.isNull(item)) {
+            log.info("상품이 존재하지 않음. 잘못된 경로.");
             return ResponseEntity.ok("해당 상품이 없어 주문이 불가능합니다.");
         }
 
@@ -89,7 +91,7 @@ public class OrderController {
                 itemId
         );
         userService.plusCount(principal.getName());
-        log.info("주문 성공!!");
+        log.info("주문 성공");
 
         String url = "/item/" + itemId;
 
@@ -101,6 +103,7 @@ public class OrderController {
         OrdersResponse order = orderService.getOrderDto(orderId);
 
         if (CommonUtils.isNull(order)) {
+            log.info("주문이 존재하지 않음. 잘못된 경로.");
             return ResponseEntity.ok("해당 주문이 없어 주문취소가 불가능합니다.");
         }
 
@@ -119,6 +122,7 @@ public class OrderController {
         Orders orders = orderService.getOrderEntity(orderId);
 
         if (CommonUtils.isNull(orders)) {
+            log.info("주문이 존재하지 않음. 잘못된 경로.");
             return ResponseEntity
                     .ok("해당 주문을 찾을 수 없어 주문 취소가 불가능합니다.");
         }
@@ -131,7 +135,7 @@ public class OrderController {
         }
 
         if (OrdersUtils.isOverCancelLimitDate(orders)) {  //주문 가능 날짜 판별
-            log.info("주문 취소 실패!!");
+            log.info("주문 취소 실패");
             return ResponseEntity.ok("주문 한지 7일이 지나 주문 취소가 불가능합니다.");
         }
 
@@ -141,7 +145,7 @@ public class OrderController {
                 orders.getItem().getId()
         );
         userService.minusCount(orders.getUsers().getEmail());
-        log.info("주문 취소 성공!!");
+        log.info("주문 취소 성공");
 
         String url = "/user/order-list";
 

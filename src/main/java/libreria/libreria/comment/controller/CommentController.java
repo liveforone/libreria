@@ -53,6 +53,7 @@ public class CommentController {
         Item item = itemService.getItemEntity(itemId);
 
         if (CommonUtils.isNull(item)) {
+            log.info("상품이 존재하지 않음.");
             return ResponseEntity.ok("해당 상품이 없어 댓글 작성이 불가능합니다.");
         }
 
@@ -61,7 +62,7 @@ public class CommentController {
                 commentRequest,
                 principal.getName()
         );
-        log.info("댓글 작성 성공!!");
+        log.info("댓글 작성 성공");
 
         String url = "/item/comment/" + itemId;
 
@@ -73,6 +74,7 @@ public class CommentController {
         CommentResponse comment = commentService.getCommentDto(id);
 
         if (CommonUtils.isNull(comment)) {
+            log.info("id : " + id + " 댓글이 존재 하지 않음");
             return ResponseEntity.ok("댓글을 찾을 수 없어 수정이 불가능합니다.");
         }
 
@@ -89,6 +91,7 @@ public class CommentController {
         Comment comment = commentService.getCommentEntity(id);
 
         if (CommonUtils.isNull(comment)) {
+            log.info("id : " + id + " 댓글이 존재 하지 않음");
             return ResponseEntity.ok("댓글을 찾을 수 없어 수정이 불가능합니다.");
         }
 
@@ -103,7 +106,7 @@ public class CommentController {
                 id,
                 commentRequest
         );
-        log.info("리뷰 업데이트 성공!!");
+        log.info("댓글 업데이트 성공");
 
         String url = "/item/comment/" + itemId;
 
@@ -119,6 +122,7 @@ public class CommentController {
         Comment comment = commentService.getCommentEntity(id);
 
         if (CommonUtils.isNull(comment)) {
+            log.info("id : " + id + " 댓글이 존재 하지 않음");
             return ResponseEntity.ok("댓글을 찾을 수 없어 삭제가 불가능합니다.");
         }
 
@@ -130,7 +134,7 @@ public class CommentController {
         }
 
         Long itemId = commentService.deleteComment(id);
-        log.info("댓글 " + id + "삭제완료!!");
+        log.info("댓글 " + id + "삭제완료");
 
         String url = "/item/comment/" + itemId;
 

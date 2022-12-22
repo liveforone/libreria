@@ -54,11 +54,12 @@ public class UserController {
         if (UserUtils.isDuplicateEmail(
                 userService.getUserEntity(userRequest.getEmail())
         )) {
+            log.info("이메일이 중복됨.");
             return ResponseEntity.ok("중복되는 이메일이 있어 회원가입이 불가능합니다.");
         }
 
         userService.joinUser(userRequest);
-        log.info("회원 가입 성공!!");
+        log.info("회원 가입 성공");
 
         return ResponseEntity
                 .status(HttpStatus.MOVED_PERMANENTLY)
@@ -76,6 +77,7 @@ public class UserController {
         Users users = userService.getUserEntity(userRequest.getEmail());
 
         if (CommonUtils.isNull(users)) {
+            log.info("잘못된 이메일.");
             return ResponseEntity.ok("회원 조회가 되지않아 로그인이 불가능합니다.");
         }
 
@@ -83,11 +85,12 @@ public class UserController {
                 userRequest.getPassword(),
                 users.getPassword()
         )) {
+            log.info("비밀번호가 일치하지 않음.");
             return ResponseEntity.ok("비밀번호가 다릅니다. 다시 시도하세요.");
         }
 
         TokenInfo tokenInfo = userService.login(userRequest);
-        log.info("로그인 성공!");
+        log.info("로그인 성공");
 
         return ResponseEntity.ok(tokenInfo);
     }
@@ -108,6 +111,7 @@ public class UserController {
         if (UserUtils.isDuplicateEmail(
                 userService.getUserEntity(userRequest.getEmail())
         )) {
+            log.info("이메일이 중복됨.");
             return ResponseEntity
                     .ok("해당 이메일이 이미 존재합니다. 다시 입력해주세요");
         }
@@ -124,7 +128,7 @@ public class UserController {
                 principal.getName(),
                 userRequest.getEmail()
         );
-        log.info("이메일 변경 성공!!");
+        log.info("이메일 변경 성공");
 
         String url = "/user/logout";
 
@@ -152,7 +156,7 @@ public class UserController {
                 users.getId(),
                 userRequest.getNewPassword()
         );
-        log.info("비밀번호 변경 성공!!");
+        log.info("비밀번호 변경 성공");
 
         String url = "/user/logout";
 
@@ -174,7 +178,7 @@ public class UserController {
             return ResponseEntity.ok("비밀번호가 다릅니다. 다시 입력해주세요.");
         }
 
-        log.info("회원 : " + users.getId() + " 탈퇴 성공!!");
+        log.info("회원 : " + users.getId() + " 탈퇴 성공");
         userService.deleteUser(users.getId());
 
         return ResponseEntity.ok("그동안 서비스를 이용해주셔서 감사합니다.");
@@ -206,10 +210,6 @@ public class UserController {
     @GetMapping("/user/my-page")
     public ResponseEntity<?> myPage(Principal principal) {
         UserResponse users = userService.getUserDto(principal.getName());
-
-        if (CommonUtils.isNull(users)) {
-            return ResponseEntity.ok("회원님을 조회할 수 없어 회원님 정보제공이 불가능합니다.");
-        }
 
         return ResponseEntity.ok(users);
     }
@@ -273,13 +273,6 @@ public class UserController {
         return ResponseEntity.ok(orderDtos);
     }
 
-    @GetMapping("/user/prohibition")
-    public ResponseEntity<?> prohibition() {
-        return ResponseEntity
-                .status(HttpStatus.FORBIDDEN)
-                .body("접근 권한이 없습니다.");
-    }
-
     /*
     * 어드민 페이지
     * 권한 : ADMIN
@@ -298,5 +291,12 @@ public class UserController {
         return ResponseEntity.ok(
                 userService.getAllUsersForAdmin()
         );
+    }
+
+    @GetMapping("/user/prohibition")
+    public ResponseEntity<?> prohibition() {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body("접근 권한이 없습니다.");
     }
 }
