@@ -12,6 +12,15 @@ import java.net.URI;
 public class UserUtils {
 
     /*
+     * 이메일 중복 검증
+     * 반환 값 : false(중복X), true(중복)
+     */
+    public static boolean isDuplicateEmail(Users users) {
+
+        return !CommonUtils.isNull(users);
+    }
+
+    /*
     * 비밀번호 같지 않은지 검증
     * 반환 값 : true(같지 않을때), false(같을때)
      */
@@ -19,15 +28,6 @@ public class UserUtils {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
         return !encoder.matches(inputPassword, originalPassword);
-    }
-
-    /*
-     * 이메일 중복 검증
-     * 반환 값 : false(중복X), true(중복)
-     */
-    public static boolean isDuplicateEmail(Users users) {
-
-        return !CommonUtils.isNull(users);
     }
 
     /*

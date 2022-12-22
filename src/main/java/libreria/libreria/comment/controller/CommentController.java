@@ -27,21 +27,6 @@ public class CommentController {
 
     private final CommentService commentService;
     private final ItemService itemService;
-
-    @GetMapping("/comment/{itemId}")
-    public ResponseEntity<Map<String, Object>> commentHome(
-            @PathVariable("itemId") Long itemId,
-            Principal principal
-    ) {
-        Map<String, Object> map = new HashMap<>();
-        String user = principal.getName();
-        List<CommentResponse> comments = commentService.getComments(itemId);
-
-        map.put("user", user);
-        map.put("body", comments);
-
-        return ResponseEntity.ok(map);
-    }
     
     @PostMapping("/comment/post/{itemId}")
     public ResponseEntity<?> commentPost(
@@ -67,6 +52,21 @@ public class CommentController {
         String url = "/item/comment/" + itemId;
 
         return CommonUtils.makeResponseEntityForRedirect(url, request);
+    }
+
+    @GetMapping("/comment/{itemId}")
+    public ResponseEntity<Map<String, Object>> commentHome(
+            @PathVariable("itemId") Long itemId,
+            Principal principal
+    ) {
+        Map<String, Object> map = new HashMap<>();
+        String user = principal.getName();
+        List<CommentResponse> comments = commentService.getComments(itemId);
+
+        map.put("user", user);
+        map.put("body", comments);
+
+        return ResponseEntity.ok(map);
     }
 
     @GetMapping("/comment/edit/{id}")

@@ -22,32 +22,24 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
 
-    /*
-    * order-list
-    * when : my-page
-     */
-    public List<OrdersResponse> getOrdersForMyPage(String email) {
-        return OrdersMapper.entityToDtoList(
-                orderRepository.findOrdersByEmail(email)
-        );
-    }
-
-    /*
-    * order-list
-    * when : item detail
-     */
-    public List<OrdersResponse> getOrdersForItemDetail(Long itemId) {
-        return OrdersMapper.entityToDtoList(
-                orderRepository.findOrdersByItemId(itemId)
-        );
-    }
-
     public Orders getOrderEntity(Long orderId) {
         return orderRepository.findOneById(orderId);
     }
 
     public OrdersResponse getOrderDto(Long orderId) {
         return orderRepository.findOneDtoById(orderId);
+    }
+
+    public List<OrdersResponse> getOrdersForMyPage(String email) {
+        return OrdersMapper.entityToDtoList(
+                orderRepository.findOrdersByEmail(email)
+        );
+    }
+
+    public List<OrdersResponse> getOrdersForItemDetail(Long itemId) {
+        return OrdersMapper.entityToDtoList(
+                orderRepository.findOrdersByItemId(itemId)
+        );
     }
 
     @Transactional

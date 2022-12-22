@@ -12,6 +12,14 @@ import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Orders, Long> {
 
+    @Query("select o from Orders o join fetch o.users join fetch o.item where o.id = :id")
+    Orders findOneById(@Param("id") Long id);
+
+    @Query("select new libreria.libreria.orders.dto.OrdersResponse" +
+            "(o.id, o.status, o.orderCount, o.createdDate)" +
+            " from Orders o where o.id = :id")
+    OrdersResponse findOneDtoById(@Param("id") Long id);
+
     /*
     * 주문리스트
     * when : my-page
@@ -25,14 +33,6 @@ public interface OrderRepository extends JpaRepository<Orders, Long> {
      */
     @Query("select o from Orders o join fetch o.users join fetch o.item i where i.id = :id")
     List<Orders> findOrdersByItemId(@Param("id") Long id);
-
-    @Query("select o from Orders o join fetch o.users join fetch o.item where o.id = :id")
-    Orders findOneById(@Param("id") Long id);
-
-    @Query("select new libreria.libreria.orders.dto.OrdersResponse" +
-            "(o.id, o.status, o.orderCount, o.createdDate)" +
-            " from Orders o where o.id = :id")
-    OrdersResponse findOneDtoById(@Param("id") Long id);
 
     @Modifying
     @Query("update Orders o set o.status = :status where o.id = :id")

@@ -23,17 +23,17 @@ public class BookmarkService {
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
 
-    public Map<String, Object> getBookmarks(String email) {
-        return BookmarkMapper.entityToMap(
-                bookmarkRepository.findBookmarksByUserEmail(email)
-        );
-    }
-
     public Bookmark getBookmarkDetail(Long itemId, String email) {
         Users users = userRepository.findByEmail(email);
         Item item = itemRepository.findOneById(itemId);
 
         return bookmarkRepository.findOneBookmark(users, item);
+    }
+
+    public Map<String, Object> getBookmarks(String email) {
+        return BookmarkMapper.entityToMap(
+                bookmarkRepository.findBookmarksByUserEmail(email)
+        );
     }
 
     @Transactional

@@ -95,10 +95,23 @@ public class UserController {
         return ResponseEntity.ok(tokenInfo);
     }
 
-    /*
-    * 로그아웃은 시큐리티 단에서 이루어짐.
-    * /user/logout 으로 get 하면 된다.
-    */
+    @GetMapping("/user/seller")
+    public ResponseEntity<?> sellerPage() {
+        return ResponseEntity.ok("판매자 등록 페이지");
+    }
+
+    @PostMapping("/user/seller")
+    public ResponseEntity<?> seller(
+            Principal principal,
+            HttpServletRequest request
+    ) {
+        userService.updateAuth(principal.getName());
+        log.info("seller 권한 업데이트 성공!!");
+
+        String url = "/user/logout";
+
+        return CommonUtils.makeResponseEntityForRedirect(url, request);
+    }
 
     @PostMapping("/user/change-email")
     public ResponseEntity<?> changeEmail(
@@ -163,57 +176,6 @@ public class UserController {
         return CommonUtils.makeResponseEntityForRedirect(url, request);
     }
 
-    @PostMapping("/user/withdraw")
-    public ResponseEntity<?> withdraw(
-            @RequestBody String password,
-            Principal principal
-    ) {
-        Users users = userService.getUserEntity(principal.getName());
-
-        if (UserUtils.isNotMatchingPassword(
-                password,
-                users.getPassword()
-        )) {
-            log.info("비밀번호 일치하지 않음.");
-            return ResponseEntity.ok("비밀번호가 다릅니다. 다시 입력해주세요.");
-        }
-
-        log.info("회원 : " + users.getId() + " 탈퇴 성공");
-        userService.deleteUser(users.getId());
-
-        return ResponseEntity.ok("그동안 서비스를 이용해주셔서 감사합니다.");
-    }
-
-    @GetMapping("/user/seller")
-    public ResponseEntity<?> sellerPage() {
-        return ResponseEntity.ok("판매자 등록 페이지");
-    }
-
-    @PostMapping("/user/seller")
-    public ResponseEntity<?> seller(
-            Principal principal,
-            HttpServletRequest request
-    ) {
-        userService.updateAuth(principal.getName());
-        log.info("seller 권한 업데이트 성공!!");
-
-        String url = "/user/logout";
-
-        return CommonUtils.makeResponseEntityForRedirect(url, request);
-    }
-
-    /*
-    * README 에서도 설명했지만 화면단에서 auth 를 바탕으로
-    * MEMBER 일 경우 주문 리스트 버튼을 띄어서 /user/order-list 로 연결하고
-    * SELLER 일 경우 등록 상품 버튼을 띄어서 /user/item-list 로 연결한다.
-     */
-    @GetMapping("/user/my-page")
-    public ResponseEntity<?> myPage(Principal principal) {
-        UserResponse users = userService.getUserDto(principal.getName());
-
-        return ResponseEntity.ok(users);
-    }
-
     @GetMapping("/user/regi-address")
     public ResponseEntity<?> regiAddressPage(Principal principal) {
         String address = userService.getUserEntity(principal.getName()).getAddress();
@@ -235,6 +197,18 @@ public class UserController {
         String url = "/user/my-page";
 
         return CommonUtils.makeResponseEntityForRedirect(url, request);
+    }
+
+    /*
+    * README 에서도 설명했지만 화면단에서 auth 를 바탕으로
+    * MEMBER 일 경우 주문 리스트 버튼을 띄어서 /user/order-list 로 연결하고
+    * SELLER 일 경우 등록 상품 버튼을 띄어서 /user/item-list 로 연결한다.
+     */
+    @GetMapping("/user/my-page")
+    public ResponseEntity<?> myPage(Principal principal) {
+        UserResponse users = userService.getUserDto(principal.getName());
+
+        return ResponseEntity.ok(users);
     }
 
     /*
@@ -271,6 +245,27 @@ public class UserController {
         List<OrdersResponse> orderDtos =
                 orderService.getOrdersForMyPage(users.getEmail());
         return ResponseEntity.ok(orderDtos);
+    }
+
+    @PostMapping("/user/withdraw")
+    public ResponseEntity<?> withdraw(
+            @RequestBody String password,
+            Principal principal
+    ) {
+        Users users = userService.getUserEntity(principal.getName());
+
+        if (UserUtils.isNotMatchingPassword(
+                password,
+                users.getPassword()
+        )) {
+            log.info("비밀번호 일치하지 않음.");
+            return ResponseEntity.ok("비밀번호가 다릅니다. 다시 입력해주세요.");
+        }
+
+        log.info("회원 : " + users.getId() + " 탈퇴 성공");
+        userService.deleteUser(users.getId());
+
+        return ResponseEntity.ok("그동안 서비스를 이용해주셔서 감사합니다.");
     }
 
     /*

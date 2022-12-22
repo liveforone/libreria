@@ -28,18 +28,20 @@ public class CustomUserDetailService implements UserDetailsService {
                     .password(users.getPassword())
                     .roles("ADMIN")
                     .build();
-        } else if (users.getAuth() == Role.SELLER) {
+        }
+
+        if (users.getAuth() == Role.SELLER) {
             return User.builder()
                     .username(users.getEmail())
                     .password(users.getPassword())
                     .roles("SELLER")
                     .build();
-        } else {
-            return User.builder()
+        }
+
+        return User.builder()
                     .username(users.getEmail())
                     .password(users.getPassword())
                     .roles("MEMBER")
                     .build();
-        }
     }
 }

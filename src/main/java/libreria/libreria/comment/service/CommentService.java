@@ -20,18 +20,18 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final ItemRepository itemRepository;
 
-    public List<CommentResponse> getComments(Long id) {
-        return CommentMapper.entityToDtoList(
-                commentRepository.findCommentsByItemId(id)
-        );
-    }
-
     public Comment getCommentEntity(Long id) {
         return commentRepository.findOneById(id);
     }
 
     public CommentResponse getCommentDto(Long id) {
         return commentRepository.findOneDtoById(id);
+    }
+
+    public List<CommentResponse> getComments(Long id) {
+        return CommentMapper.entityToDtoList(
+                commentRepository.findCommentsByItemId(id)
+        );
     }
 
     @Transactional

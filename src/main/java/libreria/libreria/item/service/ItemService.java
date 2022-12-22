@@ -22,6 +22,14 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
+    public Item getItemEntity(Long id) {
+        return itemRepository.findOneById(id);
+    }
+
+    public ItemResponse getItemDto(Long id) {
+        return itemRepository.findOneDtoById(id);
+    }
+
     public List<ItemResponse> getItemsForMyPage(String email) {
         return ItemMapper.entityToDtoList(
                 itemRepository.findItemsByEmail(email)
@@ -50,14 +58,6 @@ public class ItemService {
                     pageable
                 )
         );
-    }
-
-    public Item getItemEntity(Long id) {
-        return itemRepository.findOneById(id);
-    }
-
-    public ItemResponse getItemDto(Long id) {
-        return itemRepository.findOneDtoById(id);
     }
 
     @Transactional

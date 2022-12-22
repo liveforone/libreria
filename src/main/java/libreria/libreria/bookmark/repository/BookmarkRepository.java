@@ -11,9 +11,9 @@ import java.util.List;
 
 public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
 
-    @Query("select b from Bookmark b join fetch b.item join fetch b.users u where u.email = :email")
-    List<Bookmark> findBookmarksByUserEmail(@Param("email") String email);
-
     @Query("select b from Bookmark b join fetch b.users join fetch b.item where b.users = :users and b.item = :item")
     Bookmark findOneBookmark(@Param("users") Users users, @Param("item") Item item);
+
+    @Query("select b from Bookmark b join fetch b.item join fetch b.users u where u.email = :email")
+    List<Bookmark> findBookmarksByUserEmail(@Param("email") String email);
 }

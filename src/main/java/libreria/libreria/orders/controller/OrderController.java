@@ -29,34 +29,6 @@ public class OrderController {
     private final ItemService itemService;
     private final UserService userService;
 
-    /*
-    * 주문자 리스트
-    * who : 게시글 작성자
-     */
-    @GetMapping("/item/order-list/{itemId}")
-    public ResponseEntity<?> ordersListPage(@PathVariable("itemId") Long itemId) {
-        List<OrdersResponse> orderDtos =
-                orderService.getOrdersForItemDetail(itemId);
-
-        if (CommonUtils.isNull(orderDtos)) {
-            return ResponseEntity.ok("주문자가 아직 없습니다.");
-        }
-
-        return ResponseEntity.ok(orderDtos);
-    }
-
-    @GetMapping("/item/order/{itemId}")
-    public ResponseEntity<?> orderPage(@PathVariable("itemId") Long itemId) {
-        Item item = itemService.getItemEntity(itemId);
-
-        if (CommonUtils.isNull(item)) {
-            log.info("상품이 존재하지 않음. 잘못된 경로.");
-            return ResponseEntity.ok("해당 상품이 없어 주문이 불가능합니다.");
-        }
-
-        return ResponseEntity.ok(item);
-    }
-
     @PostMapping("/item/order/{itemId}")
     public ResponseEntity<?> order(
             @PathVariable("itemId") Long itemId,
@@ -98,6 +70,34 @@ public class OrderController {
         return CommonUtils.makeResponseEntityForRedirect(url, request);
     }
 
+    /*
+    * 주문자 리스트
+    * who : 게시글 작성자
+     */
+    @GetMapping("/item/order-list/{itemId}")
+    public ResponseEntity<?> ordersListPage(@PathVariable("itemId") Long itemId) {
+        List<OrdersResponse> orderDtos =
+                orderService.getOrdersForItemDetail(itemId);
+
+        if (CommonUtils.isNull(orderDtos)) {
+            return ResponseEntity.ok("주문자가 아직 없습니다.");
+        }
+
+        return ResponseEntity.ok(orderDtos);
+    }
+
+    @GetMapping("/item/order/{itemId}")
+    public ResponseEntity<?> orderPage(@PathVariable("itemId") Long itemId) {
+        Item item = itemService.getItemEntity(itemId);
+
+        if (CommonUtils.isNull(item)) {
+            log.info("상품이 존재하지 않음. 잘못된 경로.");
+            return ResponseEntity.ok("해당 상품이 없어 주문이 불가능합니다.");
+        }
+
+        return ResponseEntity.ok(item);
+    }
+
     @GetMapping("/item/cancel/{orderId}")
     public ResponseEntity<?> cancelPage(@PathVariable("orderId") Long orderId) {
         OrdersResponse order = orderService.getOrderDto(orderId);
@@ -110,9 +110,6 @@ public class OrderController {
         return ResponseEntity.ok(order);
     }
 
-    /*
-    * 주문취소 로직은 민감하기에 현재 유저와 주문자를 한 번 더 판별한다.
-     */
     @PostMapping("/item/cancel/{orderId}")
     public ResponseEntity<?> cancel(
             @PathVariable("orderId") Long orderId,
@@ -134,7 +131,7 @@ public class OrderController {
                     .build();
         }
 
-        if (OrdersUtils.isOverCancelLimitDate(orders)) {  //주문 가능 날짜 판별
+        if (OrdersUtils.isOverCancelLimitDate(orders)) {
             log.info("주문 취소 실패");
             return ResponseEntity.ok("주문 한지 7일이 지나 주문 취소가 불가능합니다.");
         }

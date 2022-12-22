@@ -20,6 +20,14 @@ public interface UserRepository extends JpaRepository<Users, Long> {
     @Query("update Users u set u.auth = :auth where u.email = :email")
     void updateUserAuth(@Param("auth") Role auth, @Param("email") String email);
 
+    @Modifying
+    @Query("update Users u set u.email = :newEmail where u.email = :oldEmail")
+    void updateEmail(@Param("oldEmail") String oldEmail, @Param("newEmail") String newEmail);
+
+    @Modifying
+    @Query("update Users u set u.password = :password where u.id = :id")
+    void updatePassword(@Param("id") Long id, @Param("password") String password);
+
     /*
     * 주소 업데이트
     * 파라미터1 : String address
@@ -44,12 +52,4 @@ public interface UserRepository extends JpaRepository<Users, Long> {
     @Modifying
     @Query("update Users u set u.count = u.count - 1 where u.email = :email")
     void minusCount(@Param("email") String email);
-
-    @Modifying
-    @Query("update Users u set u.email = :newEmail where u.email = :oldEmail")
-    void updateEmail(@Param("oldEmail") String oldEmail, @Param("newEmail") String newEmail);
-
-    @Modifying
-    @Query("update Users u set u.password = :password where u.id = :id")
-    void updatePassword(@Param("id") Long id, @Param("password") String password);
 }
