@@ -48,8 +48,9 @@ class ItemServiceTest {
                 .build();
         em.merge(updateTitle);  //머지(1차 캐시에 있는 객체 업데이트)
 
-        //then
         Item finalItem = em.find(Item.class, id);  //1차 캐시에 있는 객체 조회
+
+        //then
         Assertions.assertThat(finalItem.getTitle()).isEqualTo(title);
     }
 }

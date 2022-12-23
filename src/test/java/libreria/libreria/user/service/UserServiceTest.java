@@ -44,8 +44,9 @@ class UserServiceTest {
                 .build();
         em.merge(users);
 
-        //then
         Users finalUser = em.find(Users.class, id);
+
+        //then
         boolean matches = passwordEncoder.matches(inputPassword, finalUser.getPassword());
         Assertions.assertThat(matches).isTrue();
     }
