@@ -186,7 +186,8 @@ public class ItemController {
     ) throws IllegalStateException, IOException {
 
         String url = "/item/" + id;
-        ResponseEntity<String> response = CommonUtils.makeResponseEntityForRedirect(url, request);
+        ResponseEntity<String> response = CommonUtils
+                .makeResponseEntityForRedirect(url, request);
 
         Item item = itemService.getItemEntity(id);
 
@@ -201,17 +202,14 @@ public class ItemController {
         }
 
         if (uploadFile.isEmpty()) {
-            itemService.editItemWithNoFile(id, itemRequest);
-            log.info("게시글 수정 완료");
+            itemService.editItem(id, itemRequest);
+            log.info("게시글 수정 완료(파일 수정X)");
 
             return response;
         }
 
-        itemService.editItemWithFile(
-                id,
-                itemRequest
-        );
-        log.info("게시글 수정 완료");
+        itemService.editItem(id, itemRequest);
+        log.info("게시글 수정 완료(파일 수정O)");
 
         uploadFileService.editFile(uploadFile, id);
         log.info("파일 교체 완료");

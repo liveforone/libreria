@@ -73,32 +73,8 @@ public class ItemService {
         itemRepository.updateGood(id);
     }
 
-    /*
-    * 파일 수정 1
-    * 조건 : 기존 파일 유지
-     */
     @Transactional
-    public void editItemWithNoFile(Long id, ItemRequest itemRequest) {
-        Item item = itemRepository.findOneById(id);
-
-        itemRequest.setId(id);
-        itemRequest.setUsers(item.getUsers());
-        itemRequest.setGood(item.getGood());
-
-        itemRepository.save(
-                ItemMapper.dtoToEntity(itemRequest)
-        );
-    }
-
-    /*
-    * 파일 수정 2
-    * 조건 : 기존 파일 변경
-     */
-    @Transactional
-    public void editItemWithFile(
-            Long id,
-            ItemRequest itemRequest
-    ) {
+    public void editItem(Long id, ItemRequest itemRequest) {
         Item item = itemRepository.findOneById(id);
 
         itemRequest.setId(id);
