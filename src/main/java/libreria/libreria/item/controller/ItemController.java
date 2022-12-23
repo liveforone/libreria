@@ -185,6 +185,7 @@ public class ItemController {
             HttpServletRequest request
     ) throws IllegalStateException, IOException {
 
+        String currentUserEmail = principal.getName();
         String url = "/item/" + id;
         ResponseEntity<String> response = CommonUtils
                 .makeResponseEntityForRedirect(url, request);
@@ -196,7 +197,7 @@ public class ItemController {
             return ResponseEntity.ok("해당 상품이 없어 수정이 불가능합니다.");
         }
 
-        if (!Objects.equals(item.getUsers().getEmail(), principal.getName())) {
+        if (!Objects.equals(item.getUsers().getEmail(), currentUserEmail)) {
             log.info("작성자와 현재 유저가 달라 수정 불가능.");
             return ResponseEntity.ok("작성자가 아니라서 수정이 불가능합니다.");
         }

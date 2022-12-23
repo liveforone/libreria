@@ -39,9 +39,9 @@ public class BookmarkController {
             Principal principal,
             HttpServletRequest request
     ) {
+        String email = principal.getName();
         Item item = itemService.getItemEntity(itemId);
-        Bookmark bookmark =
-                bookmarkService.getBookmarkDetail(itemId, principal.getName());
+        Bookmark bookmark = bookmarkService.getBookmarkDetail(itemId, email);
 
         if (CommonUtils.isNull(item)) {
             log.info("상품 존재하지 않음.");
@@ -53,10 +53,7 @@ public class BookmarkController {
             return ResponseEntity.ok("이미 북마크 하였습니다.");
         }
 
-        bookmarkService.saveBookmark(
-                principal.getName(),
-                itemId
-        );
+        bookmarkService.saveBookmark(email, itemId);
         log.info("북마킹 성공");
 
         String url = "/item/" + itemId;
@@ -70,9 +67,9 @@ public class BookmarkController {
             Principal principal,
             HttpServletRequest request
     ) {
+        String email = principal.getName();
         Item item = itemService.getItemEntity(itemId);
-        Bookmark bookmark =
-                bookmarkService.getBookmarkDetail(itemId, principal.getName());
+        Bookmark bookmark = bookmarkService.getBookmarkDetail(itemId, email);
 
         if (CommonUtils.isNull(item)) {
             log.info("상품 존재하지 않음.");
@@ -84,10 +81,7 @@ public class BookmarkController {
             return ResponseEntity.ok("이미 북마크가 취소되었습니다.");
         }
 
-        bookmarkService.cancelBookmark(
-                principal.getName(),
-                itemId
-        );
+        bookmarkService.cancelBookmark(email, itemId);
         log.info("북마크 취소 성공");
 
         String url = "/item/" + itemId;

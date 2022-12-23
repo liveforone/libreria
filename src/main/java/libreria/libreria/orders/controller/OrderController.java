@@ -36,6 +36,7 @@ public class OrderController {
             Principal principal,
             HttpServletRequest request
     ) {
+        String email = principal.getName();
         Item item = itemService.getItemEntity(itemId);
 
         if (CommonUtils.isNull(item)) {
@@ -48,7 +49,10 @@ public class OrderController {
             return ResponseEntity.ok("품절된 상품입니다. 상품 홈으로 돌아가주세요");
         }
 
-        if (OrdersUtils.isOverRemaining(item.getRemaining(), ordersRequest.getOrderCount())) {
+        if (OrdersUtils.isOverRemaining(
+                item.getRemaining(),
+                ordersRequest.getOrderCount()
+        )) {
             log.info("주문 불가능, 주문 수량이 재고보다 많음.");
             return ResponseEntity.ok("주문 수량이 재고보다 많아 주문이 불가능합니다.");
         }
@@ -56,13 +60,13 @@ public class OrderController {
         orderService.saveOrder(
                 item,
                 ordersRequest,
-                principal.getName()
+                email
         );
         itemService.minusItemRemaining(
                 ordersRequest.getOrderCount(),
                 itemId
         );
-        userService.plusCount(principal.getName());
+        userService.plusCount(email);
         log.info("주문 성공");
 
         String url = "/item/" + itemId;
@@ -116,6 +120,7 @@ public class OrderController {
             Principal principal,
             HttpServletRequest request
     ) {
+        String currentUserEmail = principal.getName();
         Orders orders = orderService.getOrderEntity(orderId);
 
         if (CommonUtils.isNull(orders)) {
@@ -124,7 +129,7 @@ public class OrderController {
                     .ok("해당 주문을 찾을 수 없어 주문 취소가 불가능합니다.");
         }
 
-        if (!Objects.equals(principal.getName(), orders.getUsers().getEmail())) {
+        if (!Objects.equals(currentUserEmail, orders.getUsers().getEmail())) {
             log.info("작성자와 현재 유저가 달라 주문 취소 불가능");
             return ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
@@ -141,7 +146,7 @@ public class OrderController {
                 orders.getOrderCount(),
                 orders.getItem().getId()
         );
-        userService.minusCount(orders.getUsers().getEmail());
+        userService.minusCount(currentUserEmail);
         log.info("주문 취소 성공");
 
         String url = "/user/order-list";

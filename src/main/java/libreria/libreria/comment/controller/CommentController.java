@@ -102,10 +102,7 @@ public class CommentController {
                     .build();
         }
 
-        Long itemId = commentService.editComment(
-                id,
-                commentRequest
-        );
+        Long itemId = commentService.editComment(id, commentRequest);
         log.info("댓글 업데이트 성공");
 
         String url = "/item/comment/" + itemId;
