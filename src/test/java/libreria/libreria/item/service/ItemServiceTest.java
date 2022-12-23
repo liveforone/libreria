@@ -23,13 +23,13 @@ class ItemServiceTest {
                 .password("1234")
                 .auth(Role.SELLER)
                 .build();
-        em.persist(users);  //영속화
+        em.persist(users);
 
         Item item = Item.builder()
                 .title("test1")
                 .users(users)
                 .build();
-        em.persist(item);  //영속화
+        em.persist(item);
 
         return item.getId();
     }
@@ -38,17 +38,17 @@ class ItemServiceTest {
     @Transactional
     void editItemTest() {
         //given
-        Long id = makeItemAndUser();  //영속 상태
+        Long id = makeItemAndUser();
 
         //when
-        String title = "updated title";  //변경할 제목
+        String title = "updated title";
         Item updateTitle = Item.builder()
                 .id(id)
                 .title(title)
                 .build();
-        em.merge(updateTitle);  //머지(1차 캐시에 있는 객체 업데이트)
+        em.merge(updateTitle);
 
-        Item finalItem = em.find(Item.class, id);  //1차 캐시에 있는 객체 조회
+        Item finalItem = em.find(Item.class, id);
 
         //then
         Assertions.assertThat(finalItem.getTitle()).isEqualTo(title);

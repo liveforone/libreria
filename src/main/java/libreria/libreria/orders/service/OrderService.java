@@ -59,9 +59,6 @@ public class OrderService {
 
     @Transactional
     public void cancelOrder(Long id) {
-        orderRepository.updateStatus(
-                OrderStatus.CANCEL,
-                id
-        );
+        orderRepository.updateStatus(OrderStatus.CANCEL, id);
     }
 }

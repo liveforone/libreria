@@ -14,19 +14,21 @@ class OrderServiceTest {
     @Test
     @DisplayName("주문 취소 날짜 테스트")
     void getOrderAbleCancelDayTest() {
-        //테스트 당시 날짜 기준으로 한참 전 날짜임
-        LocalDate localDate = LocalDate.of(2022, 9, 8);
-        int ableDate = localDate.getDayOfYear() + 7;  //생성날짜 + 7일
+        //given
+        LocalDate createdDate = LocalDate.of(2022, 9, 8);
+        int cancelAvailableDate = createdDate.getDayOfYear() + 7;
         int nowDate = LocalDate.now().getDayOfYear();
 
+        //when
         int ok;
 
-        if (nowDate <= ableDate) {
-            ok = 1;  //주문취소 가능, 1 == true라는 뜻 => 실제 리턴값임
+        if (nowDate <= cancelAvailableDate) {
+            ok = 1;
         } else {
-            ok = -1;  //주문취소 불가능, -1 == False라는 뜻 => 실제 리턴값임
+            ok = -1;
         }
 
+        //then
         assertThat(ok).isEqualTo(-1);
     }
 }
