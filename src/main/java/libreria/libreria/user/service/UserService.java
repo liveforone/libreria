@@ -97,8 +97,7 @@ public class UserService {
         * 업데이트 한 권한 현재 객체에 저장, 로그아웃 하지 않아도 됨!
          */
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        List<GrantedAuthority> updatedAuthorities =
-                new ArrayList<>(auth.getAuthorities());
+        List<GrantedAuthority> updatedAuthorities = new ArrayList<>(auth.getAuthorities());
         updatedAuthorities.add(new SimpleGrantedAuthority(Role.SELLER.getValue()));
         Authentication newAuth = new UsernamePasswordAuthenticationToken(
                         auth.getPrincipal(),
@@ -108,26 +107,17 @@ public class UserService {
         SecurityContextHolder.getContext().setAuthentication(newAuth);
         //컨텍스트홀더 업데이트 끝.
 
-        userRepository.updateUserAuth(
-                Role.SELLER,
-                email
-        );
+        userRepository.updateUserAuth(Role.SELLER, email);
     }
 
     @Transactional
     public void regiAddress(String email, String address) {
-        userRepository.updateAddress(
-                address,
-                email
-        );
+        userRepository.updateAddress(address, email);
     }
 
     @Transactional
     public void updateEmail(String oldEmail, String newEmail) {
-        userRepository.updateEmail(
-                oldEmail,
-                newEmail
-        );
+        userRepository.updateEmail(oldEmail, newEmail);
     }
 
     @Transactional
@@ -136,10 +126,7 @@ public class UserService {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String newPassword =  passwordEncoder.encode(inputPassword);
 
-        userRepository.updatePassword(
-                id,
-                newPassword
-        );
+        userRepository.updatePassword(id, newPassword);
     }
 
     @Transactional
