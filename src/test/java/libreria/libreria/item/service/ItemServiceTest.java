@@ -17,7 +17,7 @@ class ItemServiceTest {
     private EntityManager em;
 
     @Transactional
-    public Long saveItem() {
+    public Long makeItemAndUser() {
         Users users = Users.builder()
                 .email("yc1234@gmail.com")
                 .password("1234")
@@ -36,9 +36,9 @@ class ItemServiceTest {
 
     @Test
     @Transactional
-    void editItem() {
+    void editItemTest() {
         //given
-        Long id = saveItem();  //영속 상태
+        Long id = makeItemAndUser();  //영속 상태
 
         //when
         String title = "updated title";  //변경할 제목
