@@ -48,7 +48,10 @@ public class SecurityConfig {
                         ).hasRole("SELLER")
                         .anyRequest().authenticated()
                         .and()
-                        .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+                        .addFilterBefore(
+                                new JwtAuthenticationFilter(jwtTokenProvider),
+                                UsernamePasswordAuthenticationFilter.class
+                        )
                 )
                 .logout()
                 .logoutRequestMatcher(new AntPathRequestMatcher("/user/logout"))

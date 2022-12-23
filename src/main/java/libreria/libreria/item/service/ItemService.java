@@ -44,19 +44,13 @@ public class ItemService {
 
     public Page<ItemResponse> searchItemsByTitle(String keyword, Pageable pageable) {
         return ItemMapper.entityToDtoPage(
-                itemRepository.searchItemsByTitle(
-                        keyword,
-                        pageable
-                )
+                itemRepository.searchItemsByTitle(keyword, pageable)
         );
     }
 
     public Page<ItemResponse> getCategories(String category, Pageable pageable) {
         return ItemMapper.entityToDtoPage(
-                itemRepository.findCategoriesByCategory(
-                    category,
-                    pageable
-                )
+                itemRepository.findCategoriesByCategory(category, pageable)
         );
     }
 
