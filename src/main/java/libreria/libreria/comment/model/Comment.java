@@ -29,7 +29,6 @@ public class Comment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id")
-    @JsonBackReference
     private Item item;
 
     @CreatedDate
