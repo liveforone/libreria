@@ -58,7 +58,7 @@ public class UserController {
             return ResponseEntity.ok("중복되는 이메일이 있어 회원가입이 불가능합니다.");
         }
 
-        userService.joinUser(userRequest);
+        userService.signup(userRequest);
         log.info("회원 가입 성공");
 
         return ResponseEntity

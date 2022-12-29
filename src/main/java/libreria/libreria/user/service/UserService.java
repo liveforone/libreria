@@ -52,7 +52,7 @@ public class UserService {
     }
 
     @Transactional
-    public void joinUser(UserRequest userRequest) {
+    public void signup(UserRequest userRequest) {
         userRequest.setPassword(
                 UserUtils.encodePassword(userRequest.getPassword())
         );

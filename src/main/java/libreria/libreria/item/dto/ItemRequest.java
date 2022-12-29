@@ -1,12 +1,11 @@
 package libreria.libreria.item.dto;
 
 import libreria.libreria.user.model.Users;
-import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
 public class ItemRequest {
 
     private Long id;

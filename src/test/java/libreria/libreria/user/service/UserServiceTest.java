@@ -1,7 +1,7 @@
 package libreria.libreria.user.service;
 
 import jakarta.persistence.EntityManager;
-import libreria.libreria.user.model.Role;
+import libreria.libreria.user.dto.UserRequest;
 import libreria.libreria.user.model.Users;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -11,43 +11,39 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
+@Transactional
 class UserServiceTest {
 
     @Autowired
     private EntityManager em;
 
-    @Transactional
-    public Long makeUser() {
-        Users users = Users.builder()
-                .email("yc1234@gmail.com")
-                .password("1234")
-                .auth(Role.MEMBER)
-                .build();
-        em.persist(users);
+    @Autowired
+    private UserService userService;
 
-        return users.getId();
+    public void createMember(String email, String password) {
+        UserRequest userRequest = new UserRequest();
+        userRequest.setEmail(email);
+        userRequest.setPassword(password);
+        userService.signup(userRequest);
     }
 
     @Test
-    @Transactional
     void updatePasswordTest() {
         //given
-        Long id = makeUser();
-        String inputPassword = "1357";
+        String email = "yc1111@gmail.com";
+        String password = "1234";
+        createMember(email, password);
 
         //when
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        String newPassword =  passwordEncoder.encode(inputPassword);
-        Users users = Users.builder()
-                .id(id)
-                .password(newPassword)
-                .build();
-        em.merge(users);
-
-        Users finalUser = em.find(Users.class, id);
+        Users users = userService.getUserEntity(email);
+        String newPassword = "9999";
+        userService.updatePassword(users.getId(), newPassword);
+        em.flush();
+        em.clear();
 
         //then
-        boolean matches = passwordEncoder.matches(inputPassword, finalUser.getPassword());
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        boolean matches = passwordEncoder.matches(newPassword, userService.getUserEntity(email).getPassword());
         Assertions.assertThat(matches).isTrue();
     }
 }
