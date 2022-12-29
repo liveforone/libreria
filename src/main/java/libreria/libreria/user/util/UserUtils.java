@@ -2,37 +2,40 @@ package libreria.libreria.user.util;
 
 import jakarta.servlet.http.HttpServletRequest;
 import libreria.libreria.jwt.JwtAuthenticationFilter;
+import libreria.libreria.user.model.Role;
 import libreria.libreria.user.model.Users;
 import libreria.libreria.utility.CommonUtils;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserUtils {
 
-    /*
-     * 이메일 중복 검증
-     * 반환 값 : false(중복X), true(중복)
-     */
     public static boolean isDuplicateEmail(Users users) {
 
         return !CommonUtils.isNull(users);
     }
 
-    /*
-    * 비밀번호 같지 않은지 검증
-    * 반환 값 : true(같지 않을때), false(같을때)
-     */
     public static boolean isNotMatchingPassword(String inputPassword, String originalPassword) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
         return !encoder.matches(inputPassword, originalPassword);
     }
 
-    /*
-    * 유저 등급 체크
-     */
+    public static String encodePassword(String password) {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+        return passwordEncoder.encode(password);
+    }
+
     public static String checkUserRank(int count) {
         if (count >= 120) {
             return "DIA";
@@ -63,5 +66,17 @@ public class UserUtils {
         httpHeaders.setLocation(URI.create(url));
 
         return httpHeaders;
+    }
+
+    public static void updateContextHolderAuth() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        List<GrantedAuthority> updatedAuthorities = new ArrayList<>(auth.getAuthorities());
+        updatedAuthorities.add(new SimpleGrantedAuthority(Role.SELLER.getValue()));
+        Authentication newAuth = new UsernamePasswordAuthenticationToken(
+                auth.getPrincipal(),
+                auth.getCredentials(),
+                updatedAuthorities
+        );
+        SecurityContextHolder.getContext().setAuthentication(newAuth);
     }
 }

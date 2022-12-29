@@ -8,19 +8,15 @@ import libreria.libreria.user.dto.UserResponse;
 import libreria.libreria.user.model.Users;
 import libreria.libreria.user.repository.UserRepository;
 import libreria.libreria.user.util.UserMapper;
+import libreria.libreria.user.util.UserUtils;
 import libreria.libreria.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -57,10 +53,9 @@ public class UserService {
 
     @Transactional
     public void joinUser(UserRequest userRequest) {
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        userRequest.setPassword(passwordEncoder.encode(
-                userRequest.getPassword()
-        ));
+        userRequest.setPassword(
+                UserUtils.encodePassword(userRequest.getPassword())
+        );
 
         if (Objects.equals(userRequest.getEmail(), "admin@libreria.com")) {
             userRequest.setAuth(Role.ADMIN);
@@ -92,21 +87,7 @@ public class UserService {
 
     @Transactional
     public void updateAuth (String email) {
-        /*
-        * 권한을 업데이트(컨텍스트홀더 + db)
-        * 업데이트 한 권한 현재 객체에 저장, 로그아웃 하지 않아도 됨!
-         */
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        List<GrantedAuthority> updatedAuthorities = new ArrayList<>(auth.getAuthorities());
-        updatedAuthorities.add(new SimpleGrantedAuthority(Role.SELLER.getValue()));
-        Authentication newAuth = new UsernamePasswordAuthenticationToken(
-                        auth.getPrincipal(),
-                        auth.getCredentials(),
-                        updatedAuthorities
-        );
-        SecurityContextHolder.getContext().setAuthentication(newAuth);
-        //컨텍스트홀더 업데이트 끝.
-
+        UserUtils.updateContextHolderAuth();
         userRepository.updateUserAuth(Role.SELLER, email);
     }
 
@@ -122,9 +103,7 @@ public class UserService {
 
     @Transactional
     public void updatePassword(Long id, String inputPassword) {
-        //pw 암호화
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        String newPassword =  passwordEncoder.encode(inputPassword);
+        String newPassword = UserUtils.encodePassword(inputPassword);
 
         userRepository.updatePassword(id, newPassword);
     }
