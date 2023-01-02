@@ -1,5 +1,5 @@
 # libreria
-> 온라인 서점, 해당 프로젝트 생성 시점부터 계속 릴리즈(리팩터링)되고 있습니다.
+> 온라인 서점, 프로젝트 생성 시점(2022.10.17)부터 계속 릴리즈(리팩터링)되고 있습니다.
 
 # 1. 사용 기술 스택
 * Spring Boot 2.7.4 -> 3.0.0(마이그레이션)
@@ -21,6 +21,7 @@
 * 결제로직 분리를 통해 결제로직에 치중하는 문제에서 벗어났다.
 * 깃의 wiki에 사용기술들과 설명들에 대해 자세히 기록했다.  
 * [나의 위키](https://github.com/liveforone/libreria/wiki)
+* 부족한 부분들을 점차 채워나가는 프로젝트이다.
 
 # 3. 설계
 * 유저는 ADMIN, MEMBER, SELLER 세 종류가 있다.
@@ -158,7 +159,7 @@ json 다음에 uploadFile 이라는 이름으로 파일 등록
 ```
 [GET] /item/order-list/{itemId} : myPage에서 조회할 나의 주문리스트
 [GET/POST] /item/order/{itemId} : 상품 주문
-[GET/POST] /item/cancel/{orderId} : 상품 주문 취소, 7일 안에 가능
+[GET/POST] /item/cancel/{orderId} : 상품 주문 취소, 7일 안에 가능f
 ```
 ### file
 ```
