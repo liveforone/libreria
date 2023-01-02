@@ -125,44 +125,44 @@ json 다음에 uploadFile 이라는 이름으로 파일 등록
 ## API 설계
 ### users
 ```
-/ - get
-/user/signup - get/post, Authorization 헤더 설정하지 마라!! 해당 헤더가 필요없는 api이며 설정시 에러 발생한다. 
-/user/login - get/post, Authorization 헤더 설정하지 마라!! 해당 헤더가 필요없는 api이며 설정시 에러 발생한다.
-/user/logout - get, Authorization 헤더 설정하지 마라!! 해당 헤더가 필요없는 api이며 설정시 에러 발생한다.
-/user/seller - get/post
-/user/my-page - get
-/user/regi-address - get/post
-/user/item-list - get, auth가 SELLER인 user만 가능
-/user/order-list - get, auth가 MEMBER인 user만 가능
-/user/prohibition - get
-/admin - get, auth가 ADMIN인 경우만 가능
+[GET] / : 홈
+/user/signup : Authorization 헤더 설정하지 마라!! 해당 헤더가 필요없는 api이며 설정시 에러 발생한다. 
+/user/login : Authorization 헤더 설정하지 마라!! 해당 헤더가 필요없는 api이며 설정시 에러 발생한다.
+[GET] /user/logout : Authorization 헤더 설정하지 마라!! 해당 헤더가 필요없는 api이며 설정시 에러 발생한다.
+[GET/POST] /user/seller : 판매자로 권한 업데이트
+[GET] /user/my-page : 마이 페이지
+[GET/POST] /user/regi-address : 주소 등록 
+[GET] /user/item-list : auth가 SELLER인 user만 가능, 내가 등록한 상품 리스트
+[GET] /user/order-list : auth가 MEMBER인 user만 가능, 내가 주문한 상품 리스트
+[GET] /user/prohibition : 접근 금지, status : 403
+[GET] /admin : auth가 ADMIN인 경우만 가능, 어드민 페이지
 ```
 ### item
 ```
-/item - get
-/item/search - get, parameter : keyword
-/item/category/{category} - get
-/item/post - get/post
-/item/{id} - get
-/item/good/{id} - post
-/item/edit/{id} - get/post
+[GET] /item : 전체 상품 페이지, 좋아요를 기준으로 정렬됨
+[GET] /item/search : 상품 검색, 좋아욜르 기준으로 정렬됨, 제목으로 검색, parameter : keyword
+[GET] /item/category/{category} : 카테고리로 정렬
+[GET/POST] /item/post : 상품 등록, auth : SELLER
+[GET] /item/{id} : 상품 detail
+[POST] /item/good/{id} : 상품 좋아요
+[GET/POST] /item/edit/{id} : 상품 수정
 ```
 ### comment
 ```
-/comment/{itemId} - get
-/comment/post/{itemId} - post, 댓글 홈에서 바로 댓글 작성함(textarea있음)
-/comment/edit/{id} - get/post
-/comment/delete/{id} - post
+[GET] /comment/{itemId} : 댓글 리스트
+[POST] /comment/post/{itemId} : 댓글 작성 댓글 리스트에서 바로 댓글 작성함(textarea있음)
+[GET/POST] /comment/edit/{id} : 댓글 수정, 작성자만 접근 가능
+[POST] /comment/delete/{id} : 댓글 삭제, 작성자만 접근 가능
 ```
 ### orders
 ```
-/item/order-list/{itemId} - get, myPage에서 조회할 나의 주문리스트
-/item/order/{itemId} - get/post
-/item/cancel/{orderId} - get/post
+[GET] /item/order-list/{itemId} : myPage에서 조회할 나의 주문리스트
+[GET/POST] /item/order/{itemId} : 상품 주문
+[GET/POST] /item/cancel/{orderId} : 상품 주문 취소, 7일 안에 가능
 ```
 ### file
 ```
-/file/{saveFileName} - image url
+[GET] /file/{saveFileName} : image url
 ```
 
 # 4. 데이터 베이스 설계
