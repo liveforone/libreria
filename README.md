@@ -413,13 +413,15 @@ public static ResponseEntity<String> makeRedirect(String inputUrl, HttpServletRe
 * 큰 변화가 있을때 마이그레이션 하지 않으면 나중에 마이그레이션 작업을 할 때 힘들어 질것같아 마이그레이션을 결정했다.
 * 마이그레이션 진행은 아래와 같다.
 ```
-디펜던시에 
-runtimeOnly 'org.springframework.boot:spring-boot-properties-migrator' 를 추가한다.
+gradle에
+runtimeOnly 'org.springframework.boot:spring-boot-properties-migrator' 
+를 추가한다.
 
 plugin { } 에서 자바의 버전을 원하는 버전으로 변경하는데
 2.7.4에서 3.0.0 으로 넘어갈때 plugin에는 약간의 변화가 있다.
 
-id 'io.spring.dependency-management' version '1.1.0' 요 친구가 추가되었다.
+id 'io.spring.dependency-management' version '1.1.0' 
+요 친구가 추가되었다.
 
 따라서 아래와 같이 변경하면된다.
 
