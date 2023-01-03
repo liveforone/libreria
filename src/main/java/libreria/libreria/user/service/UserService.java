@@ -119,6 +119,11 @@ public class UserService {
     }
 
     @Transactional
+    public void degrade(String email) {
+        userRepository.degrade(email);
+    }
+
+    @Transactional
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }

@@ -34,4 +34,8 @@ public interface UserRepository extends JpaRepository<Users, Long> {
     @Modifying
     @Query("update Users u set u.count = u.count - 1 where u.email = :email")
     void minusCount(@Param("email") String email);
+
+    @Modifying
+    @Query("update Users u set u.count = u.count - 5 where u.email = :email")
+    void degrade(@Param("email") String email);
 }

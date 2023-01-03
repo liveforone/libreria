@@ -5,8 +5,10 @@ import libreria.libreria.comment.dto.CommentRequest;
 import libreria.libreria.comment.dto.CommentResponse;
 import libreria.libreria.comment.model.Comment;
 import libreria.libreria.comment.service.CommentService;
+import libreria.libreria.filteringBot.FilteringBot;
 import libreria.libreria.item.model.Item;
 import libreria.libreria.item.service.ItemService;
+import libreria.libreria.user.service.UserService;
 import libreria.libreria.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +33,7 @@ public class CommentController {
 
     private final CommentService commentService;
     private final ItemService itemService;
+    private final UserService userService;
     
     @PostMapping("/comment/post/{itemId}")
     public ResponseEntity<?> commentPost(
@@ -40,16 +43,24 @@ public class CommentController {
             HttpServletRequest request
     ) {
         Item item = itemService.getItemEntity(itemId);
+        String email = principal.getName();
 
         if (CommonUtils.isNull(item)) {
             log.info("상품이 존재하지 않음.");
             return ResponseEntity.ok("해당 상품이 없어 댓글 작성이 불가능합니다.");
         }
 
+        String content = commentRequest.getContent();
+        if (FilteringBot.ignoreBlankCheckBadWord(content)) {
+            userService.degrade(email);
+            return ResponseEntity
+                    .ok("비속어가 포함된 리뷰는 작성이 불가능합니다. \n올바른 단어를 사용하세요.");
+        }
+
         commentService.saveComment(
                 item,
                 commentRequest,
-                principal.getName()
+                email
         );
         log.info("댓글 작성 성공");
 
