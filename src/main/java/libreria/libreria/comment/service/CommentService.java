@@ -5,12 +5,12 @@ import libreria.libreria.comment.dto.CommentRequest;
 import libreria.libreria.comment.dto.CommentResponse;
 import libreria.libreria.comment.repository.CommentRepository;
 import libreria.libreria.comment.util.CommentMapper;
-import libreria.libreria.item.repository.ItemRepository;
+import libreria.libreria.item.model.Item;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +18,6 @@ import java.util.List;
 public class CommentService {
 
     private final CommentRepository commentRepository;
-    private final ItemRepository itemRepository;
 
     public Comment getCommentEntity(Long id) {
         return commentRepository.findOneById(id);
@@ -28,19 +27,19 @@ public class CommentService {
         return commentRepository.findOneDtoById(id);
     }
 
-    public List<CommentResponse> getComments(Long id) {
-        return CommentMapper.entityToDtoList(
-                commentRepository.findCommentsByItemId(id)
+    public Page<CommentResponse> getComments(Item item, Pageable pageable) {
+        return CommentMapper.entityToDtoPage(
+                commentRepository.findCommentsByItemId(item, pageable)
         );
     }
 
     @Transactional
     public void saveComment(
-            Long itemId,
+            Item item,
             CommentRequest commentRequest,
             String writer
     ) {
-        commentRequest.setItem(itemRepository.findOneById(itemId));
+        commentRequest.setItem(item);
         commentRequest.setWriter(writer);
 
         commentRepository.save(
@@ -48,16 +47,9 @@ public class CommentService {
         );
     }
 
-    /*
-    * 댓글 수정
-    * 반환 타입 : item id
-    * 반환 타입이 item id인 이유는 수정 후 해당 게시글로 리다이렉트 할 것이기 때문이다.
-     */
     @Transactional
-    public Long editComment(Long id, CommentRequest commentRequest) {
-        Comment comment = commentRepository.findOneById(id);
-
-        commentRequest.setId(id);
+    public Long editComment(Comment comment, CommentRequest commentRequest) {
+        commentRequest.setId(comment.getId());
         commentRequest.setWriter(comment.getWriter());
         commentRequest.setItem(comment.getItem());
 
@@ -68,16 +60,8 @@ public class CommentService {
         return comment.getItem().getId();
     }
 
-    /*
-     * 댓글 삭제
-     * 반환 타입 : item id
-     * 반환 타입이 item id인 이유는 삭제 후 해당 게시글로 리다이렉트 할 것이기 때문이다.
-     */
     @Transactional
-    public Long deleteComment(Long id) {
-        Comment comment = commentRepository.findOneById(id);
-        commentRepository.deleteById(id);
-
-        return comment.getItem().getId();
+    public void deleteComment(Comment comment) {
+        commentRepository.deleteById(comment.getId());
     }
 }

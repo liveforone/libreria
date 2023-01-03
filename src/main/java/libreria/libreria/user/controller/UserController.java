@@ -109,7 +109,6 @@ public class UserController {
         log.info("seller 권한 업데이트 성공!!");
 
         String url = "/user/logout";
-
         return CommonUtils.makeResponseEntityForRedirect(url, request);
     }
 
@@ -120,10 +119,9 @@ public class UserController {
             HttpServletRequest request
     ) {
         Users users = userService.getUserEntity(principal.getName());
+        Users requestUsers = userService.getUserEntity(userRequest.getEmail());
 
-        if (UserUtils.isDuplicateEmail(
-                userService.getUserEntity(userRequest.getEmail())
-        )) {
+        if (UserUtils.isDuplicateEmail(requestUsers)) {
             log.info("이메일이 중복됨.");
             return ResponseEntity
                     .ok("해당 이메일이 이미 존재합니다. 다시 입력해주세요");
@@ -144,7 +142,6 @@ public class UserController {
         log.info("이메일 변경 성공");
 
         String url = "/user/logout";
-
         return CommonUtils.makeResponseEntityForRedirect(url, request);
     }
 
@@ -172,13 +169,13 @@ public class UserController {
         log.info("비밀번호 변경 성공");
 
         String url = "/user/logout";
-
         return CommonUtils.makeResponseEntityForRedirect(url, request);
     }
 
     @GetMapping("/user/regi-address")
     public ResponseEntity<?> regiAddressPage(Principal principal) {
-        String address = userService.getUserEntity(principal.getName()).getAddress();
+        String email = principal.getName();
+        String address = userService.getUserEntity(email).getAddress();
 
         return ResponseEntity.ok(address);
     }
@@ -195,7 +192,6 @@ public class UserController {
         log.info("주소 등록 성공!!");
 
         String url = "/user/my-page";
-
         return CommonUtils.makeResponseEntityForRedirect(url, request);
     }
 
@@ -211,10 +207,6 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-    /*
-    * 내가 등록한 상품
-    * 권한 : SELLER
-     */
     @GetMapping("/user/item-list")
     public ResponseEntity<?> myItemList(Principal principal) {
         Users users = userService.getUserEntity(principal.getName());
@@ -228,10 +220,6 @@ public class UserController {
         return ResponseEntity.ok(items);
     }
 
-    /*
-    * 내가 주문한 상품
-    * 권한 : SELLER
-     */
     @GetMapping("/user/order-list")
     public ResponseEntity<?> myOrderList(Principal principal) {
         Users users = userService.getUserEntity(principal.getName());
@@ -249,13 +237,13 @@ public class UserController {
 
     @PostMapping("/user/withdraw")
     public ResponseEntity<?> withdraw(
-            @RequestBody String password,
+            @RequestBody String inputPassword,
             Principal principal
     ) {
         Users users = userService.getUserEntity(principal.getName());
 
         if (UserUtils.isNotMatchingPassword(
-                password,
+                inputPassword,
                 users.getPassword()
         )) {
             log.info("비밀번호 일치하지 않음.");
@@ -268,10 +256,6 @@ public class UserController {
         return ResponseEntity.ok("그동안 서비스를 이용해주셔서 감사합니다.");
     }
 
-    /*
-    * 어드민 페이지
-    * 권한 : ADMIN
-     */
     @GetMapping("/admin")
     public ResponseEntity<?> admin(Principal principal) {
         Users users = userService.getUserEntity(principal.getName());

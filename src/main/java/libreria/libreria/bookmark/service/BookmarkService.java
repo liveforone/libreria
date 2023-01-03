@@ -4,10 +4,7 @@ import libreria.libreria.bookmark.model.Bookmark;
 import libreria.libreria.bookmark.repository.BookmarkRepository;
 import libreria.libreria.bookmark.util.BookmarkMapper;
 import libreria.libreria.item.model.Item;
-import libreria.libreria.item.repository.ItemRepository;
 import libreria.libreria.user.model.Users;
-import libreria.libreria.user.repository.UserRepository;
-import libreria.libreria.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,12 +17,8 @@ import java.util.Map;
 public class BookmarkService {
 
     private final BookmarkRepository bookmarkRepository;
-    private final UserRepository userRepository;
-    private final ItemRepository itemRepository;
 
-    public Bookmark getBookmarkDetail(Long itemId, String email) {
-        Users users = userRepository.findByEmail(email);
-        Item item = itemRepository.findOneById(itemId);
+    public Bookmark getBookmarkDetail(Item item, Users users) {
 
         return bookmarkRepository.findOneBookmark(users, item);
     }
@@ -37,10 +30,7 @@ public class BookmarkService {
     }
 
     @Transactional
-    public void saveBookmark(String email, Long itemId) {
-        Users users = userRepository.findByEmail(email);
-        Item item = itemRepository.findOneById(itemId);
-
+    public void saveBookmark(Users users, Item item) {
         Bookmark bookmark = Bookmark.builder()
                 .users(users)
                 .item(item)
@@ -50,14 +40,7 @@ public class BookmarkService {
     }
 
     @Transactional
-    public void cancelBookmark(String email, Long itemId) {
-        Users users = userRepository.findByEmail(email);
-        Item item = itemRepository.findOneById(itemId);
-
-        Bookmark bookmark = bookmarkRepository.findOneBookmark(users, item);
-
-        if (!CommonUtils.isNull(bookmark)) {
-            bookmarkRepository.deleteById(bookmark.getId());
-        }
+    public void cancelBookmark(Bookmark bookmark) {
+        bookmarkRepository.deleteById(bookmark.getId());
     }
 }

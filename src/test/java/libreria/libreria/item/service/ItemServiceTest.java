@@ -50,12 +50,14 @@ class ItemServiceTest {
 
         String title = "test title";
         Long itemId = createItem(title, email);
+        em.flush();
+        em.clear();
 
         //when
         String updateTitle = "updated title";
         ItemRequest itemRequest = new ItemRequest();
         itemRequest.setTitle(updateTitle);
-        itemService.editItem(itemId, itemRequest);
+        itemService.editItem(itemService.getItemEntity(itemId), itemRequest);
         em.flush();
         em.clear();
 

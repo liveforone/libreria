@@ -3,15 +3,10 @@ package libreria.libreria.comment.util;
 import libreria.libreria.comment.dto.CommentRequest;
 import libreria.libreria.comment.dto.CommentResponse;
 import libreria.libreria.comment.model.Comment;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
 
 public class CommentMapper {
 
-    /*
-     * dto ->  entity 변환 편의 메소드
-     */
     public static Comment dtoToEntity(CommentRequest commentRequest) {
         return Comment.builder()
                 .id(commentRequest.getId())
@@ -21,9 +16,6 @@ public class CommentMapper {
                 .build();
     }
 
-    /*
-     * CommentResponse builder 편의 메소드
-     */
     private static CommentResponse dtoBuilder(Comment comment) {
         return CommentResponse.builder()
                 .id(comment.getId())
@@ -33,14 +25,7 @@ public class CommentMapper {
                 .build();
     }
 
-    /*
-     * entity -> dto 편의 메소드1
-     * 반환 타입 : 리스트형식
-     */
-    public static List<CommentResponse> entityToDtoList(List<Comment> comments) {
-        return comments
-                .stream()
-                .map(CommentMapper::dtoBuilder)
-                .collect(Collectors.toList());
+    public static Page<CommentResponse> entityToDtoPage(Page<Comment> comments) {
+        return comments.map(CommentMapper::dtoBuilder);
     }
 }

@@ -5,6 +5,8 @@ import libreria.libreria.bookmark.model.Bookmark;
 import libreria.libreria.bookmark.service.BookmarkService;
 import libreria.libreria.item.model.Item;
 import libreria.libreria.item.service.ItemService;
+import libreria.libreria.user.model.Users;
+import libreria.libreria.user.service.UserService;
 import libreria.libreria.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +26,7 @@ public class BookmarkController {
 
     private final BookmarkService bookmarkService;
     private final ItemService itemService;
+    private final UserService userService;
 
     @GetMapping("/my-bookmark")
     public ResponseEntity<Map<String, Object>> myBookmark(Principal principal) {
@@ -39,9 +42,9 @@ public class BookmarkController {
             Principal principal,
             HttpServletRequest request
     ) {
-        String email = principal.getName();
+        Users users = userService.getUserEntity(principal.getName());
         Item item = itemService.getItemEntity(itemId);
-        Bookmark bookmark = bookmarkService.getBookmarkDetail(itemId, email);
+        Bookmark bookmark = bookmarkService.getBookmarkDetail(item, users);
 
         if (CommonUtils.isNull(item)) {
             log.info("상품 존재하지 않음.");
@@ -53,11 +56,10 @@ public class BookmarkController {
             return ResponseEntity.ok("이미 북마크 하였습니다.");
         }
 
-        bookmarkService.saveBookmark(email, itemId);
+        bookmarkService.saveBookmark(users, item);
         log.info("북마킹 성공");
 
         String url = "/item/" + itemId;
-
         return CommonUtils.makeResponseEntityForRedirect(url, request);
     }
 
@@ -67,9 +69,9 @@ public class BookmarkController {
             Principal principal,
             HttpServletRequest request
     ) {
-        String email = principal.getName();
+        Users users = userService.getUserEntity(principal.getName());
         Item item = itemService.getItemEntity(itemId);
-        Bookmark bookmark = bookmarkService.getBookmarkDetail(itemId, email);
+        Bookmark bookmark = bookmarkService.getBookmarkDetail(item, users);
 
         if (CommonUtils.isNull(item)) {
             log.info("상품 존재하지 않음.");
@@ -81,11 +83,10 @@ public class BookmarkController {
             return ResponseEntity.ok("이미 북마크가 취소되었습니다.");
         }
 
-        bookmarkService.cancelBookmark(email, itemId);
+        bookmarkService.cancelBookmark(bookmark);
         log.info("북마크 취소 성공");
 
         String url = "/item/" + itemId;
-
         return CommonUtils.makeResponseEntityForRedirect(url, request);
     }
 }

@@ -68,10 +68,8 @@ public class ItemService {
     }
 
     @Transactional
-    public void editItem(Long id, ItemRequest itemRequest) {
-        Item item = itemRepository.findOneById(id);
-
-        itemRequest.setId(id);
+    public void editItem(Item item, ItemRequest itemRequest) {
+        itemRequest.setId(item.getId());
         itemRequest.setUsers(item.getUsers());
         itemRequest.setGood(item.getGood());
 

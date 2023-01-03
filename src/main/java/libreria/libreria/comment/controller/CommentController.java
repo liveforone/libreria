@@ -10,13 +10,17 @@ import libreria.libreria.item.service.ItemService;
 import libreria.libreria.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -43,25 +47,35 @@ public class CommentController {
         }
 
         commentService.saveComment(
-                itemId,
+                item,
                 commentRequest,
                 principal.getName()
         );
         log.info("댓글 작성 성공");
 
-        String url = "/item/comment/" + itemId;
+        String url = "/comment/" + itemId;
 
         return CommonUtils.makeResponseEntityForRedirect(url, request);
     }
 
     @GetMapping("/comment/{itemId}")
-    public ResponseEntity<Map<String, Object>> commentHome(
+    public ResponseEntity<?> commentHome(
             @PathVariable("itemId") Long itemId,
+            @PageableDefault(page = 0, size = 10)
+            @SortDefault.SortDefaults({
+                    @SortDefault(sort = "id", direction = Sort.Direction.DESC)
+            }) Pageable pageable,
             Principal principal
     ) {
+        Item item = itemService.getItemEntity(itemId);
+
+        if (CommonUtils.isNull(item)) {
+            return ResponseEntity.ok("게시글이 없습니다.");
+        }
+
         Map<String, Object> map = new HashMap<>();
         String user = principal.getName();
-        List<CommentResponse> comments = commentService.getComments(itemId);
+        Page<CommentResponse> comments = commentService.getComments(item, pageable);
 
         map.put("user", user);
         map.put("body", comments);
@@ -95,14 +109,16 @@ public class CommentController {
             return ResponseEntity.ok("댓글을 찾을 수 없어 수정이 불가능합니다.");
         }
 
-        if (!Objects.equals(comment.getWriter(), principal.getName())) {
+        String writer = comment.getWriter();
+        String user = principal.getName();
+        if (!Objects.equals(writer, user)) {
             log.info("작성자와 현재 유저가 달라 수정 불가능.");
             return ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
                     .build();
         }
 
-        Long itemId = commentService.editComment(id, commentRequest);
+        Long itemId = commentService.editComment(comment, commentRequest);
         log.info("댓글 업데이트 성공");
 
         String url = "/item/comment/" + itemId;
@@ -123,18 +139,20 @@ public class CommentController {
             return ResponseEntity.ok("댓글을 찾을 수 없어 삭제가 불가능합니다.");
         }
 
-        if (!Objects.equals(comment.getWriter(), principal.getName())) {
+        String writer = comment.getWriter();
+        String user = principal.getName();
+        if (!Objects.equals(writer, user)) {
             log.info("작성자와 현재유저가 달라 삭제 불가능");
             return ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
                     .build();
         }
 
-        Long itemId = commentService.deleteComment(id);
+        commentService.deleteComment(comment);
         log.info("댓글 " + id + "삭제완료");
 
+        Long itemId = comment.getItem().getId();
         String url = "/item/comment/" + itemId;
-
         return CommonUtils.makeResponseEntityForRedirect(url, request);
     }
 }

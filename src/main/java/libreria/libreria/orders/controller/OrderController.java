@@ -70,14 +70,9 @@ public class OrderController {
         log.info("주문 성공");
 
         String url = "/item/" + itemId;
-
         return CommonUtils.makeResponseEntityForRedirect(url, request);
     }
-
-    /*
-    * 주문자 리스트
-    * who : 게시글 작성자
-     */
+    
     @GetMapping("/item/order-list/{itemId}")
     public ResponseEntity<?> ordersListPage(@PathVariable("itemId") Long itemId) {
         List<OrdersResponse> orderDtos =
@@ -99,7 +94,7 @@ public class OrderController {
             return ResponseEntity.ok("해당 상품이 없어 주문이 불가능합니다.");
         }
 
-        return ResponseEntity.ok(item);
+        return ResponseEntity.ok("주문 페이지");
     }
 
     @GetMapping("/item/cancel/{orderId}")
@@ -129,7 +124,8 @@ public class OrderController {
                     .ok("해당 주문을 찾을 수 없어 주문 취소가 불가능합니다.");
         }
 
-        if (!Objects.equals(currentUserEmail, orders.getUsers().getEmail())) {
+        String orderer = orders.getUsers().getEmail();
+        if (!Objects.equals(currentUserEmail, orderer)) {
             log.info("작성자와 현재 유저가 달라 주문 취소 불가능");
             return ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
@@ -150,7 +146,6 @@ public class OrderController {
         log.info("주문 취소 성공");
 
         String url = "/user/order-list";
-
         return CommonUtils.makeResponseEntityForRedirect(url, request);
     }
 }

@@ -105,14 +105,9 @@ public class ItemController {
         log.info("파일 저장 성공");
 
         String url = "/item/" + itemId;
-
         return CommonUtils.makeResponseEntityForRedirect(url, request);
     }
 
-    /*
-    * remaining 을 클라이언트로 내보낸다.
-    * 클라이언트는 remaining 이 0일경우 주문 버튼을 품절로 바꾼다.
-     */
     @GetMapping("/item/{id}")
     public ResponseEntity<?> itemDetail(
             @PathVariable("id") Long id,
@@ -155,7 +150,6 @@ public class ItemController {
         log.info("좋아요 업데이트");
 
         String url = "/item/" + id;
-
         return CommonUtils.makeResponseEntityForRedirect(url, request);
     }
 
@@ -168,7 +162,7 @@ public class ItemController {
             return ResponseEntity.ok("해당 상품이 없어 수정이 불가능합니다.");
         }
 
-        return ResponseEntity.ok(id);
+        return ResponseEntity.ok(item);
     }
 
     /*
@@ -184,8 +178,6 @@ public class ItemController {
             Principal principal,
             HttpServletRequest request
     ) throws IllegalStateException, IOException {
-
-        String currentUserEmail = principal.getName();
         String url = "/item/" + id;
         ResponseEntity<String> response = CommonUtils
                 .makeResponseEntityForRedirect(url, request);
@@ -197,19 +189,21 @@ public class ItemController {
             return ResponseEntity.ok("해당 상품이 없어 수정이 불가능합니다.");
         }
 
-        if (!Objects.equals(item.getUsers().getEmail(), currentUserEmail)) {
+        String writer = item.getUsers().getEmail();
+        String currentUserEmail = principal.getName();
+        if (!Objects.equals(writer, currentUserEmail)) {
             log.info("작성자와 현재 유저가 달라 수정 불가능.");
             return ResponseEntity.ok("작성자가 아니라서 수정이 불가능합니다.");
         }
 
         if (uploadFile.isEmpty()) {
-            itemService.editItem(id, itemRequest);
+            itemService.editItem(item, itemRequest);
             log.info("게시글 수정 완료(파일 수정X)");
 
             return response;
         }
 
-        itemService.editItem(id, itemRequest);
+        itemService.editItem(item, itemRequest);
         log.info("게시글 수정 완료(파일 수정O)");
 
         uploadFileService.editFile(uploadFile, id);
