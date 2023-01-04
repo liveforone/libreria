@@ -43,7 +43,7 @@ public class OrderService {
     }
 
     @Transactional
-    public void saveOrder(
+    public Long saveOrder(
             Item item,
             OrdersRequest ordersRequest,
             String email
@@ -52,9 +52,9 @@ public class OrderService {
         ordersRequest.setUsers(userRepository.findByEmail(email));
         ordersRequest.setStatus(OrderStatus.ORDER);
 
-        orderRepository.save(
+        return orderRepository.save(
                 OrdersMapper.dtoToEntity(ordersRequest)
-        );
+        ).getId();
     }
 
     @Transactional
