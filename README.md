@@ -307,15 +307,34 @@ commentList
 * 따라서 item의 remaining 칼럼은 절대로 0미만으로 내려가서는 안된다.
 
 ## 주문취소
+* 주문취소는 LocalDate를 활용해서 주문후 7일 안에 주문취소가 가능하도록 설정한다.
+* LocalDate로 저장된 생성날자에서 getDayOfYear()를 사용해서 365일중 몇일인지(예 : 260) int형으로 뽑아낸다.
+* getDayOfYear() 에 7을 더한 날짜보다 nowDate()가  크면 주문취소가 불가능하다.
+* 문제는 한해가 넘어가면 getDayOfYear()는 다시 1로 초기화 된다.
+* 즉 1월 1일은 2022년도 2023년도, 2024년도 모두 1이란 수를 갖는다.
+* 따라서 12월 25일부터 31일 까지의 날짜들은 모두 7을 더하면 365라는 숫자를 넘어가버려서 비교가 불가능해진다.
+* 이들은 모두 swtich문을 사용해서 12월 25일은 마감 날짜가 1,
+* 31일은 7로 하여 하나씩 값을 넣어주었다.
+* 주문취소는 status를 CANCEL로 바꾸는 것이지, 절대 db에서 삭제가 아니다!!
 ```
-주문취소는 LocalDate를 활용해서 주문후 7일 안에 주문취소가 가능하도록 설정한다.
-LocalDate로 저장된 생성날자에서 getDayOfYear()를 사용해서 365일중 몇일인지(예 : 260) 뽑아낸다.
-그리고 그 수에 + 7을 더해준다. 7을 더하는것이 가능한 이유는 getDayOfYear() 값은 int 형이다.
-그리고 LocalDate.now().getDayOfYear()로 현재 날짜를 출력하고 그 값이 생성날짜에 7을 더한 값과 비교한다.
-주문취소가 가능하다면 1을 리턴하고, 아니라면 -1을 리턴하도록 했다.
-컨트롤러단에서 입력받은 int 변수를 통해서 if문으로 1인지 아닌지 판별후 1이면 주문취소를 하고 아닐경우 
-불가능 메세지를 내보낸다.
-주문취소는 status를 CANCEL로 바꾸는 것이지, 절대 db에서 삭제가 아니다!!
+LocalDate createdDate = orders.getCreatedDate();
+int orderDate = createdDate.getDayOfYear();
+
+int nowYear = LocalDate.now().getYear();
+int nowDate = LocalDate.now().getDayOfYear();
+
+int cancelLimitDate = switch (orderDate) {
+    case 359 -> LocalDate.of(nowYear, 1, 1).getDayOfYear();
+    case 360 -> LocalDate.of(nowYear, 1, 2).getDayOfYear();
+    case 361 -> LocalDate.of(nowYear, 1, 3).getDayOfYear();
+    case 362 -> LocalDate.of(nowYear, 1, 4).getDayOfYear();
+    case 363 -> LocalDate.of(nowYear, 1, 5).getDayOfYear();
+    case 364 -> LocalDate.of(nowYear, 1, 6).getDayOfYear();
+    case 365 -> LocalDate.of(nowYear, 1, 7).getDayOfYear();
+    default -> orderDate + 7;
+};
+
+return nowDate > cancelLimitDate;
 ```
 
 ## my-page
