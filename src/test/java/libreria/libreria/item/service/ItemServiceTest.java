@@ -5,14 +5,12 @@ import libreria.libreria.item.dto.ItemRequest;
 import libreria.libreria.user.dto.UserRequest;
 import libreria.libreria.user.service.UserService;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
-@Transactional
 class ItemServiceTest {
 
     @Autowired
@@ -24,7 +22,6 @@ class ItemServiceTest {
     @Autowired
     private UserService userService;
 
-    @DisplayName("가장 먼저 생성하라")
     public void createUsers(String email, String password) {
         UserRequest userRequest = new UserRequest();
         userRequest.setEmail(email);
