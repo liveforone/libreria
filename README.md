@@ -129,8 +129,8 @@ json 다음에 uploadFile 이라는 이름으로 파일 등록
 ### users
 ```
 [GET] / : 홈
-/user/signup : Authorization 헤더 설정하지 마라!! 해당 헤더가 필요없는 api이며 설정시 에러 발생한다. 
-/user/login : Authorization 헤더 설정하지 마라!! 해당 헤더가 필요없는 api이며 설정시 에러 발생한다.
+[GET/POST] /user/signup : Authorization 헤더 설정하지 마라!! 해당 헤더가 필요없는 api이며 설정시 에러 발생한다. 
+[GET/POST] /user/login : Authorization 헤더 설정하지 마라!! 해당 헤더가 필요없는 api이며 설정시 에러 발생한다.
 [GET] /user/logout : Authorization 헤더 설정하지 마라!! 해당 헤더가 필요없는 api이며 설정시 에러 발생한다.
 [GET/POST] /user/seller : 판매자로 권한 업데이트
 [GET] /user/my-page : 마이 페이지
