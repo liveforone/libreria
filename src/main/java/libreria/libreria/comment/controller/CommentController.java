@@ -106,7 +106,7 @@ public class CommentController {
         return ResponseEntity.ok(comment);
     }
 
-    @PostMapping("/comment/edit/{id}")
+    @PutMapping("/comment/edit/{id}")
     public ResponseEntity<?> editComment(
             @PathVariable("id") Long id,
             @RequestBody CommentRequest commentRequest,
@@ -137,7 +137,7 @@ public class CommentController {
         return CommonUtils.makeResponseEntityForRedirect(url, request);
     }
 
-    @PostMapping("/comment/delete/{id}")
+    @DeleteMapping("/comment/delete/{id}")
     public ResponseEntity<?> deleteComment(
             @PathVariable("id") Long id,
             Principal principal,

@@ -109,7 +109,7 @@ public class OrderController {
         return ResponseEntity.ok(order);
     }
 
-    @PostMapping("/item/cancel/{orderId}")
+    @DeleteMapping("/item/cancel/{orderId}")
     public ResponseEntity<?> cancel(
             @PathVariable("orderId") Long orderId,
             Principal principal,

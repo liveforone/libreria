@@ -134,7 +134,7 @@ public class ItemController {
         return ResponseEntity.ok(map);
     }
 
-    @PostMapping("/item/good/{id}")
+    @PutMapping("/item/good/{id}")
     public ResponseEntity<?> updateGood(
             @PathVariable("id") Long id,
             HttpServletRequest request
@@ -170,7 +170,7 @@ public class ItemController {
     * 조건1 : 기존 사진을 유지하며 게시글 수정
     * 조건2 : 사진을 수정하면서 게시글 수정
      */
-    @PostMapping("/item/edit/{id}")
+    @PutMapping("/item/edit/{id}")
     public ResponseEntity<?> editItem(
             @PathVariable("id") Long id,
             @RequestPart("itemRequest") ItemRequest itemRequest,
