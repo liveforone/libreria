@@ -18,10 +18,9 @@
 * rest-api 서버이지만 클라이언트 단에서 어떻게 반응해야하는지에 대한 설계도 모두 적혀있다.
 * 즉 화면단 까지 고려하여 설계하고 작성되었다.
 * 결제로직은 분리했다. 즉 다루지 않았다.
-* 결제로직 분리를 통해 결제로직에 치중하는 문제에서 벗어났다.
+* [나만의 스타일가이드/나만의 코드 컨벤션](https://github.com/liveforone/study/tree/main/%5B%EB%82%98%EB%A7%8C%EC%9D%98%20%EC%8A%A4%ED%83%80%EC%9D%BC%20%EA%B0%80%EC%9D%B4%EB%93%9C%5D)를 지키며 제작하였다. 
 * 깃의 wiki에 사용기술들과 설명들에 대해 자세히 기록했다.  
 * [나의 위키](https://github.com/liveforone/libreria/wiki)
-* 부족한 부분들을 점차 채워나가는 프로젝트이다.
 
 # 3. 설계
 * 유저는 ADMIN, MEMBER, SELLER 세 종류가 있다.
