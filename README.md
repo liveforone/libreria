@@ -46,6 +46,59 @@
 * 여타 다른 사이트가 그렇듯 상품은 품절됬음 품절됬지 게시글을 삭제하는것은 불가능하다.(어드민은 가능)
 * 테스트 코드는 기능에 대해서 작성했다. 예를 들어 주문을 취소할때 7일 안에 취소가 가능하다면 이런 날짜를 체크하는 함수를 테스트한다고 보면된다.
 
+## API 설계
+### users
+```
+[GET] / : 홈
+[GET/POST] /user/signup : Authorization 헤더 설정하지 마라!! 해당 헤더가 필요없는 api이며 설정시 에러 발생한다. 
+[GET/POST] /user/login : Authorization 헤더 설정하지 마라!! 해당 헤더가 필요없는 api이며 설정시 에러 발생한다.
+[GET] /user/logout : Authorization 헤더 설정하지 마라!! 해당 헤더가 필요없는 api이며 설정시 에러 발생한다.
+[GET/POST] /user/seller : 판매자로 권한 업데이트
+[GET] /user/my-page : 마이 페이지
+[GET/POST] /user/regi-address : 주소 등록 
+[PUT] /user/change-email : 이메일 변경, UserChangeEmailRequest 형식 필요
+[PUT] /user/change-password : 비밀번호 변경, UserChangePasswordRequest 형식 필요
+[GET] /user/item-list : auth가 SELLER인 user만 가능, 내가 등록한 상품 리스트
+[GET] /user/order-list : auth가 MEMBER인 user만 가능, 내가 주문한 상품 리스트
+[GET] /user/prohibition : 접근 금지, status : 403
+[GET] /admin : auth가 ADMIN인 경우만 가능, 어드민 페이지
+[DELETE] /user/withdraw : 계정 탈퇴
+```
+### item
+```
+[GET] /item : 전체 상품 페이지, 좋아요를 기준으로 정렬됨
+[GET] /item/search : 상품 검색, 좋아욜르 기준으로 정렬됨, 제목으로 검색, parameter : keyword
+[GET] /item/category/{category} : 카테고리로 정렬
+[GET/POST] /item/post : 상품 등록, auth : SELLER
+[GET] /item/{id} : 상품 detail
+[PUT] /item/good/{id} : 상품 좋아요
+[GET/PUT] /item/edit/{id} : 상품 수정
+```
+### comment
+```
+[GET] /comment/{itemId} : 댓글 리스트
+[POST] /comment/post/{itemId} : 댓글 작성 댓글 리스트에서 바로 댓글 작성함(textarea있음)
+[GET/PUT] /comment/edit/{id} : 댓글 수정, 작성자만 접근 가능
+[DELETE] /comment/delete/{id} : 댓글 삭제, 작성자만 접근 가능
+```
+### orders
+```
+[GET] /item/order-list/{itemId} : myPage에서 조회할 나의 주문리스트
+[GET/POST] /item/order/{itemId} : 상품 주문
+[GET] /item/order/{itemId} : 주문 상세
+[GET/DELETE] /item/cancel/{orderId} : 상품 주문 취소, 7일 안에 가능f
+```
+### file
+```
+[GET] /file/{saveFileName} : image url
+```
+### Bookmark
+```
+[GET] /my-bookmark : 나의 북마크 보기
+[POST] /bookmark/post/{itemId} : 북마킹 
+[DELETE] /bookmark/cancel/{itemId} : 북마크 취소
+```
+
 ## json body 설계 및 예시
 ### users
 ```
@@ -123,59 +176,6 @@ json 다음에 uploadFile 이라는 이름으로 파일 등록
 {
     "orderCount" : "2"
 }
-```
-
-## API 설계
-### users
-```
-[GET] / : 홈
-[GET/POST] /user/signup : Authorization 헤더 설정하지 마라!! 해당 헤더가 필요없는 api이며 설정시 에러 발생한다. 
-[GET/POST] /user/login : Authorization 헤더 설정하지 마라!! 해당 헤더가 필요없는 api이며 설정시 에러 발생한다.
-[GET] /user/logout : Authorization 헤더 설정하지 마라!! 해당 헤더가 필요없는 api이며 설정시 에러 발생한다.
-[GET/POST] /user/seller : 판매자로 권한 업데이트
-[GET] /user/my-page : 마이 페이지
-[GET/POST] /user/regi-address : 주소 등록 
-[PUT] /user/change-email : 이메일 변경, UserChangeEmailRequest 형식 필요
-[PUT] /user/change-password : 비밀번호 변경, UserChangePasswordRequest 형식 필요
-[GET] /user/item-list : auth가 SELLER인 user만 가능, 내가 등록한 상품 리스트
-[GET] /user/order-list : auth가 MEMBER인 user만 가능, 내가 주문한 상품 리스트
-[GET] /user/prohibition : 접근 금지, status : 403
-[GET] /admin : auth가 ADMIN인 경우만 가능, 어드민 페이지
-[DELETE] /user/withdraw : 계정 탈퇴
-```
-### item
-```
-[GET] /item : 전체 상품 페이지, 좋아요를 기준으로 정렬됨
-[GET] /item/search : 상품 검색, 좋아욜르 기준으로 정렬됨, 제목으로 검색, parameter : keyword
-[GET] /item/category/{category} : 카테고리로 정렬
-[GET/POST] /item/post : 상품 등록, auth : SELLER
-[GET] /item/{id} : 상품 detail
-[PUT] /item/good/{id} : 상품 좋아요
-[GET/PUT] /item/edit/{id} : 상품 수정
-```
-### comment
-```
-[GET] /comment/{itemId} : 댓글 리스트
-[POST] /comment/post/{itemId} : 댓글 작성 댓글 리스트에서 바로 댓글 작성함(textarea있음)
-[GET/PUT] /comment/edit/{id} : 댓글 수정, 작성자만 접근 가능
-[DELETE] /comment/delete/{id} : 댓글 삭제, 작성자만 접근 가능
-```
-### orders
-```
-[GET] /item/order-list/{itemId} : myPage에서 조회할 나의 주문리스트
-[GET/POST] /item/order/{itemId} : 상품 주문
-[GET] /item/order/{itemId} : 주문 상세
-[GET/DELETE] /item/cancel/{orderId} : 상품 주문 취소, 7일 안에 가능f
-```
-### file
-```
-[GET] /file/{saveFileName} : image url
-```
-### Bookmark
-```
-[GET] /my-bookmark : 나의 북마크 보기
-[POST] /bookmark/post/{itemId} : 북마킹 
-[DELETE] /bookmark/cancel/{itemId} : 북마크 취소
 ```
 
 # 4. 데이터 베이스 설계
