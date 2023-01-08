@@ -135,10 +135,13 @@ json 다음에 uploadFile 이라는 이름으로 파일 등록
 [GET/POST] /user/seller : 판매자로 권한 업데이트
 [GET] /user/my-page : 마이 페이지
 [GET/POST] /user/regi-address : 주소 등록 
+[PUT] /user/change-email : 이메일 변경, UserChangeEmailRequest 형식 필요
+[PUT] /user/change-password : 비밀번호 변경, UserChangePasswordRequest 형식 필요
 [GET] /user/item-list : auth가 SELLER인 user만 가능, 내가 등록한 상품 리스트
 [GET] /user/order-list : auth가 MEMBER인 user만 가능, 내가 주문한 상품 리스트
 [GET] /user/prohibition : 접근 금지, status : 403
 [GET] /admin : auth가 ADMIN인 경우만 가능, 어드민 페이지
+[DELETE] /user/withdraw : 계정 탈퇴
 ```
 ### item
 ```
@@ -147,25 +150,32 @@ json 다음에 uploadFile 이라는 이름으로 파일 등록
 [GET] /item/category/{category} : 카테고리로 정렬
 [GET/POST] /item/post : 상품 등록, auth : SELLER
 [GET] /item/{id} : 상품 detail
-[POST] /item/good/{id} : 상품 좋아요
-[GET/POST] /item/edit/{id} : 상품 수정
+[PUT] /item/good/{id} : 상품 좋아요
+[GET/PUT] /item/edit/{id} : 상품 수정
 ```
 ### comment
 ```
 [GET] /comment/{itemId} : 댓글 리스트
 [POST] /comment/post/{itemId} : 댓글 작성 댓글 리스트에서 바로 댓글 작성함(textarea있음)
-[GET/POST] /comment/edit/{id} : 댓글 수정, 작성자만 접근 가능
-[POST] /comment/delete/{id} : 댓글 삭제, 작성자만 접근 가능
+[GET/PUT] /comment/edit/{id} : 댓글 수정, 작성자만 접근 가능
+[DELETE] /comment/delete/{id} : 댓글 삭제, 작성자만 접근 가능
 ```
 ### orders
 ```
 [GET] /item/order-list/{itemId} : myPage에서 조회할 나의 주문리스트
 [GET/POST] /item/order/{itemId} : 상품 주문
-[GET/POST] /item/cancel/{orderId} : 상품 주문 취소, 7일 안에 가능f
+[GET] /item/order/{itemId} : 주문 상세
+[GET/DELETE] /item/cancel/{orderId} : 상품 주문 취소, 7일 안에 가능f
 ```
 ### file
 ```
 [GET] /file/{saveFileName} : image url
+```
+### Bookmark
+```
+[GET] /my-bookmark : 나의 북마크 보기
+[POST] /bookmark/post/{itemId} : 북마킹 
+[DELETE] /bookmark/cancel/{itemId} : 북마크 취소
 ```
 
 # 4. 데이터 베이스 설계
