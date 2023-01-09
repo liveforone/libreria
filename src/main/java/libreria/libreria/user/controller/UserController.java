@@ -3,6 +3,7 @@ package libreria.libreria.user.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import libreria.libreria.item.dto.ItemResponse;
 import libreria.libreria.item.service.ItemService;
+import libreria.libreria.jwt.JwtAuthenticationFilter;
 import libreria.libreria.jwt.TokenInfo;
 import libreria.libreria.orders.dto.OrdersResponse;
 import libreria.libreria.orders.service.OrderService;
@@ -13,13 +14,15 @@ import libreria.libreria.user.dto.UserRequest;
 import libreria.libreria.user.dto.UserResponse;
 import libreria.libreria.user.model.Users;
 import libreria.libreria.user.service.UserService;
-import libreria.libreria.user.util.UserUtils;
+import libreria.libreria.user.util.UserEmail;
+import libreria.libreria.user.util.UserPassword;
 import libreria.libreria.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.security.Principal;
 import java.util.List;
 
@@ -31,7 +34,6 @@ public class UserController {
     private final UserService userService;
     private final ItemService itemService;
     private final OrderService orderService;
-
 
     @GetMapping("/")
     public ResponseEntity<?> home() {
@@ -48,7 +50,7 @@ public class UserController {
             @RequestBody UserRequest userRequest,
             HttpServletRequest request
     ) {
-        if (UserUtils.isDuplicateEmail(
+        if (UserEmail.isDuplicateEmail(
                 userService.getUserEntity(userRequest.getEmail())
         )) {
             log.info("이메일이 중복됨.");
@@ -60,8 +62,17 @@ public class UserController {
 
         return ResponseEntity
                 .status(HttpStatus.MOVED_PERMANENTLY)
-                .headers(UserUtils.makeHttpHeadersWhenSignupRedirect(request))
+                .headers(makeHttpHeadersWhenSignup(request))
                 .build();
+    }
+
+    private HttpHeaders makeHttpHeadersWhenSignup(HttpServletRequest request) {
+        String url = "/user/login";
+        String token = JwtAuthenticationFilter.resolveToken(request);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setBearerAuth(token);
+        httpHeaders.setLocation(URI.create(url));
+        return httpHeaders;
     }
 
     @GetMapping("/user/login")
@@ -78,7 +89,7 @@ public class UserController {
             return ResponseEntity.ok("회원 조회가 되지않아 로그인이 불가능합니다.");
         }
 
-        if (UserUtils.isNotMatchingPassword(
+        if (UserPassword.isNotMatchingPassword(
                 userRequest.getPassword(),
                 users.getPassword()
         )) {
@@ -118,13 +129,13 @@ public class UserController {
         Users users = userService.getUserEntity(principal.getName());
         Users requestUsers = userService.getUserEntity(userRequest.getEmail());
 
-        if (UserUtils.isDuplicateEmail(requestUsers)) {
+        if (UserEmail.isDuplicateEmail(requestUsers)) {
             log.info("이메일이 중복됨.");
             return ResponseEntity
                     .ok("해당 이메일이 이미 존재합니다. 다시 입력해주세요");
         }
 
-        if (UserUtils.isNotMatchingPassword(
+        if (UserPassword.isNotMatchingPassword(
                 userRequest.getPassword(),
                 users.getPassword()
         )) {
@@ -151,7 +162,7 @@ public class UserController {
     ) {
         Users users = userService.getUserEntity(principal.getName());
 
-        if (UserUtils.isNotMatchingPassword(
+        if (UserPassword.isNotMatchingPassword(
                 userRequest.getOldPassword(),
                 users.getPassword()
         )) {
@@ -239,7 +250,7 @@ public class UserController {
     ) {
         Users users = userService.getUserEntity(principal.getName());
 
-        if (UserUtils.isNotMatchingPassword(
+        if (UserPassword.isNotMatchingPassword(
                 inputPassword,
                 users.getPassword()
         )) {

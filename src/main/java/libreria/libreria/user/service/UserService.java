@@ -8,7 +8,7 @@ import libreria.libreria.user.dto.UserResponse;
 import libreria.libreria.user.model.Users;
 import libreria.libreria.user.repository.UserRepository;
 import libreria.libreria.user.util.UserMapper;
-import libreria.libreria.user.util.UserUtils;
+import libreria.libreria.user.util.UserPassword;
 import libreria.libreria.utility.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -54,7 +54,7 @@ public class UserService {
     @Transactional
     public void signup(UserRequest userRequest) {
         userRequest.setPassword(
-                UserUtils.encodePassword(userRequest.getPassword())
+                UserPassword.encodePassword(userRequest.getPassword())
         );
 
         if (Objects.equals(userRequest.getEmail(), "admin@libreria.com")) {
@@ -87,7 +87,6 @@ public class UserService {
 
     @Transactional
     public void updateAuth (String email) {
-        UserUtils.updateContextHolderAuth();
         userRepository.updateUserAuth(Role.SELLER, email);
     }
 
@@ -103,7 +102,7 @@ public class UserService {
 
     @Transactional
     public void updatePassword(Long id, String inputPassword) {
-        String newPassword = UserUtils.encodePassword(inputPassword);
+        String newPassword = UserPassword.encodePassword(inputPassword);
 
         userRepository.updatePassword(id, newPassword);
     }

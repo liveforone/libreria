@@ -22,8 +22,28 @@ public class UserMapper {
                 .id(users.getId())
                 .email(users.getEmail())
                 .address(users.getAddress())
-                .rank(UserUtils.checkUserRank(users.getCount()))
+                .rank(UserMapper.checkUserRank(users.getCount()))
                 .auth(users.getAuth())
                 .build();
+    }
+
+    private static String checkUserRank(int count) {
+        if (count >= 120) {
+            return "DIA";
+        }
+
+        if (count >= 60) {
+            return "PLATINUM";
+        }
+
+        if (count >= 30) {
+            return "GOLD";
+        }
+
+        if (count >= 15) {
+            return "SILVER";
+        }
+
+        return "BRONZE";
     }
 }
