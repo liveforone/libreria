@@ -4,15 +4,7 @@ import libreria.libreria.orders.model.Orders;
 
 import java.time.LocalDate;
 
-public class OrdersUtils {
-
-    public static boolean isSoldOut(int remaining) {
-        return remaining <= 0;
-    }
-
-    public static boolean isOverRemaining(int remaining, int orderCount) {
-        return remaining - orderCount <= 0;
-    }
+public class OrderCancel {
 
     /*
      * 주문 취소 가능 검증 - 주문 취소 가능 날짜를 넘겼는가?
