@@ -110,8 +110,7 @@ public class CommentController {
     public ResponseEntity<?> editComment(
             @PathVariable("id") Long id,
             @RequestBody CommentRequest commentRequest,
-            Principal principal,
-            HttpServletRequest request
+            Principal principal
     ) {
         Comment comment = commentService.getCommentEntity(id);
 
@@ -129,19 +128,16 @@ public class CommentController {
                     .build();
         }
 
-        Long itemId = commentService.editComment(comment, commentRequest);
+        commentService.editComment(comment, commentRequest);
         log.info("댓글 업데이트 성공");
 
-        String url = "/item/comment/" + itemId;
-
-        return CommonUtils.makeResponseEntityForRedirect(url, request);
+        return ResponseEntity.ok("댓글 수정을 완료했습니다.");
     }
 
     @DeleteMapping("/comment/delete/{id}")
     public ResponseEntity<?> deleteComment(
             @PathVariable("id") Long id,
-            Principal principal,
-            HttpServletRequest request
+            Principal principal
     ) {
         Comment comment = commentService.getCommentEntity(id);
 
@@ -163,7 +159,6 @@ public class CommentController {
         log.info("댓글 " + id + "삭제완료");
 
         Long itemId = comment.getItem().getId();
-        String url = "/item/comment/" + itemId;
-        return CommonUtils.makeResponseEntityForRedirect(url, request);
+        return ResponseEntity.ok("댓글이 삭제되었습니다.");
     }
 }

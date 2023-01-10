@@ -136,8 +136,7 @@ public class ItemController {
 
     @PutMapping("/item/good/{id}")
     public ResponseEntity<?> updateGood(
-            @PathVariable("id") Long id,
-            HttpServletRequest request
+            @PathVariable("id") Long id
     ) {
         Item item = itemService.getItemEntity(id);
 
@@ -149,8 +148,7 @@ public class ItemController {
         itemService.updateGood(id);
         log.info("좋아요 업데이트");
 
-        String url = "/item/" + id;
-        return CommonUtils.makeResponseEntityForRedirect(url, request);
+        return ResponseEntity.ok("좋아요가 업데이트 되었습니다.");
     }
 
     @GetMapping("/item/edit/{id}")
@@ -175,12 +173,8 @@ public class ItemController {
             @PathVariable("id") Long id,
             @RequestPart("itemRequest") ItemRequest itemRequest,
             @RequestPart MultipartFile uploadFile,
-            Principal principal,
-            HttpServletRequest request
+            Principal principal
     ) throws IllegalStateException, IOException {
-        String url = "/item/" + id;
-        ResponseEntity<String> response = CommonUtils
-                .makeResponseEntityForRedirect(url, request);
 
         Item item = itemService.getItemEntity(id);
 
@@ -200,7 +194,7 @@ public class ItemController {
             itemService.editItem(item, itemRequest);
             log.info("게시글 수정 완료(파일 수정X)");
 
-            return response;
+            return ResponseEntity.ok("게시글 수정을 완료했습니다.");
         }
 
         itemService.editItem(item, itemRequest);
@@ -209,6 +203,6 @@ public class ItemController {
         uploadFileService.editFile(uploadFile, id);
         log.info("파일 교체 완료");
 
-        return response;
+        return ResponseEntity.ok("게시글 수정을 완료했습니다.");
     }
 }
