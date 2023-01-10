@@ -116,6 +116,11 @@
     "email" : "admin@libreria.com",
     "password" : "1234"
 }
+[이메일 변경]
+{
+    "email" : "yc1111@gmail.com",
+    "password" : "1234"
+}
 [비밀번호 변경]
 {
     "oldPassword" : "1234",
