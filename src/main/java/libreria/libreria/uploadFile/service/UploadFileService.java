@@ -6,6 +6,7 @@ import libreria.libreria.uploadFile.model.UploadFile;
 import libreria.libreria.uploadFile.repository.UploadFileRepository;
 import libreria.libreria.uploadFile.util.UploadFileMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +18,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class UploadFileService {
 
     private final UploadFileRepository uploadFileRepository;
@@ -46,6 +48,12 @@ public class UploadFileService {
     @Transactional
     public void editFile(MultipartFile uploadFile, Long itemId) throws IOException {
         UploadFile file = uploadFileRepository.findOneByItemId(itemId);
+        uploadFileRepository.deleteById(file.getId());
+        String preFileName = file.getSaveFileName();
+        File localFile = new File("C:\\Temp\\upload\\" + preFileName);
+        if (localFile.delete()) {
+            log.info("file : " + preFileName + " 삭제 완료");
+        }
 
         String saveFileName = makeSaveFileName(
                 uploadFile.getOriginalFilename()
